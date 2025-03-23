@@ -1,0 +1,153 @@
+﻿/* Стилі для сторінки продуктів з характеристиками */
+
+/* Картка продукту */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+/* Заголовок картки */
+.card-header {
+    padding: 1rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0;
+    color: #1F4E92;
+    height: 2.5rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Квадратний контейнер для зображення */
+.square-img-container {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* Створює квадратний контейнер */
+    overflow: hidden;
+    background-color: #f8f9fa;
+}
+
+.product-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Зберігає пропорції */
+    padding: 0.75rem;
+    max-width: 100%;
+    max-height: 100%;
+    box-sizing: border-box;
+}
+
+/* Тіло картки */
+.card-body {
+    padding: 1rem;
+    flex-grow: 1;
+}
+
+.card-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+    height: 4.5rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* Характеристики */
+.characteristic-summary {
+    margin-top: 0.5rem;
+}
+
+.characteristic-group {
+    font-size: 0.95rem;
+    color: #1F4E92;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.characteristic-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+    .characteristic-list li {
+        padding: 0.25rem 0;
+        font-size: 0.85rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        .characteristic-list li:last-child {
+            border-bottom: none;
+        }
+
+.characteristic-name {
+    color: #495057;
+    font-weight: 500;
+    margin-right: 0.25rem;
+}
+
+.characteristic-value {
+    color: #6c757d;
+}
+
+/* Футер картки */
+.card-footer {
+    padding: 1rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+    .card-footer .btn-primary {
+        background-color: #1F4E92;
+        border-color: #1F4E92;
+    }
+
+        .card-footer .btn-primary:hover {
+            background-color: #163a72;
+            border-color: #163a72;
+        }
+
+/* Кнопка "Деталі" */
+.btn-outline-primary {
+    color: #1F4E92;
+    border-color: #1F4E92;
+}
+
+    .btn-outline-primary:hover {
+        background-color: #1F4E92;
+        color: white;
+    }
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 767.98px) {
+    .card-title {
+        height: auto;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-text {
+        height: auto;
+        margin-bottom: 1rem;
+    }
+
+    .characteristic-list li {
+        font-size: 0.8rem;
+    }
+}

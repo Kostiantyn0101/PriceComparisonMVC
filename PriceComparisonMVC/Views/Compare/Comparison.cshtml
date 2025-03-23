@@ -1,0 +1,285 @@
+﻿@model List<PriceComparisonMVC.Controllers.ProductComparisonViewModel>
+@{
+    ViewData["Title"] = "Порівняння товарів";
+}
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MarketMap - @ViewData["Title"]</title>
+    <!-- CSS стилі -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/comparison.css")" />
+</head>
+
+<body>
+    <partial name="_Header" />
+
+    <div class="container-xxl mt-4">
+        <h1 class="text-center mb-4">Порівняння товарів</h1>
+
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="empty-comparison-message text-center py-5">
+                <img src="@Url.Content("~/images/empty-comparison.png")" alt="Немає товарів для порівняння" class="mb-3" width="120"
+                     onerror="this.src='@Url.Content("~/images/placeholder.png")'; this.onerror='';">
+                <h3>Немає товарів для порівняння</h3>
+                <p class="text-muted">Додайте товари до порівняння, щоб побачити їх характеристики поруч</p>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">Перейти до каталогу</a>
+            </div>
+        }
+        else
+        {
+            <div class="comparison-container">
+                <div class="row">
+                    <!-- Перший стовпець - "Додати товар" -->
+                    <div class="col-auto add-product-column">
+                        <div class="add-product-box d-flex flex-column align-items-center justify-content-center h-100">
+                            <div class="product-compare-title">Додати товар до порівняння</div>
+                            <a href="#" class="add-product-btn">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Стовпці з товарами -->
+                    @foreach (var product in Model)
+                    {
+                        <div class="product-column">
+                            <div class="product-compare-box">
+                                <div class="product-image-container">
+                                    <img src="@product.ImageUrl" alt="@product.Name" class="product-image"
+                                         onerror="this.src='@Url.Content("~/images/placeholder.png")'; this.onerror='';">
+                                    <a href="@Url.Action("RemoveFromComparison", "Compare", new { id = product.Id })"
+                                       class="favorites-btn" title="Видалити з порівняння">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                </div>
+                                <h3 class="product-title">@product.Name</h3>
+                                <div class="product-price">
+                                    від @product.MinPrice.ToString("N0") до @product.MaxPrice.ToString("N0") грн
+                                </div>
+                                <div class="product-offers">Пропозицій <span class="offer-count">@product.OfferCount</span></div>
+                                <div class="product-brand">
+                                    <span>@product.Brand</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Порожній стовпець для балансу (тільки якщо потрібно підтримувати максимальну кількість колонок) -->
+                    @if (Model.Count < 4) // Припускаємо, що максимальна кількість колонок - 4
+                    {
+                        <!-- Додаємо порожній стовпець, але не даємо йому розтягуватися -->
+                        <div class="product-column empty-column">
+                            <div class="product-compare-box empty-product">
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Панель сортування і фільтрації -->
+                <div class="comparison-controls d-flex justify-content-between align-items-center mt-4">
+                    <div class="sort-options">
+                        <button class="btn btn-outline-primary me-2">Сортування за ціною <i class="fas fa-sort"></i></button>
+                        <button id="smart-comparison-btn" class="btn btn-outline-success">Розумне порівняння <i class="fas fa-robot"></i></button> 
+                        @* <a href="@Url.Action("SmartComparison", "Compare", new { productIdA = 1, productIdB = 2 })" class="btn btn-outline-success"> *@
+                        @*     Розумне порівняння <i class="fas fa-robot"></i> *@
+                        @* </a> *@
+                    </div>
+
+                  
+
+
+                    <div class="view-options">
+                        <a href="@Url.Action("ClearComparison", "Compare")" class="btn btn-outline-danger">
+                            <i class="fas fa-trash-alt"></i> Очистити порівняння
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Фільтр характеристик -->
+                <div class="filter-tabs mt-4">
+                    <div class="d-flex">
+                        <div class="tab-buttons btn-group">
+                            <button class="tab-button btn btn-outline-success active" id="show-all">Всі характеристики</button>
+                            <button class="tab-button btn btn-outline-success" id="show-different">Відмінні</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Характеристики товарів -->
+                <div class="specs-wrapper">
+                    <!-- Отримуємо унікальні групи характеристик -->
+                    @{
+                        var allSpecs = new HashSet<string>();
+                        foreach (var product in Model)
+                        {
+                            foreach (var spec in product.Specifications.Keys)
+                            {
+                                allSpecs.Add(spec);
+                            }
+                        }
+
+                        // Примірні групи для категоризації
+                        var groups = new Dictionary<string, List<string>>
+                {
+                { "Дисплей", new List<string> { "Діагональ екрана", "Тип матриці", "Покриття екрана", "Роздільна здатність", "Частота зміни кадрів" } },
+                { "Процесор", new List<string> { "Серія процесора", "Модель процесора", "Кількість ядер", "Частота процесора" } },
+                { "Пам'ять", new List<string> { "Об'єм оперативної пам'яті", "Тип оперативної пам'яті", "Об'єм накопичувача", "Тип накопичувача" } }
+                };
+                    }
+
+                    @foreach (var group in groups)
+                    {
+                        var relevantSpecs = allSpecs.Where(spec => group.Value.Any(g => spec.Contains(g))).ToList();
+                        if (relevantSpecs.Any())
+                        {
+                            <div class="specs-section">
+                                <div class="specs-header">@group.Key</div>
+                                <div class="specs-table-container">
+                                    <table class="specs-table">
+                                        @foreach (var spec in relevantSpecs)
+                                        {
+                                            <tr>
+                                                <td class="feature-name">@spec</td>
+                                                @foreach (var product in Model)
+                                                {
+                                                    <td class="feature-value">
+                                                        @(product.Specifications.ContainsKey(spec) ? product.Specifications[spec] : "-")
+                                                    </td>
+                                                }
+                                                @if (Model.Count < 4) // Додаємо порожню клітинку, якщо є порожній стовпець
+                                                {
+                                                    <td class="feature-value empty-value"></td>
+                                                }
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    <!-- Інші характеристики, які не потрапили до груп -->
+                    @{
+                        var groupedSpecs = groups.Values.SelectMany(g => g).ToList();
+                        var otherSpecs = allSpecs.Where(spec => !groupedSpecs.Any(g => spec.Contains(g))).ToList();
+                    }
+
+                    @if (otherSpecs.Any())
+                    {
+                        <div class="specs-section">
+                            <div class="specs-header">Інші характеристики</div>
+                            <div class="specs-table-container">
+                                <table class="specs-table">
+                                    @foreach (var spec in otherSpecs)
+                                    {
+                                        <tr>
+                                            <td class="feature-name">@spec</td>
+                                            @foreach (var product in Model)
+                                            {
+                                                <td class="feature-value">
+                                                    @(product.Specifications.ContainsKey(spec) ? product.Specifications[spec] : "-")
+                                                </td>
+                                            }
+                                            @if (Model.Count < 4) // Додаємо порожню клітинку, якщо є порожній стовпець
+                                            {
+                                                <td class="feature-value empty-value"></td>
+                                            }
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Модальне вікно для розумного порівняння -->
+    <div class="modal fade" id="smartComparisonModal" tabindex="-1" aria-labelledby="smartComparisonModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="smartComparisonModalLabel">Розумне порівняння</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="loading-spinner" class="text-center my-3 d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Завантаження...</span>
+                        </div>
+                        <p class="mt-2">Аналізуємо відмінності між товарами...</p>
+                    </div>
+                    <div id="comparison-result"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <partial name="_Footer" />
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Встановлюємо CSS змінну з кількістю товарів для правильного розміру клітинок
+            var productCount = $(".product-column").not(".empty-column").length;
+            document.documentElement.style.setProperty('--product-count', productCount);
+
+            // Обробка кнопок для фільтрації
+            $("#show-different").click(function() {
+                $(this).addClass('active');
+                $("#show-all").removeClass('active');
+
+                // Проходимося по всіх рядках таблиць
+                $(".specs-table tr").each(function() {
+                    var cells = $(this).find("td.feature-value").not(".empty-value");
+                    var values = [];
+
+                    // Збираємо всі непусті значення
+                    cells.each(function() {
+                        var value = $(this).text().trim();
+                        if (value !== "" && value !== "-") {
+                            values.push(value);
+                        }
+                    });
+
+                    // Якщо всі значення однакові, ховаємо рядок
+                    var allSame = values.every(v => v === values[0]);
+                    if (allSame && values.length > 1) {
+                        $(this).hide();
+                    }
+                });
+            });
+
+            $("#show-all").click(function() {
+                $(this).addClass('active');
+                $("#show-different").removeClass('active');
+
+                // Показуємо всі рядки
+                $(".specs-table tr").show();
+            });
+
+            // Функціонал для розумного порівняння
+            $("#smart-comparison-btn").click(function() {
+                // Фіксовані ідентифікатори продуктів для тестування
+                var productIds = ["1", "2"];
+
+                // Перенаправляємо на сторінку порівняння з параметрами
+                window.location.href = "/Compare/SmartComparison?productIdA=" + productIds[0] + "&productIdB=" + productIds[1];
+            });
+            });
+        });
+    </script>
+</body>
+</html>

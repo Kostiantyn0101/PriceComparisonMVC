@@ -2,7 +2,7 @@
 {
     public class ProductWithCharacteristicsViewModel
     {
-        public Categories.ProductToCategiriesListModel Product { get; set; }
+        public Categories.ProductToCategoriesListModel Product { get; set; }
         public List<Response.ProductCharacteristicGroupResponseModel> CharacteristicGroups { get; set; }
     }
 }

@@ -1,79 +1,177 @@
 ﻿@model IEnumerable<PriceComparisonMVC.Models.ProductWithCharacteristicsViewModel>
+@{
+    ViewData["Title"] = ViewBag.CurrentCategory != null ? ViewBag.CurrentCategory.Title : "Продукти з характеристиками";
+}
 
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="utf-8" />
-    <title>Продукти з характеристиками</title>
-    <link rel="stylesheet" href="~/css/site.css" />
-    <style>
-        .card {
-            margin-bottom: 20px;
-        }
-
-        .product-image {
-            max-width: 300px;
-            height: auto;
-            margin-bottom: 10px;
-            display: block;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MarketMap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/category-product-list-style.css" />
+    <link rel="stylesheet" href="~/css/header-style.css" />
+    <link rel="stylesheet" href="~/css/footer-style.css" />
+    @* <link rel="stylesheet" href="~/css/product-characteristics.css" /> *@
 </head>
 <body>
-    <div class="container">
-        <h1>Продукти категорії з характеристиками</h1>
-        @foreach (var item in Model)
+    <!-- Підключення хедера з часткового представлення -->
+    <partial name="_Header" />
+
+    <!-- Основний контент -->
+    <main class="container-fluid py-4">
+        <!-- Навігаційні "хлібні крихти" -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Головна</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("CategoryList", "Categories")">Каталог</a></li>
+
+                @if (ViewBag.ParentCategory != null)
+                {
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("CategoryList", "Categories", new { id = ViewBag.ParentCategory.Id })">
+                            @ViewBag.ParentCategory.Title
+                        </a>
+                    </li>
+                }
+
+                @if (ViewBag.CurrentCategory != null)
+                {
+                    <li class="breadcrumb-item active" aria-current="page">@ViewBag.CurrentCategory.Title</li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item active" aria-current="page">Всі продукти</li>
+                }
+            </ol>
+        </nav>
+
+        <h2 class="mb-4">
+            @if (ViewBag.CurrentCategory != null)
+            {
+                @ViewBag.CurrentCategory.Title
+            }
+            else
+            {
+                <span>Продукти з характеристиками</span>
+            }
+        </h2>
+
+        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
         {
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">@item.Product.Title</h4>
-                    <p class="card-text">@item.Product.Description</p>
-                    @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
-                    {
-                        <img src="@Url.Content(item.Product.ImageUrl)" alt="@item.Product.Title" class="product-image" />
-                    }
-                    <hr />
-                    <h5>Характеристики:</h5>
-                    @if (item.CharacteristicGroups.Any())
-                    {
-                        @foreach (var group in item.CharacteristicGroups.OrderBy(g => g.GroupDisplayOrder))
-                        {
-                            <div>
-                                <h6>@group.CharacteristicGroupTitle</h6>
-                                <ul>
-                                    @foreach (var characteristic in group.ProductCharacteristics.OrderBy(pc => pc.DisplayOrder))
-                                    {
-                                        <li>
-                                            <strong>@characteristic.CharacteristicTitle:</strong>
-                                            @if (!string.IsNullOrEmpty(characteristic.ValueText))
-                                            {
-                                                @characteristic.ValueText
-                                            }
-                                            else if (characteristic.ValueNumber.HasValue)
-                                            {
-                                                @characteristic.ValueNumber
-                                            }
-                                            else if (characteristic.ValueBoolean.HasValue)
-                                            {
-                                                @(characteristic.ValueBoolean.Value ? "Так" : "Ні")
-                                            }
-                                            else if (characteristic.ValueDate.HasValue)
-                                            {
-                                                @characteristic.ValueDate.Value.ToShortDateString()
-                                            }
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>Характеристики відсутні.</p>
-                    }
-                </div>
+            <div class="alert alert-danger" role="alert">
+                @ViewBag.ErrorMessage
             </div>
         }
-    </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info" role="alert">
+                Продукти в цій категорії відсутні.
+            </div>
+        }
+        else
+        {
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                @foreach (var item in Model)
+                {
+                    <div class="col mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-transparent border-0 text-center">
+                                <h5 class="card-title">@item.Product.Title</h5>
+                            </div>
+
+                            <div class="square-img-container">
+                                <img src="@(string.IsNullOrEmpty(item.Product.ImageUrl) ? "/images/default-product.png" : Url.Content(item.Product.ImageUrl))"
+                                     alt="@item.Product.Title"
+                                     class="product-img"
+                                     onerror="this.src='/images/default-product.png'">
+                            </div>
+
+                            <div class="card-body">
+                                @if (!string.IsNullOrEmpty(item.Product.Description))
+                                {
+                                    <p class="card-text">@(item.Product.Description?.Length > 100 ? item.Product.Description.Substring(0, 100) + "..." : item.Product.Description)</p>
+                                }
+
+                                <div class="characteristic-summary">
+                                    @if (item.CharacteristicGroups.Any())
+                                    {
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted">Характеристик: @item.CharacteristicGroups.SelectMany(g => g.ProductCharacteristics).Count()</span>
+                                            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse"
+                                                    data-bs-target="#collapse-@item.Product.Id" aria-expanded="false">
+                                                Деталі
+                                            </button>
+                                        </div>
+
+                                        <div class="collapse mt-3" id="collapse-@item.Product.Id">
+                                            @foreach (var group in item.CharacteristicGroups.OrderBy(g => g.GroupDisplayOrder))
+                                            {
+                                                <div class="mb-3">
+                                                    <h6 class="characteristic-group">@group.CharacteristicGroupTitle</h6>
+                                                    <ul class="characteristic-list">
+                                                        @foreach (var characteristic in group.ProductCharacteristics.OrderBy(pc => pc.DisplayOrder))
+                                                        {
+                                                            <li>
+                                                                <span class="characteristic-name">@characteristic.CharacteristicTitle:</span>
+                                                                <span class="characteristic-value">
+                                                                    @if (!string.IsNullOrEmpty(characteristic.ValueText))
+                                                                    {
+                                                                        @characteristic.ValueText
+                                                                    }
+                                                                    else if (characteristic.ValueNumber.HasValue)
+                                                                    {
+                                                                        @characteristic.ValueNumber
+                                                                    }
+                                                                    else if (characteristic.ValueBoolean.HasValue)
+                                                                    {
+                                                                        @(characteristic.ValueBoolean.Value ? "Так" : "Ні")
+                                                                    }
+                                                                    else if (characteristic.ValueDate.HasValue)
+                                                                    {
+                                                                        @characteristic.ValueDate.Value.ToShortDateString()
+                                                                    }
+                                                                </span>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">Характеристики відсутні.</p>
+                                    }
+                                </div>
+                            </div>
+
+                            @* <div class="card-footer bg-transparent"> *@
+                            @*     <a href="@Url.Action("Index", "Product", new { id = item.Product.Id })" class="btn btn-primary w-100"> *@
+                            @*         Детальніше *@
+                            @*     </a> *@
+                            @* </div> *@
+
+                            <div class="card-footer bg-transparent">
+                                <a href="@Url.Action("Index", "Product", new { id = item.Product.Id, firstProductId = item.Product.FirstProductId })" class="btn btn-primary w-100">
+                                    Детальніше
+                                </a>
+                            </div>
+
+
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </main>
+
+    <!-- Підключення футера -->
+    <partial name="_Footer" />
+
+    <!-- JavaScript для Bootstrap і додаткових функцій -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

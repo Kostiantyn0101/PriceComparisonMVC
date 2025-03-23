@@ -1,25 +1,223 @@
-header {
+/*header {
     background-color: #1F4E92;
     height: 150px;
 }
 
 .custom-header {
-    z-index: 10; /* Пріоритет для хедера */
-}
+    z-index: 10;*/ /* Пріоритет для хедера */
+/*}
 
 .custom-search-field {
-    border-radius: 4px; /* Згладжені кути для поля пошуку */
-    height: 54px; /* Висота поля пошуку */
-}
+    border-radius: 4px;*/ /* Згладжені кути для поля пошуку */
+    /*height: 54px;*/ /* Висота поля пошуку */
+/*}
 
 a.text-white {
-    color: #fff; /* Білий колір */
-    text-decoration: none; /* Без підкреслення */
-}
+    color: #fff;*/ /* Білий колір */
+    /*text-decoration: none;*/ /* Без підкреслення */
+/*}
 
     a.text-white:hover {
-        text-decoration: none; /* Без підкреслення навіть при наведенні */
+        text-decoration: none;*/ /* Без підкреслення навіть при наведенні */
+    /*}*/
+
+
+
+/*.custom-header {
+    background-color: #1F4E92;
+    height: auto;
+    min-height: 80px;
+    width: 100%;
+}
+
+    .custom-header .container-fluid {
+        height: 100%;
     }
+
+    .custom-header .row {
+        height: 100%;
+        align-items: center;
+        flex-wrap: nowrap;*/ /* Забезпечує розташування в один рядок */
+    /*}*/
+
+/* Стилі для поля пошуку */
+/*.custom-search-field {
+    border-radius: 0.25rem;
+    height: 44px;
+    width: 100%;
+}*/
+
+/* Стилі для іконок в хедері */
+/*.custom-header .header-icon {
+    width: 24px;
+    height: 24px;
+}*/
+
+/* Спеціальні стилі для логотипу - з найвищим пріоритетом */
+/*.custom-header .site-logo {
+    width: 262px !important;
+    height: 56px !important;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.custom-header .logo-container {
+    display: inline-block;
+}*/
+
+/* Адаптивність для малих екранів */
+/*@media (max-width: 992px) {
+    .custom-header .row > div {
+        padding: 0 5px;
+    }
+
+    .custom-header a,
+    .custom-header span {
+        font-size: 0.8rem;
+    }
+
+    .custom-header .site-logo {
+        width: 200px !important;
+    }
+}*/
+
+/* Для дуже малих екранів сховаємо текст, залишивши тільки іконки */
+/*@media (max-width: 768px) {
+    .custom-header a:not(.logo-container),
+    .custom-header span,
+    .custom-header form {
+        display: none;
+    }
+
+    .custom-header .header-icon {
+        margin-right: 0 !important;
+    }
+
+    .custom-header .site-logo {
+        width: 150px !important;
+    }
+
+    .custom-header .logo-container {
+        display: block !important;
+    }
+}*/
+
+
+/* Основні стилі хедера */
+.custom-header {
+    background-color: #1F4E92;
+    height: auto;
+    min-height: 80px;
+    width: 100%;
+}
+
+    .custom-header .container-fluid {
+        height: 100%;
+    }
+
+    .custom-header .row {
+        height: 100%;
+        align-items: center;
+        flex-wrap: nowrap; /* Забезпечує розташування в один рядок */
+    }
+
+    .custom-header h1 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+/* Поле пошуку */
+.custom-search-field {
+    border-radius: 0.25rem;
+    height: 44px;
+    width: 100%;
+}
+
+/* Загальні стилі для іконок в хедері */
+.custom-header img.header-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Спеціальні стилі для логотипу */
+.custom-header .site-logo {
+    width: 262px !important;
+    height: 56px !important;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.custom-header .logo-container {
+    display: inline-block;
+    text-align: center;
+}
+
+/* Стилі для посилань в хедері */
+.custom-header a.text-white {
+    color: #fff;
+    text-decoration: none;
+}
+
+    .custom-header a.text-white:hover {
+        text-decoration: none;
+    }
+
+/* Адаптивність для малих екранів */
+@media (max-width: 992px) {
+    .custom-header .row > div {
+        padding: 0 5px;
+    }
+
+    .custom-header a,
+    .custom-header span {
+        font-size: 0.8rem;
+    }
+
+    .custom-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .custom-header .site-logo {
+        width: 200px !important;
+    }
+}
+
+/* Для дуже малих екранів сховаємо текст, залишивши тільки іконки */
+@media (max-width: 768px) {
+    .custom-header a:not(.logo-container),
+    .custom-header span,
+    .custom-header form {
+        display: none;
+    }
+
+    .custom-header .header-icon {
+        margin-right: 0 !important;
+    }
+
+    .custom-header .site-logo {
+        width: 150px !important;
+    }
+
+    .custom-header .logo-container {
+        display: block !important;
+    }
+}
+
+/* Переопределяем стили для всех img в хедере, чтобы исключение работало */
+.custom-header img {
+    width: 24px;
+    height: 24px;
+}
+
+    /* Исключение для логотипа, которое перекрывает общее правило */
+    .custom-header img.site-logo {
+        width: 262px !important;
+        height: 56px !important;
+    }
+
+
+
 
 
 
@@ -645,6 +843,28 @@ a.text-white {
     font-weight: bold;
 }
 
+/* Стилі для логотипу в футері */
+.footer-logo-container {
+    display: inline-block;
+}
+
+.footer-logo {
+    width: 200px !important;
+    height: auto !important;
+    max-width: 100%;
+    max-height: 56px;
+    object-fit: contain;
+    filter: brightness(1.2); /* Опціонально: робить логотип трохи яскравішим на темному фоні */
+}
+
+/* Адаптивність для малих екранів */
+@media (max-width: 768px) {
+    .footer-logo {
+        width: 160px !important;
+    }
+}
+
+
 /* Заголовки категорій */
 .category-title {
     font-size: 16px;
@@ -693,4 +913,26 @@ a.text-white {
     .additional-link:hover {
         text-decoration: underline;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

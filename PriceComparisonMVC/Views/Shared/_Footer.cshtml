@@ -1,0 +1,51 @@
+﻿<!-- Footer -->
+<footer class="footer text-white py-5">
+    <div class="container-fluid">
+        <div class="row align-items-start">
+            <!-- Логотип -->
+            @* <div class="col-12 col-md-3 col-lg-2 text-center mb-4 mb-md-0"> *@
+            @*     <div class="logo">LOGO</div> *@
+            @* </div> *@
+
+
+            <div class="col-12 col-md-3 col-lg-2 text-center mb-4 mb-md-0">
+                <a href="@Url.Action("Index", "Home")" class="footer-logo-container">
+                    <img src="@Url.Content("~/images/logo.png")" alt="inMarket Map" class="footer-logo">
+                </a>
+            </div>
+
+            <!-- Блоки категорій -->
+            <div class="col-12 col-md-8 col-lg-9">
+                <div class="row g-4">
+                    @foreach (var category in new[]
+                    {
+                    new { Title = "Про нас", Links = new[] { "Що таке MarketMap", "Як ми працюємо", "Партнери" } },
+                    new { Title = "Корисна інформація", Links = new[] { "Відгуки про товари", "Відгуки про магазин", "Як обрати товар", "Часті запитання" } },
+                    new { Title = "Контакти", Links = new[] { "Зв'язатися з нами", "Карта сайту" } },
+                    new { Title = "Правова інформація", Links = new[] { "Політика конфіденційності", "Умови використання" } },
+                    new { Title = "Соціальні мережі", Links = new[] { "Instagram", "Facebook", "YouTube", "Telegram" } }
+                    })
+                    {
+                        <div class="col-6 col-lg-2">
+                            <div class="category-title">@category.Title</div>
+                            <div class="d-flex flex-column">
+                                @foreach (var link in category.Links)
+                                {
+                                    <a href="#" class="category-link">@link</a>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Додатковий блок -->
+            <div class="col-12 col-md-10 col-lg-1 text-center mt-4 mt-lg-0 position-relative">
+                <div class="additional-box position-absolute top-0 end-0">
+                    <div class="arrow-icon">↑</div>
+                    <a href="#top" class="additional-link">Наверх</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

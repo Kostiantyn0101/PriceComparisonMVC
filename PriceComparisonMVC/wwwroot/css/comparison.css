@@ -1,0 +1,90 @@
+﻿/* Модифікація стилів для колонок товарів */
+.comparison-container {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+/* Стилі для колонок товарів */
+.add-product-column {
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    border-right: 1px solid #e0e0e0;
+}
+
+/* Змінюємо стилі для колонок, щоб вони займали весь вільний простір */
+.product-column {
+    /* Змінюємо flex: 1 на flex-grow: 1 для кращої підтримки */
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 220px;
+    border-right: 1px solid #e0e0e0;
+}
+
+    /* Порожній стовпець не повинен розтягуватися */
+    .product-column.empty-column {
+        flex-grow: 0;
+        flex-basis: auto;
+    }
+
+/* Контейнер для рядка товарів */
+.row {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+/* Стилі для таблиці характеристик */
+.specs-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+    .specs-table td {
+        width: auto;
+    }
+
+.feature-name {
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+}
+
+/* Клітинки з характеристиками товарів повинні бути однакової ширини */
+.feature-value {
+    width: calc((100% - 200px) / var(--product-count, 4));
+    text-align: center;
+}
+
+/* Адаптивність */
+@media (max-width: 992px) {
+    .add-product-column {
+        min-width: 180px;
+        max-width: 180px;
+    }
+
+    .feature-name {
+        width: 180px;
+        min-width: 180px;
+        max-width: 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+    }
+
+    .product-column,
+    .add-product-column {
+        flex-basis: auto;
+        width: 100%;
+        max-width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .feature-value {
+        width: auto;
+    }
+}

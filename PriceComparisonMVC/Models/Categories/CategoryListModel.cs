@@ -2,10 +2,10 @@
 
 namespace PriceComparisonMVC.Models.Categories
 {
-    public class CategiryListModel
+    public class CategoryListModel
     {
         public CategoryResponseModel ParentCategory { get; set; }
 
-        public List<ProductToCategiriesListModel> ProductToCategiries { get; set; }
+        public List<ProductToCategoriesListModel> ProductToCategories { get; set; }
     }
 }
