@@ -443,7 +443,11 @@
                                                 <td>
                                                     @if (item.CharacteristicDataType == "string")
                                                     {
-                                                        @Html.Raw(item.ValueText.Replace("\\r\\n", "<br/>").Replace("\\n", "<br/>"))
+                                                        @* @Html.Raw(item.ValueText.Replace("\\r\\n", "<br/>").Replace("\\n", "<br/>")) *@
+                                                        @Html.Raw((item.ValueText ?? string.Empty)
+                                                                 .Replace("\\r\\n", "<br/>")
+                                                                 .Replace("\\n", "<br/>"))
+
                                                     }
                                                     else if (item.CharacteristicDataType == "decimal")
                                                     {
@@ -491,7 +495,11 @@
                                                 <td>
                                                     @if (item.CharacteristicDataType == "string")
                                                     {
-                                                       @Html.Raw(item.ValueText.Replace("\\r\\n", "<br/>").Replace("\\n", "<br/>"))
+                                                       @* @Html.Raw(item.ValueText.Replace("\\r\\n", "<br/>").Replace("\\n", "<br/>")) *@
+                                                        @Html.Raw((item.ValueText ?? string.Empty)
+                                                                 .Replace("\\r\\n", "<br/>")
+                                                                 .Replace("\\n", "<br/>"))
+
                                                     }
                                                     else if (item.CharacteristicDataType == "decimal")
                                                     {
