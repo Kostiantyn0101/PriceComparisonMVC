@@ -25,15 +25,11 @@ namespace PriceComparisonMVC.Controllers
         // GET: /Compare/Comparison
         public async Task<IActionResult> Comparison()
         {
-            // Очищаємо поточний список порівняння
+            // Для тестування очищаємо список та додаємо два товари
             _comparisonProducts.Clear();
-
-            // Додаємо тестові ID товарів
             _comparisonProducts.Add(1);
             _comparisonProducts.Add(2);
 
-
-            // Якщо список порожній, повертаємо пустий список
             if (_comparisonProducts.Count == 0)
             {
                 return View(new List<ProductComparisonViewModel>());
@@ -54,10 +50,10 @@ namespace PriceComparisonMVC.Controllers
                     // Отримуємо зображення товару
                     var productImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{productId}");
 
-                    // Отримуємо дані продавців для діапазону цін
+                    // Отримуємо дані продавців для визначення цінового діапазону
                     var sellerProductDetails = await _apiService.GetAsync<List<SellerProductDetailResponseModel>>($"api/SellerProductDetails/{productId}");
 
-                    // Визначаємо мінімальну та максимальну ціну
+                    // Визначаємо мінімальну та максимальну ціну, а також кількість пропозицій
                     decimal minPrice = 0;
                     decimal maxPrice = 0;
                     int offerCount = 0;
@@ -69,7 +65,7 @@ namespace PriceComparisonMVC.Controllers
                         offerCount = sellerProductDetails.Count;
                     }
 
-                    // Створюємо модель для представлення порівняння
+                    // Формуємо модель представлення для порівняння
                     var comparisonModel = new ProductComparisonViewModel
                     {
                         Id = productId,
@@ -87,12 +83,13 @@ namespace PriceComparisonMVC.Controllers
                 }
                 catch (Exception ex)
                 {
+                    // Рекомендується використовувати механізм логування замість Console.WriteLine
                     Console.WriteLine($"Помилка при отриманні даних для товару {productId}: {ex.Message}");
                     // Продовжуємо з наступним товаром
                 }
             }
 
-            // Сортуємо за мінімальною ціною
+            // Сортуємо товари за мінімальною ціною
             comparisonProducts = comparisonProducts.OrderBy(p => p.MinPrice).ToList();
 
             return View(comparisonProducts);
@@ -101,14 +98,11 @@ namespace PriceComparisonMVC.Controllers
         // GET: /Compare/TestComparison
         public async Task<IActionResult> TestComparison()
         {
-            // Очищаємо поточний список порівняння
+            // Очищаємо список порівняння та додаємо тестові товари
             _comparisonProducts.Clear();
-
-            // Додаємо тестові ID товарів
             _comparisonProducts.Add(1);
             _comparisonProducts.Add(2);
 
-            // Перенаправляємо на звичайну сторінку порівняння, яка тепер відобразить ці товари
             return await Comparison();
         }
 
@@ -155,13 +149,10 @@ namespace PriceComparisonMVC.Controllers
         // GET: /Compare/Add/5
         public IActionResult Add(int id)
         {
-            // Перевірка, чи товар вже у списку
             if (!_comparisonProducts.Contains(id))
             {
-                // Максимальна кількість товарів для порівняння - 5
                 if (_comparisonProducts.Count < 5)
                 {
-                    // Додати товар до списку порівняння
                     _comparisonProducts.Add(id);
                     TempData["SuccessMessage"] = "Товар додано до порівняння";
                 }
@@ -175,7 +166,6 @@ namespace PriceComparisonMVC.Controllers
                 TempData["InfoMessage"] = "Цей товар вже додано до порівняння";
             }
 
-            // Повернутися на попередню сторінку або перенаправити на сторінку порівняння
             return RedirectToAction("Comparison");
         }
 
@@ -187,7 +177,6 @@ namespace PriceComparisonMVC.Controllers
                 _comparisonProducts.Remove(id);
                 TempData["InfoMessage"] = "Товар видалено з порівняння";
             }
-
             return RedirectToAction("Comparison");
         }
 
@@ -198,54 +187,51 @@ namespace PriceComparisonMVC.Controllers
             TempData["InfoMessage"] = "Список порівняння очищено";
             return RedirectToAction("Comparison");
         }
-    
 
+        // GET: /Compare/SmartComparison?productIdA=1&productIdB=2
+        public async Task<IActionResult> SmartComparison(int productIdA, int productIdB)
+        {
+            try
+            {
+                // Отримуємо дані порівняння з API (формат відповіді – ComparisonApiResponse)
+                var apiResponse = await _apiService.GetAsync<ComparisonApiResponse>($"api/ProductComparison/comparegpt?productIdA={productIdA}&productIdB={productIdB}");
 
+                if (apiResponse == null)
+                {
+                    TempData["ErrorMessage"] = "Не вдалося отримати дані порівняння.";
+                    return RedirectToAction("Comparison");
+                }
 
-     // GET: /Compare/SmartComparison
-        //public async Task<IActionResult> SmartComparison(int productIdA, int productIdB)
-        //{
-        //    try
-        //    {
-        //        // Отримуємо дані порівняння з API
-        //        var apiResponse = await _apiService.GetAsync<SmartComparisonViewModel>($"api/ProductComparison/comparegpt?productIdA={productIdA}&productIdB={productIdB}");
+                // Отримуємо зображення для кожного продукту
+                var productAImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{productIdA}");
+                var productBImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{productIdB}");
 
-        //        if (apiResponse == null)
-        //        {
-        //            TempData["ErrorMessage"] = "Не вдалося отримати дані порівняння.";
-        //            return RedirectToAction("Comparison");
-        //        }
+                // Формуємо модель представлення для розумного порівняння
+                var viewModel = new SmartComparisonViewModel
+                {
+                    ProductAName = apiResponse.ProductATitle,
+                    ProductBName = apiResponse.ProductBTitle,
+                    ProductAImageUrl = productAImages?.FirstOrDefault()?.ImageUrl ?? "/images/placeholder.jpg",
+                    ProductBImageUrl = productBImages?.FirstOrDefault()?.ImageUrl ?? "/images/placeholder.jpg",
+                    Explanation = apiResponse.Explanation,
+                    KeyDifferences = GenerateKeyDifferences(apiResponse)
+                };
 
-        //        // Отримуємо додаткову інформацію про продукти
-        //        var productAImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{productIdA}");
-        //        var productBImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{productIdB}");
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Помилка при отриманні даних порівняння: {ex.Message}";
+                return RedirectToAction("Comparison");
+            }
+        }
 
-        //        // Створюємо модель представлення
-        //        var viewModel = new SmartComparisonViewModel
-        //        {
-        //            //ProductAName = apiResponse.ProductATitle,
-        //            //ProductBName = apiResponse.ProductBTitle,
-        //            ProductAImageUrl = productAImages?.FirstOrDefault()?.ImageUrl ?? "/images/placeholder.jpg",
-        //            ProductBImageUrl = productBImages?.FirstOrDefault()?.ImageUrl ?? "/images/placeholder.jpg",
-        //            Explanation = apiResponse.Explanation,
-        //            //KeyDifferences = GenerateKeyDifferences(apiResponse)
-        //        };
-
-        //        return View(viewModel);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        TempData["ErrorMessage"] = $"Помилка при отриманні даних порівняння: {ex.Message}";
-        //        return RedirectToAction("Comparison");
-        //    }
-        //}
-
-        // Допоміжний метод для генерації ключових відмінностей з API відповіді
+        // Допоміжний метод для генерації ключових відмінностей з відповіді API
         private List<KeyDifference> GenerateKeyDifferences(ComparisonApiResponse apiResponse)
         {
             var differences = new List<KeyDifference>();
 
-            // Перебираємо групи характеристик і знаходимо виділені елементи
+            // Перебираємо групи характеристик продукту A
             foreach (var group in apiResponse.ProductA)
             {
                 var groupTitle = group.CharacteristicGroupTitle;
@@ -254,10 +240,8 @@ namespace PriceComparisonMVC.Controllers
                 {
                     if (characteristic.IsHighlighted)
                     {
-                        // Шукаємо відповідну характеристику в продукті B
-                        var productBGroup = apiResponse.ProductB.Find(g => g.CharacteristicGroupTitle == groupTitle);
-                        var productBCharacteristic = productBGroup?.ProductCharacteristics.Find(c =>
-                            c.CharacteristicTitle == characteristic.CharacteristicTitle);
+                        var productBGroup = apiResponse.ProductB.FirstOrDefault(g => g.CharacteristicGroupTitle == groupTitle);
+                        var productBCharacteristic = productBGroup?.ProductCharacteristics.FirstOrDefault(c => c.CharacteristicTitle == characteristic.CharacteristicTitle);
 
                         if (productBCharacteristic != null)
                         {
@@ -267,14 +251,14 @@ namespace PriceComparisonMVC.Controllers
                                 ProductAValue = characteristic.Value,
                                 ProductBValue = productBCharacteristic.Value,
                                 Winner = characteristic.IsHighlighted && !productBCharacteristic.IsHighlighted ? "A" :
-                                        !characteristic.IsHighlighted && productBCharacteristic.IsHighlighted ? "B" : "Рівно"
+                                         !characteristic.IsHighlighted && productBCharacteristic.IsHighlighted ? "B" : "Рівно"
                             });
                         }
                     }
                 }
             }
 
-            // Перевіряємо, чи не пропустили ми характеристики, які виділені в продукті B, але не в A
+            // Додатково перевіряємо характеристики, які виділені в продукті B, але не були враховані
             foreach (var group in apiResponse.ProductB)
             {
                 var groupTitle = group.CharacteristicGroupTitle;
@@ -283,15 +267,11 @@ namespace PriceComparisonMVC.Controllers
                 {
                     if (characteristic.IsHighlighted)
                     {
-                        // Перевіряємо, чи ця характеристика вже є у списку відмінностей
-                        var existingDifference = differences.Find(d => d.CharacteristicName == characteristic.CharacteristicTitle);
-
+                        var existingDifference = differences.FirstOrDefault(d => d.CharacteristicName == characteristic.CharacteristicTitle);
                         if (existingDifference == null)
                         {
-                            // Шукаємо відповідну характеристику в продукті A
-                            var productAGroup = apiResponse.ProductA.Find(g => g.CharacteristicGroupTitle == groupTitle);
-                            var productACharacteristic = productAGroup?.ProductCharacteristics.Find(c =>
-                                c.CharacteristicTitle == characteristic.CharacteristicTitle);
+                            var productAGroup = apiResponse.ProductA.FirstOrDefault(g => g.CharacteristicGroupTitle == groupTitle);
+                            var productACharacteristic = productAGroup?.ProductCharacteristics.FirstOrDefault(c => c.CharacteristicTitle == characteristic.CharacteristicTitle);
 
                             if (productACharacteristic != null)
                             {
@@ -312,8 +292,6 @@ namespace PriceComparisonMVC.Controllers
         }
     }
 
-
-
     // Модель представлення для товару при порівнянні
     public class ProductComparisonViewModel
     {
@@ -328,39 +306,26 @@ namespace PriceComparisonMVC.Controllers
         public Dictionary<string, string> Specifications { get; set; }
     }
 
-
-    // Моделі для розумного порівняння
+    // Модель представлення для розумного порівняння
     public class SmartComparisonViewModel
     {
-        // Інформація про перший продукт
         public string ProductAName { get; set; }
         public string ProductAImageUrl { get; set; }
-
-        // Інформація про другий продукт
         public string ProductBName { get; set; }
         public string ProductBImageUrl { get; set; }
-
-        // Пояснення від AI
         public string Explanation { get; set; }
-
-        // Ключові відмінності між продуктами
         public List<KeyDifference> KeyDifferences { get; set; } = new List<KeyDifference>();
     }
 
     public class KeyDifference
     {
-        // Назва характеристики
         public string CharacteristicName { get; set; }
-
-        // Значення для продуктів
         public string ProductAValue { get; set; }
         public string ProductBValue { get; set; }
-
-        // Який продукт краще за цією характеристикою (A, B, або "Рівно")
         public string Winner { get; set; }
     }
 
-    // Класи моделей для десеріалізації відповіді API
+    // Класи для десеріалізації відповіді API
     public class ComparisonApiResponse
     {
         public string ProductATitle { get; set; }
@@ -384,4 +349,3 @@ namespace PriceComparisonMVC.Controllers
         public bool IsHighlighted { get; set; }
     }
 }
-

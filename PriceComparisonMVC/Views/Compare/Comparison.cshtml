@@ -97,9 +97,15 @@
                 <div class="comparison-controls d-flex justify-content-between align-items-center mt-4">
                     <div class="sort-options">
                         <button class="btn btn-outline-primary me-2">Сортування за ціною <i class="fas fa-sort"></i></button>
-                        <button id="smart-comparison-btn" class="btn btn-outline-success">
+                        @* <button id="smart-comparison-btn" class="btn btn-outline-success"> *@
+                        @*     Розумне порівняння <i class="fas fa-robot"></i> *@
+                        @* </button> *@
+
+                        <button id="smart-comparison-btn" class="btn btn-outline-success" onclick="window.location.href='@Url.Action("SmartComparison", "Compare", new { productIdA = 1, productIdB = 2 })'">
                             Розумне порівняння <i class="fas fa-robot"></i>
                         </button>
+
+
                     </div>
                     <div class="view-options">
                         <a href="@Url.Action("ClearComparison", "Compare")" class="btn btn-outline-danger">
