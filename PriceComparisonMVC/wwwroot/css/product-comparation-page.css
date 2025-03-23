@@ -1,0 +1,341 @@
+﻿/* Fixes for first column width */
+.add-to-compare,
+.specs-table th:first-child,
+.specs-table td:first-child,
+.specs-table tbody tr td:first-child {
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+    box-sizing: border-box !important;
+    padding: 10px 15px !important;
+}
+
+/* Table layout fixed to maintain consistent widths */
+.specs-table,
+.products-table {
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+}
+    /* Consistent styling for borders and backgrounds */
+    .specs-table tr td:first-child {
+        border-right: 1px solid #e5e5e5 !important;
+        background-color: #fafafa !important;
+    }
+
+    .specs-table th:first-child {
+        background-color: #fafafa !important;
+    }
+
+    /* Force column widths to be exact same */
+    .specs-table th:not(:first-child),
+    .specs-table td:not(:first-child),
+    .product-item {
+        width: 250px !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
+        box-sizing: border-box !important;
+    }
+/* Base styles */
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Фіксована ширина для першої колонки */
+.feature-column {
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+}
+
+/* Гнучка ширина для колонок товарів */
+.product-column {
+    width: calc((100% - 250px) / var(--product-count, 4));
+}
+
+/* Встановлюємо змінну CSS для зберігання кількості продуктів */
+:root {
+    --product-count: 4; /* За замовчуванням 4 товари */
+}
+
+
+
+.container-xxl {
+    max-width: 1920px;
+}
+
+/* Table container */
+/*.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 30px;
+}*/
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 30px;
+    min-width: 1250px; /* Мінімальна ширина для коректного відображення */
+}
+
+
+/* Unified comparison table */
+/*.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 1250px;*/ /* Мінімальна ширина для таблиць (250px для назв + 4 стовпці по 250px) */
+/*}*/
+
+
+.comparison-table {
+    width: 100%;
+    table-layout: fixed !important;
+    border-collapse: collapse;
+}
+
+    .comparison-table th,
+    .comparison-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e5e5e5;
+        vertical-align: top;
+    }
+
+/*.product-item {
+    vertical-align: top;
+    text-align: center;
+    padding: 15px;
+    width: auto;
+}*/
+
+
+.product-item {
+    display: table-cell !important;
+    vertical-align: top;
+    width: auto !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+}
+
+
+.product-image {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.image-container {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.product-image:hover {
+    transform: scale(1.05);
+}
+
+.brand-logo {
+    max-width: 120px;
+    margin: 10px auto;
+    display: block;
+}
+
+.price {
+    font-weight: bold;
+    color: #333;
+    margin: 5px 0;
+}
+
+.model-name {
+    font-weight: 500;
+}
+
+/* Add to compare section */
+.add-to-compare {
+    position: relative;
+    border-right: 1px solid #e9e9e9;
+    width: 250px; /* Фіксована ширина для блоку "Додати товар" */
+    vertical-align: top;
+}
+
+.add-compare-container {
+    text-align: center;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    border-bottom: 1px solid #2C509A;
+}
+
+.add-compare-text {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.add-button-container {
+    margin-top: 15px;
+}
+
+.add-compare-button {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #000;
+    background-color: transparent;
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+/* Filter buttons row */
+.filter-buttons-row td {
+    padding: 10px;
+    background-color: #f8f8f8;
+}
+
+.tab-custom.active {
+    background-color: #4CAF50 !important;
+    color: white !important;
+    border-color: #4CAF50 !important;
+}
+
+.filter-button {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+    .filter-button:hover {
+        background-color: #003d80;
+        border-color: #003d80;
+    }
+
+/* Headers */
+.header-row th {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    z-index: 10;
+    font-weight: 500;
+    text-align: center;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.feature-header {
+    width: 250px;
+    text-align: left;
+    background-color: #fafafa !important;
+}
+
+/* Specs table */
+.specs-scroll-container {
+    overflow-x: auto;
+    margin-bottom: 30px;
+}
+
+.specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 1250px; /* Мінімальна ширина для таблиць (250px для назв + 4 стовпці по 250px) */
+}
+
+    .specs-table th, .specs-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e9e9e9;
+    }
+
+    .specs-table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+        z-index: 10;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        font-weight: 500;
+        text-align: center;
+        width: 250px; /* Фіксована ширина для стовпців з моделями */
+    }
+
+    .specs-table th.feature-name,
+    .specs-table td.feature-name,
+    .feature-name {
+        width: 250px; /* Фіксована ширина для стовпця з характеристиками */
+        text-align: left;
+        min-width: 250px; /* Гарантує, що ширина не зменшиться */
+        max-width: 250px; /* Гарантує, що ширина не збільшиться */
+    }
+
+.section-header td {
+    background-color: #f8f8f8;
+    font-weight: bold;
+    padding: 10px 15px;
+}
+
+/* Styles for characteristic names in the first column */
+.specs-table tbody tr td:first-child {
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+    font-weight: 500;
+    box-sizing: border-box;
+}
+
+/* Style for the section headers (Display, Processor, etc.) */
+.section-header td {
+    background-color: #f8f8f8;
+    font-weight: bold;
+    padding: 10px 15px;
+    text-align: left;
+}
+
+/* Adaptive rules */
+
+
+/* При 2-3 товарах - збільшуємо простір для кожного */
+@media (min-width: 992px) {
+    .table-container.products-2 .product-item {
+        --product-count: 2;
+    }
+
+    .table-container.products-3 .product-item {
+        --product-count: 3;
+    }
+}
+
+/* При великій кількості товарів (5-6) - зменшуємо зображення */
+@media (min-width: 992px) {
+    .table-container.products-5 .product-image,
+    .table-container.products-6 .product-image {
+        max-width: 150px;
+        height: 150px;
+    }
+}
+
+
+@media (max-width: 1600px) {
+    .product-image {
+        max-width: 160px;
+    }
+}
+
+@media (max-width: 768px) {
+    .product-image {
+        max-width: 140px;
+    }
+
+    .add-compare-text {
+        font-size: 16px;
+    }
+}

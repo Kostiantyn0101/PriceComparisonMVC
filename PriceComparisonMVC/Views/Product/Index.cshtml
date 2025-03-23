@@ -22,38 +22,13 @@
     <title>@ViewData["Title"]</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/product-style.css" />
+    <link rel="stylesheet" href="~/css/header-style.css" />
+    <link rel="stylesheet" href="~/css/footer-style.css" />
 </head>
 <body>
-    <!-- Header -->
-    <header class="custom-header">
-        <div class="container">
-            <div class="row align-items-center mb-4">
-                <!-- Логотип -->
-                <div class="col-12 col-md-2 text-white text-center">
-                    <h1 class="m-0 fs-4">LOGO</h1>
-                </div>
-                <!-- Поле пошуку -->
-                <div class="col-12 col-md-6 mt-3 mt-md-0">
-                    <input type="text" class="form-control custom-search-field" placeholder="Пошук..." />
-                </div>
-                <!-- Навігація дій -->
-                <nav class="col-12 col-md-4 d-flex justify-content-evenly align-items-center mt-3 mt-md-0">
-                    <a href="#" class="action-link text-white d-flex align-items-center">
-                        <img src="~/images/justice-scale-02.png" alt="Іконка для порівняння" class="icon me-2" />
-                        <span>Порівняння</span>
-                    </a>
-                    <a href="#" class="action-link text-white d-flex align-items-center">
-                        <img src="~/images/user.png" alt="Іконка користувача" class="icon me-2" />
-                        <span>Кабінет</span>
-                    </a>
-                    <a href="#" class="action-link text-white d-flex align-items-center">
-                        <img src="~/images/favourite.png" alt="Іконка обраного" class="icon me-2" />
-                        <span>Обране</span>
-                    </a>
-                </nav>
-            </div>
-        </div>
-    </header>
+
+    <partial name="_Header" />
+
 
     <section class="category-section">
         <div class="container text-center">
@@ -468,7 +443,7 @@
                                                 <td>
                                                     @if (item.CharacteristicDataType == "string")
                                                     {
-                                                        @item.ValueText
+                                                        @Html.Raw(item.ValueText.Replace("\\r\\n", "<br/>").Replace("\\n", "<br/>"))
                                                     }
                                                     else if (item.CharacteristicDataType == "decimal")
                                                     {
@@ -516,7 +491,7 @@
                                                 <td>
                                                     @if (item.CharacteristicDataType == "string")
                                                     {
-                                                        @item.ValueText
+                                                       @Html.Raw(item.ValueText.Replace("\\r\\n", "<br/>").Replace("\\n", "<br/>"))
                                                     }
                                                     else if (item.CharacteristicDataType == "decimal")
                                                     {
@@ -549,24 +524,47 @@
             </section>
 
 
+                     
 
 
+
+      
             <!-- Вкладка "Відгуки" -->
             <section id="reviews-tab" class="tab-content" style="display:block;">
                 <div class="container-fluid">
                     <!-- Заголовок "Відгуки" -->
                     <div class="reviews-header">
                         Відгуки
+                        @if (Model.FeedbacksPaging.TotalItems > 0)
+                        {
+                            <span>(@Model.FeedbacksPaging.TotalItems)</span>
+                        }
                     </div>
+
+                    <!-- Повідомлення про успіх або помилку -->
+                    @if (TempData["FeedbackSuccess"] != null)
+                    {
+                        <div class="alert alert-success">
+                            @TempData["FeedbackSuccess"]
+                        </div>
+                    }
+                    @if (TempData["FeedbackError"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            @TempData["FeedbackError"]
+                        </div>
+                    }
+
                     <!-- Кнопка "Додати відгук" -->
                     <div class="reviews-button-container">
-                        <button class="reviews-add-button">Додати відгук</button>
+                        <button class="reviews-add-button" id="show-review-form">Додати відгук</button>
                     </div>
+
                     <!-- Контейнер для відгуків -->
                     <div class="reviews-content">
                         @if (Model.Feedbacks != null && Model.Feedbacks.Any())
                         {
-                            @foreach (var feedback in Model.Feedbacks.OrderByDescending(f => f.CreatedAt).Take(3))
+                            foreach (var feedback in Model.Feedbacks)
                             {
                                 <div class="review-card">
                                     <div class="review-content">
@@ -574,29 +572,43 @@
                                         <div class="review-left">
                                             <!-- Блок з аватаркою користувача -->
                                             <div class="review-avatar">
-                                                <img src="~/images/empty-avatar.jpeg" class="thumbnail-img" alt="Мініатюра @feedback.UserId" />
+                                                <img src="~/images/empty-avatar.jpeg" class="thumbnail-img" alt="Аватар користувача @feedback.UserName" />
                                             </div>
                                             <!-- Блок з текстом відгуку -->
                                             <div class="review-text">
-                                                <!-- Верхній блок (ідентифікатор користувача + рейтинг) -->
+                                                <!-- Верхній блок (ім'я користувача + рейтинг + дата) -->
                                                 <div class="review-header">
-                                                    <span class="review-username">@feedback.UserId</span>
+                                                    <span class="review-username">@feedback.UserName</span>
                                                     <div class="review-rating">
                                                         @for (int i = 0; i < feedback.Rating; i++)
                                                         {
                                                             <img src="~/images/star.png" alt="Рейтинг" class="rating-star" />
                                                         }
                                                     </div>
+                                                    <span class="review-date">@feedback.CreatedAt.ToString("dd.MM.yyyy")</span>
                                                 </div>
                                                 <!-- Текст відгуку -->
                                                 <p class="review-message">
                                                     @feedback.FeedbackText
                                                 </p>
+                                    
+                                                <!-- Зображення відгуку (якщо є) -->
+                                                @if (feedback.FeedbackImageUrls != null && feedback.FeedbackImageUrls.Any())
+                                                {
+                                                    <div class="review-images">
+                                                        @foreach (var imageUrl in feedback.FeedbackImageUrls)
+                                                        {
+                                                            <div class="review-image">
+                                                                <img src="@imageUrl" alt="Зображення відгуку" onclick="openImageModal('@imageUrl')" />
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
                                             </div>
                                         </div>
                                         <!-- Правий контейнер -->
                                         <div class="review-right">
-                                            <!-- Стрілка вниз -->
+                                            <!-- Стрілка для розгортання/згортання -->
                                             <div class="review-dropdown">
                                                 <img src="~/images/arrow-up-02.png" alt="Розгорнути" class="dropdown-arrow" />
                                             </div>
@@ -606,6 +618,45 @@
                                     </div>
                                 </div>
                             }
+
+                            <!-- Пагінація -->
+                            @if (Model.FeedbacksPaging.TotalItems > Model.FeedbacksPaging.PageSize)
+                            {
+                                <div class="pagination-container">
+                                    <ul class="pagination">
+                                        @if (Model.CurrentFeedbackPage > 1)
+                                        {
+                                            <li>
+                                                <a href="@Url.Action("Index", new { id = Model.ProductResponseModel.Id, feedbackPage = Model.CurrentFeedbackPage - 1 })">
+                                                    <span>&laquo;</span> Попередня
+                                                </a>
+                                            </li>
+                                        }
+
+                                        @{
+                                            var totalPages = (int)Math.Ceiling((double)Model.FeedbacksPaging.TotalItems / Model.FeedbacksPaging.PageSize);
+                                            var startPage = Math.Max(1, Model.CurrentFeedbackPage - 2);
+                                            var endPage = Math.Min(totalPages, startPage + 4);
+                                        }
+
+                                        @for (int i = startPage; i <= endPage; i++)
+                                        {
+                                            <li class="@(i == Model.CurrentFeedbackPage ? "active" : "")">
+                                                <a href="@Url.Action("Index", new { id = Model.ProductResponseModel.Id, feedbackPage = i })">@i</a>
+                                            </li>
+                                        }
+
+                                        @if (Model.CurrentFeedbackPage < totalPages)
+                                        {
+                                            <li>
+                                                <a href="@Url.Action("Index", new { id = Model.ProductResponseModel.Id, feedbackPage = Model.CurrentFeedbackPage + 1 })">
+                                                    Наступна <span>&raquo;</span>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
                         }
                         else
                         {
@@ -613,67 +664,119 @@
                         }
                     </div>
 
-                    <div class="additional-block">
-                        <!-- Верхній блок (розділений на дві частини) -->
-                        <div class="additional-top">
-                            <div class="top-left">
-                                <!-- Верхній внутрішній блок -->
-                                <div class="top-left-header">
-                                    <div class="top-left-text">Переваги</div>
-                                    <div class="top-left-plus">+</div>
-                                </div>
-                                <!-- Нижній внутрішній блок -->
-                                <div class="top-left-content">
-                                    <div class="advantage-block">
-                                        <span class="advantage-label">Перевага</span>
-                                        <input type="text" class="advantage-input" placeholder="Введіть текст..." />
-                                    </div>
-                                    <div class="advantage-block">
-                                        <span class="advantage-label">Перевага</span>
-                                        <input type="text" class="advantage-input" placeholder="Введіть текст..." />
-                                    </div>
-                                    <div class="advantage-block">
-                                        <span class="advantage-label">Перевага</span>
-                                        <input type="text" class="advantage-input" placeholder="Введіть текст..." />
-                                    </div>
+                    <!-- Форма додавання відгуку (спочатку схована) -->
+                    <div class="feedback-form-container" id="feedback-form-container" style="display: none;">
+                        <form asp-controller="Product" asp-action="AddFeedback" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="ProductId" value="@Model.ProductResponseModel.Id" />
+                
+                            <div class="form-header">
+                                <h4>Залишити відгук про "@Model.ProductResponseModel.Title"</h4>
+                            </div>
+                
+                            <!-- Блок з рейтингом -->
+                            <div class="rating-block">
+                                <p>Ваша оцінка:</p>
+                                <div class="star-rating">
+                                    @for (int i = 5; i >= 1; i--)
+                                    {
+                                        <input type="radio" id="star@i" name="Rating" value="@i" @(i == 5 ? "checked" : "") />
+                                        <label for="star@i" title="@i зірок">@i</label>
+                                    }
                                 </div>
                             </div>
-                            <div class="top-right">
-                                <!-- Верхній внутрішній блок -->
-                                <div class="top-right-header">
-                                    <div class="top-right-text">Недоліки</div>
-                                    <div class="top-right-minus">-</div>
+                
+                            <!-- Текст відгуку -->
+                            <div class="form-group">
+                                <label for="FeedbackText">Ваш відгук:</label>
+                                <textarea id="FeedbackText" name="FeedbackText" rows="4" required></textarea>
+                            </div>
+                
+                            <!-- Переваги та недоліки -->
+                            <div class="additional-block">
+                                <!-- Верхній блок (розділений на дві частини) -->
+                                <div class="additional-top">
+                                    <div class="top-left">
+                                        <!-- Верхній внутрішній блок -->
+                                        <div class="top-left-header">
+                                            <div class="top-left-text">Переваги</div>
+                                            <div class="top-left-plus">+</div>
+                                        </div>
+                                        <!-- Нижній внутрішній блок -->
+                                        <div class="top-left-content">
+                                            <div class="advantage-block">
+                                                <span class="advantage-label">Перевага</span>
+                                                <input type="text" name="Advantages[0]" class="advantage-input" placeholder="Введіть текст..." />
+                                            </div>
+                                            <div class="advantage-block">
+                                                <span class="advantage-label">Перевага</span>
+                                                <input type="text" name="Advantages[1]" class="advantage-input" placeholder="Введіть текст..." />
+                                            </div>
+                                            <div class="advantage-block">
+                                                <span class="advantage-label">Перевага</span>
+                                                <input type="text" name="Advantages[2]" class="advantage-input" placeholder="Введіть текст..." />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="top-right">
+                                        <!-- Верхній внутрішній блок -->
+                                        <div class="top-right-header">
+                                            <div class="top-right-text">Недоліки</div>
+                                            <div class="top-right-minus">-</div>
+                                        </div>
+                                        <!-- Нижній внутрішній блок -->
+                                        <div class="top-right-content">
+                                            <div class="advantage-block">
+                                                <span class="advantage-label">Недолік</span>
+                                                <input type="text" name="Disadvantages[0]" class="advantage-input" placeholder="Введіть текст..." />
+                                            </div>
+                                            <div class="advantage-block">
+                                                <span class="advantage-label">Недолік</span>
+                                                <input type="text" name="Disadvantages[1]" class="advantage-input" placeholder="Введіть текст..." />
+                                            </div>
+                                            <div class="advantage-block">
+                                                <span class="advantage-label">Недолік</span>
+                                                <input type="text" name="Disadvantages[2]" class="advantage-input" placeholder="Введіть текст..." />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <!-- Нижній внутрішній блок -->
-                                <div class="top-right-content">
-                                    <div class="advantage-block">
-                                        <span class="advantage-label">Недолік</span>
-                                        <input type="text" class="advantage-input" placeholder="Введіть текст..." />
+                    
+                                <!-- Завантаження зображень -->
+                                <div class="form-group">
+                                    <label for="FeedbackImages">Додайте фото (до 5 файлів):</label>
+                                    <input type="file" id="FeedbackImages" name="FeedbackImages" multiple accept="image/*" />
+                                    <div class="image-preview" id="image-preview"></div>
+                                </div>
+                    
+                                <!-- Нижній блок (іконки та кнопка) -->
+                                <div class="additional-bottom">
+                                    <div class="bottom-icons">
+                                        <div class="icon-box"></div>
+                                        <div class="icon-box"></div>
+                                        <div class="icon-box"></div>
+                                        <div class="icon-box"></div>
                                     </div>
-                                    <div class="advantage-block">
-                                        <span class="advantage-label">Недолік</span>
-                                        <input type="text" class="advantage-input" placeholder="Введіть текст..." />
-                                    </div>
-                                    <div class="advantage-block">
-                                        <span class="advantage-label">Недолік</span>
-                                        <input type="text" class="advantage-input" placeholder="Введіть текст..." />
-                                    </div>
+                                    <button type="submit" class="add-review-button">Додати відгук</button>
+                                    <button type="button" class="cancel-review-button" id="cancel-review">Скасувати</button>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Нижній блок (іконки та кнопка) -->
-                        <div class="additional-bottom">
-                            <div class="bottom-icons">
-                                <div class="icon-box"></div>
-                                <div class="icon-box"></div>
-                                <div class="icon-box"></div>
-                                <div class="icon-box"></div>
-                            </div>
-                            <button class="add-review-button">Додати відгук</button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </section>
+
+            <!-- Модальне вікно для перегляду зображень -->
+            <div id="image-modal" class="modal" style="display: none;">
+                <span class="close-modal">&times;</span>
+                <img class="modal-content" id="modal-image">
+            </div>
+
+
+
+
+
+
+
 
             <!-- Секція рейтингових товарів -->
             <section class="related-products">
@@ -723,44 +826,9 @@
         </div>
     </main>
 
-    <!-- Футер -->
-    <footer class="footer text-white py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 col-md-3 col-lg-2 text-center mb-4">
-                    <div class="logo">LOGO</div>
-                </div>
-                <div class="col-12 col-md-9">
-                    <div class="row">
-                        <div class="col-6 col-lg-2">
-                            <h5>Про нас</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="category-link">Що таке MarketMap</a></li>
-                                <li><a href="#" class="category-link">Як ми працюємо</a></li>
-                                <li><a href="#" class="category-link">Партнери</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-6 col-lg-2">
-                            <h5>Контакти</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="category-link">Зв'язатися з нами</a></li>
-                                <li><a href="#" class="category-link">Карта сайту</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-6 col-lg-2">
-                            <h5>Соцмережі</h5>
-                            <ul class="list-unstyled">
-                                <li><a href="#" class="category-link">Instagram</a></li>
-                                <li><a href="#" class="category-link">Facebook</a></li>
-                                <li><a href="#" class="category-link">YouTube</a></li>
-                                <li><a href="#" class="category-link">Telegram</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+
+    <!-- Підключення футера -->
+    <partial name="_Footer" />
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/product-page-script.js"></script>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.IdentityModel.Tokens;
 using PriceComparisonMVC.Models;
 using PriceComparisonMVC.Models.Categories;
@@ -17,92 +18,58 @@ namespace PriceComparisonMVC.Controllers
         {
             _apiService = apiService;
         }
-        
-        public async Task<IActionResult> Index(int id)
+
+        public async Task<IActionResult> Index(int id, int firstProductId, int feedbackPage = 1)
         {
             List<ProductCharacteristicResponseModel>? characteristics = null;
             List<ProductCharacteristicGroupResponseModel>? shortCharacteristics = null;
             List<ProductImageModel>? productImages = null;
             ProductResponseModel? productResponseModel = null;
+            CategoryDetailsResponseModel categoryDetails = null;
             CategoryResponseModel? category = null;
-            List<FeedbackResponseModel>? feedbacks = null;
+            FeedbacksPagedResponseModel? feedbacks = null;
             List<SellerProductDetailResponseModel>? sellerProductDetails = null;
             List<RelatedProductModel> relatedProducts = new List<RelatedProductModel>();
             List<CategoryResponseModel>? breadcrumb = null;
             int productCategoryId = 0;
 
-
             try
             {
-                characteristics = await _apiService.GetAsync<List<ProductCharacteristicResponseModel>>($"api/ProductCharacteristics/{id}");
 
-                shortCharacteristics = await _apiService.GetAsync<List<ProductCharacteristicGroupResponseModel>>($"/api/ProductCharacteristics/short-grouped/{id}");
+                characteristics = await _apiService.GetAsync<List<ProductCharacteristicResponseModel>>($"api/ProductCharacteristics/{firstProductId}");
+
+                shortCharacteristics = await _apiService.GetAsync<List<ProductCharacteristicGroupResponseModel>>($"/api/ProductCharacteristics/short-grouped/{firstProductId}");
 
                 productImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{id}");
-                
-                productResponseModel = await _apiService.GetAsync<ProductResponseModel>($"api/Products/{id}");
-                                
-                productCategoryId = productResponseModel.CategoryId;
 
-                category = await _apiService.GetAsync<CategoryResponseModel>($"api/Categories/{productCategoryId}");
-                
+                //productResponseModel = await _apiService.GetAsync<ProductResponseModel>($"api/Products/{id}");
+
+                //productCategoryId = productResponseModel.CategoryId;
+
+
+                categoryDetails = await _apiService.GetAsync<CategoryDetailsResponseModel>($"/api/Categories/getbyproduct/{id}");
+
+                category = await _apiService.GetAsync<CategoryResponseModel>($"api/Categories/{categoryDetails.Id}");
+
                 breadcrumb = await BuildBreadcrumbAsync(category);
 
-                //feedbacks = await _apiService.GetAsync<List<FeedbackResponseModel>>($"api/Feedback/{id}");
-
-                // Отримання відгуків
+                // Отримання пагінованих відгуків
                 try
                 {
-                    feedbacks = await _apiService.GetAsync<List<FeedbackResponseModel>>($"api/Feedback/{id}");
-
-                    // Перевірка та обробка отриманих даних
-                    if (feedbacks != null)
-                    {
-                        // Можемо додатково обробити відгуки, якщо потрібно
-                        // Наприклад, перевірити, чи не пусті обов'язкові поля та заповнити їх значеннями за замовчуванням
-                        foreach (var feedback in feedbacks)
-                        {
-                            // Перевірка UserId
-                            //if (feedback.UserId))
-                            //{
-                            //    feedback.UserId = 3;
-                            //}
-
-                            // Перевірка FeedbackText
-                            if (string.IsNullOrEmpty(feedback.FeedbackText))
-                            {
-                                feedback.FeedbackText = "Відгук без тексту";
-                            }
-
-                            // Перевірка Rating (якщо рейтинг < 1, встановлюємо 1)
-                            if (feedback.Rating < 1)
-                            {
-                                feedback.Rating = 1;
-                            }
-
-                            // Перевірка CreatedAt (якщо дата не встановлена, використовуємо поточну)
-                            if (feedback.CreatedAt == default)
-                            {
-                                feedback.CreatedAt = DateTime.Now;
-                            }
-                        }
-                    }
+                    const int pageSize = 5; // Кількість відгуків на сторінці
+                    feedbacks = await _apiService.GetAsync<FeedbacksPagedResponseModel>($"api/Feedback/paginated/{id}?page={feedbackPage}&pageSize={pageSize}");
                 }
                 catch (Exception ex)
                 {
-                    // Загальна обробка інших помилок
-                    Console.WriteLine($"Загальна помилка при отриманні відгуків: {ex.Message}");
+                    Console.WriteLine($"Помилка при отриманні відгуків: {ex.Message}");
+                    feedbacks = new FeedbacksPagedResponseModel
+                    {
+                        Data = new List<FeedbackResponseModel>(),
+                        Page = 1,
+                        PageSize = 5,
+                        TotalItems = 0
+                    };
                 }
-
-
-
-                var productsWrapper = await _apiService.GetAsync<ProductsResponseWrapper>($"api/Products/bycategory/{productCategoryId}?page=1");
-                
-                var relatedProductsRaw = productsWrapper?.Data ?? new List<ProductToCategiriesListModel>();
-
-                var relatedProductsFiltered = relatedProductsRaw.Where(p => p.Id != id).Take(4).ToList();
-
-                //var sellerProductDetails = await _apiService.GetAsync<List<SellerProductDetailResponseModel>>($"api/SellerProductDetails/{id}");
 
                 // Отримання даних продавців
                 try
@@ -122,7 +89,6 @@ namespace PriceComparisonMVC.Controllers
                                 seller.ProductStoreUrl = "#";
                             }
                         }
-                        
                     }
                 }
                 catch (Exception ex)
@@ -132,8 +98,43 @@ namespace PriceComparisonMVC.Controllers
                 }
 
 
+                var productsWrapper = await _apiService.GetAsync<ProductsResponseWrapper>(
+               $"api/Products/bycategorypaginated/{productCategoryId}?page={1}&pageSize={5}");
+                               
 
-                relatedProducts = new List<RelatedProductModel>();
+                // Конвертуємо нову модель у формат, що очікується представленням
+                var products = new List<ProductToCategoriesListModel>();
+
+                if (productsWrapper?.Data != null)
+                {
+                    foreach (var relatedProduct in productsWrapper.Data)
+                    {
+                        var convertedProduct = new ProductToCategoriesListModel
+                        {
+                            Id = relatedProduct.ProductGroups.FirstOrDefault()?.FirstProductId ?? relatedProduct.BaseProductId,
+                            Title = relatedProduct.Title,
+                            Description = relatedProduct.Description,
+                            CategoryId = relatedProduct.CategoryId
+                        };
+
+                        try
+                        {
+                            // Все ще потрібно окремо отримувати зображення
+                            var relatedProductImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{relatedProduct.BaseProductId}");
+                            convertedProduct.ImageUrl = productImages?.FirstOrDefault()?.ImageUrl;
+                        }
+                        catch (Exception ex)
+                        {
+                            convertedProduct.ImageUrl = null;
+                        }
+                        products.Add(convertedProduct);
+                    }
+                }
+
+
+                var relatedProductsFiltered = products.Where(p => p.Id != id).Take(4).ToList();
+
+
 
                 foreach (var relatedProduct in relatedProductsFiltered)
                 {
@@ -144,11 +145,12 @@ namespace PriceComparisonMVC.Controllers
                     relatedProducts.Add(new RelatedProductModel
                     {
                         Id = relatedProduct.Id,
-                        ProductName = relatedProduct.Title,  
+                        ProductName = relatedProduct.Title,
                         ProductPrice = 25000,
                         ImageUrl = imageUrl,
                     });
                 }
+
 
 
                 var product = new ProductPageModel
@@ -157,27 +159,35 @@ namespace PriceComparisonMVC.Controllers
                     ShortCharacteristics = shortCharacteristics ?? new List<ProductCharacteristicGroupResponseModel>(),
                     ProductImages = productImages ?? new List<ProductImageModel>(),
                     CategoryBreadcrumb = breadcrumb ?? new List<CategoryResponseModel>(),
-                    Feedbacks = feedbacks ?? new List<FeedbackResponseModel>(),
-                    RelatedProducts = relatedProducts, // Вже ініціалізований і не може бути null
+                    Feedbacks = feedbacks?.Data ?? new List<FeedbackResponseModel>(),
+                    FeedbacksPaging = feedbacks ?? new FeedbacksPagedResponseModel
+                    {
+                        Data = new List<FeedbackResponseModel>(),
+                        Page = 1,
+                        PageSize = 5,
+                        TotalItems = 0
+                    },
+                    RelatedProducts = relatedProducts,
                     SellerProductDetails = sellerProductDetails ?? new List<SellerProductDetailResponseModel>(),
                     ProductResponseModel = productResponseModel ?? new ProductResponseModel
                     {
                         Title = "Інформація недоступна",
                         Description = "Опис товару недоступний"
                     },
-                    CategoryId = productCategoryId
+                    CategoryId = productCategoryId,
+                    CurrentFeedbackPage = feedbackPage
                 };
 
-                var a = 3;
+
 
                 return View(product);
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Загальна помилка: {ex.Message}");
                 return View(new ProductPageModel());
             }
         }
-
 
         private async Task<List<CategoryResponseModel>> BuildBreadcrumbAsync(CategoryResponseModel category)
         {
@@ -198,5 +208,29 @@ namespace PriceComparisonMVC.Controllers
             return breadcrumb;
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> AddFeedback(FeedbackRequestModel model)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        TempData["FeedbackError"] = "Будь ласка, перевірте правильність заповнення всіх полів";
+        //        return RedirectToAction("Index", new { id = model.ProductId });
+        //    }
+
+        //    try
+        //    {
+        //        // Відправляємо запит на API для додавання відгуку
+        //        var response = await _apiService.PostAsync<FeedbackResponseModel>("api/Feedback", model);
+
+        //        TempData["FeedbackSuccess"] = "Ваш відгук успішно додано!";
+        //        return RedirectToAction("Index", new { id = model.ProductId });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["FeedbackError"] = "Не вдалося додати відгук. Спробуйте пізніше.";
+        //        Console.WriteLine($"Помилка додавання відгуку: {ex.Message}");
+        //        return RedirectToAction("Index", new { id = model.ProductId });
+        //    }
+        //}
     }
 }

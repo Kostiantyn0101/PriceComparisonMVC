@@ -15,122 +15,177 @@ namespace PriceComparisonMVC.Controllers
             _apiService = apiService;
         }
 
-        public async Task<IActionResult> Index()
-        {
-            try
-            {
-                var categories = await _apiService.GetAsync<List<CategoryResponseModel>>("api/categories/getall");
-                return View(categories);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = ex.Message;
-                return View(new List<CategoryResponseModel>());
-            }
-        }
-
-      
         
+
         public async Task<IActionResult> CategoryList(int id)
         {
             var categories = await _apiService.GetAsync<List<CategoryResponseModel>>("api/categories/getall");
+
+            // Знаходимо поточну категорію для відображення в "хлібних крихтах"
+            var currentCategory = categories.FirstOrDefault(c => c.Id == id);
+            ViewBag.CurrentCategory = currentCategory;
 
             var subcategories = categories
                 .Where(c => c.ParentCategoryId.HasValue && c.ParentCategoryId.Value == id)
                 .ToList();
 
-            var categoryListModels = new List<CategiryListModel>();
+            var categoryListModels = new List<CategoryListModel>();
 
             foreach (var subcategory in subcategories)
             {
-                var productsWrapper = await _apiService.GetAsync<ProductsResponseWrapper>(
-                    $"api/Products/bycategory/{subcategory.Id}?page=1");
-                var products = productsWrapper?.Data ?? new List<ProductToCategiriesListModel>();
-
-
-                foreach (var product in products)
-                {
-                    try
-                    {
-                        var productImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{product.Id}");
-                        var imageUrl = productImages?.FirstOrDefault()?.ImageUrl;
-                        product.ImageUrl = imageUrl;
-                    }
-                    catch (Exception ex)
-                    {
-                        product.ImageUrl = null;
-                    }
-                }
-
+                // Використовуємо виокремлений метод для отримання продуктів
+                var products = await GetProductsByCategoryAsync(subcategory.Id);
+                
                 var topProducts = products.Take(4).ToList();
 
-                var categoryListModelOne = new CategiryListModel
+                var categoryListModel = new CategoryListModel
                 {
                     ParentCategory = subcategory,
-                    ProductToCategiries = topProducts
+                    ProductToCategories = topProducts
                 };
 
-                categoryListModels.Add(categoryListModelOne);
+                categoryListModels.Add(categoryListModel);
             }
 
             return View(categoryListModels);
         }
 
-
         public async Task<IActionResult> CategoryProductList(int id)
         {
-
-            var productsWrapper = await _apiService.GetAsync<ProductsResponseWrapper>($"api/Products/bycategory/{id}?page=1");
-            var products = productsWrapper?.Data ?? new List<ProductToCategiriesListModel>();
-
-            foreach (var product in products)
+            try
             {
-                try
+                // Отримуємо інформацію про поточну категорію для "хлібних крихт"
+                var currentCategory = await _apiService.GetAsync<CategoryResponseModel>($"api/categories/{id}");
+                ViewBag.CurrentCategory = currentCategory;
+
+                // Отримуємо всі категорії, щоб знайти батьківську категорію
+                var allCategories = await _apiService.GetAsync<List<CategoryResponseModel>>("api/categories/getall");
+
+                // Встановлюємо батьківську категорію для "хлібних крихт", якщо вона є
+                if (currentCategory != null && currentCategory.ParentCategoryId.HasValue)
                 {
-                    var productImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{product.Id}");
-                    var imageUrl = productImages?.FirstOrDefault()?.ImageUrl;
-                    product.ImageUrl = imageUrl;
+                    ViewBag.ParentCategory = allCategories.FirstOrDefault(c => c.Id == currentCategory.ParentCategoryId.Value);
                 }
-                catch (Exception ex)
+
+                // Використовуємо виокремлений метод для отримання продуктів
+                var products = await GetProductsByCategoryAsync(id);
+
+                // Створюємо моделі представлення з характеристиками для кожного продукту
+                var viewModels = new List<ProductWithCharacteristicsViewModel>();
+                foreach (var product in products)
                 {
-                    product.ImageUrl = null;
+                    try
+                    {
+                        var characteristicGroups = await _apiService.GetAsync<List<ProductCharacteristicGroupResponseModel>>(
+                            $"api/ProductCharacteristics/short-grouped/{product.Id}");
+                        viewModels.Add(new ProductWithCharacteristicsViewModel
+                        {
+                            Product = product,
+                            CharacteristicGroups = characteristicGroups ?? new List<ProductCharacteristicGroupResponseModel>()
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        viewModels.Add(new ProductWithCharacteristicsViewModel
+                        {
+                            Product = product,
+                            CharacteristicGroups = new List<ProductCharacteristicGroupResponseModel>()
+                        });
+                    }
                 }
+
+                return View(viewModels);
             }
-
-
-
-            var viewModels = new List<ProductWithCharacteristicsViewModel>();
-
-            foreach (var product in products)
+            catch (Exception ex)
             {
-                try
-                {
-                    var characteristicGroups = await _apiService.GetAsync<List<ProductCharacteristicGroupResponseModel>>(
-                        $"api/ProductCharacteristics/short-grouped/{product.Id}");
-
-                    viewModels.Add(new ProductWithCharacteristicsViewModel
-                    {
-                        Product = product,
-                        CharacteristicGroups = characteristicGroups ?? new List<ProductCharacteristicGroupResponseModel>()
-                    });
-                }
-                catch (Exception ex)
-                {
-                    viewModels.Add(new ProductWithCharacteristicsViewModel
-                    {
-                        Product = product,
-                        CharacteristicGroups = new List<ProductCharacteristicGroupResponseModel>()
-                    });
-                }
+                // Обробка загальних помилок
+                ViewBag.ErrorMessage = "Сталася помилка при отриманні даних: " + ex.Message;
+                return View(new List<ProductWithCharacteristicsViewModel>());
             }
-            return View(viewModels);
         }
 
 
-        public async Task<IActionResult> ProductList(int id)
+
+
+        /// <summary>
+        /// Отримує продукти за вказаною категорією
+        /// </summary>
+        /// <param name="categoryId">ID категорії</param>
+        /// <param name="page">Номер сторінки</param>
+        /// <param name="pageSize">Розмір сторінки</param>
+        /// <returns>Список продуктів, конвертованих для відображення</returns>
+        /// 
+
+        private async Task<List<ProductToCategoriesListModel>> GetProductsByCategoryAsync(int categoryId, int page = 1, int pageSize = 10)
         {
-            return View(id);
-        }
-    }
+            // Отримуємо продукти за обраною категорією
+            var productsWrapper = await _apiService.GetAsync<ProductsResponseWrapper>(
+                $"api/Products/bycategorypaginated/{categoryId}?page={page}&pageSize={pageSize}");
 
+            // Конвертуємо нову модель у формат, що очікується представленням
+            //var products = new List<ProductToCategoriesListModel>();
+
+            //if (productsWrapper?.Data != null)
+            //{
+            //    foreach (var product in productsWrapper.Data)
+            //    {
+            //        var convertedProduct = new ProductToCategoriesListModel
+            //        {
+            //            Id = product.ProductGroups.FirstOrDefault()?.FirstProductId ?? product.BaseProductId,
+            //            Title = product.Title,
+            //            Description = product.Description,
+            //            CategoryId = product.CategoryId
+            //        };
+
+            //        try
+            //        {
+            //            // Все ще потрібно окремо отримувати зображення
+            //            var productImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{product.BaseProductId}");
+            //            convertedProduct.ImageUrl = productImages?.FirstOrDefault()?.ImageUrl;
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            convertedProduct.ImageUrl = null;
+            //        }
+            //        products.Add(convertedProduct);
+            //    }
+            //}
+            //return products;
+
+
+            var products = new List<ProductToCategoriesListModel>();
+            if (productsWrapper?.Data != null)
+            {
+                foreach (var product in productsWrapper.Data)
+                {
+                    var firstGroup = product.ProductGroups.FirstOrDefault();
+                    var convertedProduct = new ProductToCategoriesListModel
+                    {
+                        Id = product.BaseProductId,
+                        FirstProductId = firstGroup?.FirstProductId ?? product.BaseProductId, // Зберігаємо firstProductId
+                        Title = product.Title,
+                        Description = product.Description,
+                        CategoryId = product.CategoryId
+                    };
+                    try
+                    {
+                        // Все ще потрібно окремо отримувати зображення
+                        var productImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{product.BaseProductId}");
+                        convertedProduct.ImageUrl = productImages?.FirstOrDefault()?.ImageUrl;
+                    }
+                    catch (Exception ex)
+                    {
+                        convertedProduct.ImageUrl = null;
+                    }
+                    products.Add(convertedProduct);
+                }
+            }
+            return products;
+
+
+
+        }
+
+
+    }
 }

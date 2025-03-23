@@ -1,0 +1,41 @@
+﻿<header class="custom-header">
+    <div class="container-fluid py-3">
+        <div class="row align-items-center">
+            <!-- Логотип -->
+            <div class="col-3 text-white text-center">
+                <a href="@Url.Action("Index", "Home")" class="logo-container">
+                    <img src="@Url.Content("~/images/logo.png")" alt="inMarket Map" class="site-logo">
+                </a>
+            </div>
+            <!-- Поле пошуку -->
+            <div class="col-6">
+                <input type="text" class="form-control custom-search-field" placeholder="Пошук...">
+            </div>
+            <!-- Кабінет користувача -->
+            <div class="col-1 d-flex align-items-center justify-content-center text-white">
+                <img src="@Url.Content("~/images/user-icon.png")" alt="Іконка користувача" class="rounded-circle me-2 header-icon">
+                @if (!string.IsNullOrEmpty(ViewBag.Username))
+                {
+                    <span>@ViewBag.Username</span>
+                    <form asp-action="Logout" asp-controller="Account" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-link text-white text-decoration-none ms-2 p-0">(Вийти)</button>
+                    </form>
+                }
+                else
+                {
+                    <a href="@Url.Action("Login", "Account")" class="text-white text-decoration-none">Кабінет</a>
+                }
+            </div>
+            <!-- Порівняння -->
+            <div class="col-1 d-flex align-items-center justify-content-center text-white">
+                <img src="@Url.Content("~/images/justice-scale-02.png")" alt="Іконка порівняння" class="rounded-circle me-2 header-icon">
+                <a href="@Url.Action("Comparison", "Compare")" class="text-white text-decoration-none">Порівняння</a>
+            </div>
+            <!-- Обране -->
+            <div class="col-1 d-flex align-items-center justify-content-center text-white">
+                <img src="@Url.Content("~/images/favourite.png")" alt="Іконка обраного" class="rounded-circle me-2 header-icon">
+                <a href="#" class="text-white text-decoration-none">Обране</a>
+            </div>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,86 @@
+﻿/* Футер */
+.footer {
+    background-color: #1F4E92 !important;
+    color: #fff;
+    padding: 40px 80px;
+    box-sizing: border-box;
+}
+
+/* Логотип */
+.logo {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Стилі для логотипу в футері */
+.footer-logo-container {
+    display: inline-block;
+}
+
+.footer-logo {
+    width: 200px !important;
+    height: auto !important;
+    max-width: 100%;
+    max-height: 56px;
+    object-fit: contain;
+    filter: brightness(1.2); /* Опціонально: робить логотип трохи яскравішим на темному фоні */
+}
+
+/* Адаптивність для малих екранів */
+@media (max-width: 768px) {
+    .footer-logo {
+        width: 160px !important;
+    }
+}
+
+
+
+/* Заголовки категорій */
+.category-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+/* Посилання */
+.category-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+    .category-link:hover {
+        color: #FFD700;
+        text-decoration: underline;
+    }
+
+/* Додатковий блок */
+.additional-box {
+    width: 97px;
+    height: 73px;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #123456; /* Можливий фоновий колір */
+}
+
+.arrow-icon {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.additional-link {
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #FFF;
+}
+
+    .additional-link:hover {
+        text-decoration: underline;
+    }
