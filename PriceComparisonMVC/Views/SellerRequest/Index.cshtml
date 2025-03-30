@@ -1,0 +1,66 @@
+﻿@using PriceComparisonMVC.Models.Seller
+@model SellerRequestCreateModel
+
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Seller request</title>
+	<style>
+        .field-validation-error{
+            color: red
+        }
+	</style>
+</head>
+<body class="d-flex flex-column min-vh-100 justify-content-between" style="background-color: #f9f9f9">
+	<header>
+		<partial name="_Header" />
+	</header>
+	<main>
+		<div class="container">
+            <form asp-action="CreateSellerRequest" method="post">
+                @Html.HiddenFor(m => m.UserId)
+
+                <div class="m-4">
+                    @Html.LabelFor(m => m.StoreName, new { @style = "display:none;" })
+                    @Html.TextBoxFor(m => m.StoreName, new { @class = "form-control", placeholder = "Назва магазину" })
+                    @Html.ValidationMessageFor(m => m.StoreName)
+                </div>
+
+                <div class="m-4">
+                    @Html.LabelFor(m => m.WebsiteUrl, new { @style = "display:none;" })
+                    @Html.TextBoxFor(m => m.WebsiteUrl, new { @class = "form-control", placeholder = "URL магазину" })
+                    @Html.ValidationMessageFor(m => m.WebsiteUrl)
+                </div>
+
+                <div class="m-4">
+                    @Html.LabelFor(m => m.ContactPerson, new { @style = "display:none;" })
+                    @Html.TextBoxFor(m => m.ContactPerson, new { @class = "form-control", placeholder = "Контактна особа (ПІБ)" })
+                    @Html.ValidationMessageFor(m => m.ContactPerson)
+                </div>
+
+                <div class="m-4">
+                    @Html.LabelFor(m => m.ContactPhone, new { @style = "display:none;" })
+                    @Html.TextBoxFor(m => m.ContactPhone, new { @class = "form-control", placeholder = "Контактний телефон" })
+                    @Html.ValidationMessageFor(m => m.ContactPhone)
+                </div>
+
+                <div class="m-4">
+                    @Html.LabelFor(m => m.StoreComment, new { @style = "display:none;" })
+                    @Html.TextAreaFor(m => m.StoreComment, new { @class = "form-control", placeholder = "Коментар (при потребі)" })
+                    @Html.ValidationMessageFor(m => m.StoreComment)
+                </div>
+
+                <div class="m-5 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary fs-4">Подати заявку на розміщення магазину</button>
+                </div>
+            </form>
+		</div>
+	</main>
+	<footer class="mt-auto bg-light fixed-bottom">
+		<partial name="_Footer" />
+	</footer>
+</body>
+</html>
+
