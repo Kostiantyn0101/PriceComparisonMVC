@@ -10,6 +10,8 @@ namespace PriceComparisonMVC.Infrastructure
             try
             {
                 builder.AddConfiguration();
+                builder.AddFluentValidation();
+                builder.AddRazorRuntimeCompilation();
                 builder.AddServices();
                 builder.AddAuth();
             }

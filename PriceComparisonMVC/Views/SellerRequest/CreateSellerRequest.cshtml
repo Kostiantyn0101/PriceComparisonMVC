@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Створення заявки</title>
+	<style>
+	</style>
+</head>
+<body class="d-flex flex-column min-vh-100 justify-content-between">
+	<header >
+		<partial name="_Header" />
+	</header>
+	<main class="container">
+		<div class="mt-5 d-flex flex-column align-items-center gap-3">
+			@if (@ViewData.ContainsKey("Message")){
+				<h3 class="text-black text-center">@ViewData["Message"]</h3>
+			}
+			<a asp-controller="Home" asp-action="Index" class="fs-4">На головну</a>
+		</div>
+	</main>
+	<footer class="mt-auto bg-light fixed-bottom">
+		<partial name="_Footer" />
+	</footer>
+</body>
+</html>
+
