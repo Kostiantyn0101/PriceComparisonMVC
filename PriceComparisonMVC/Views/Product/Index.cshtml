@@ -24,7 +24,52 @@
     <link rel="stylesheet" href="~/css/product-style.css" />
     <link rel="stylesheet" href="~/css/header-style.css" />
     <link rel="stylesheet" href="~/css/footer-style.css" />
+    <style>
+        .colors-container {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            padding: 8px 1px;
+            border-radius: 4px;
+        }
+
+        .spec-title1 {
+            font-weight: bold;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+
+        .colors-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .color-square {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #dee2e6;
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-left: 5px;
+        }
+
+            .color-square:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            }
+
+            .color-square.active {
+                border: 2px solid #343a40;
+            }
+    </style>
 </head>
+
+
 <body>
 
     <partial name="_Header" />
@@ -263,7 +308,13 @@
                                                         }
                                                         break;
                                                     case "string":
-                                                        result = c.ValueText;
+                                                        result = !string.IsNullOrEmpty(c.ValueText)
+                                                                    ? c.ValueText
+                                                                    .Replace("\\r\\n", "<br/>")
+                                                                    .Replace("\\n", "<br/>")
+                                                                    .Replace("\r\n", "<br/>")
+                                                                    .Replace("\n", "<br/>")
+                                                                    : "";
                                                         break;
                                                     case "bool":
                                                         result = c.ValueBoolean.HasValue ? (c.ValueBoolean.Value ? "Так" : "Ні") : "";
@@ -279,12 +330,29 @@
 
                                             var displayValue = string.Join(", ", values);
                                         }
-                                        @displayValue
+                                        @Html.Raw(displayValue)
                                     </li>
                                 }
                             }
                         </ul>
                     </div>
+
+                    @if (Model.ProductColors != null && Model.ProductColors.Any())
+                    {
+                        <div class="colors-container">
+                            <span class="spec-title1">Доступні кольори:</span>
+                            <div class="colors-wrapper">
+                                @foreach (var color in Model.ProductColors)
+                                {
+                                    <a href="@Url.Action("Index", "Product", new { firstProductId = color.ProductId })"
+                                       class="color-square @(color.ProductId == Model.ProductResponseModel.Id ? "active" : "")"
+                                       title="@color.Name"
+                                       style="background-color: @color.HexCode;">
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
 
                 </section>
             </div>
@@ -786,7 +854,6 @@
 
 
 
-            <!-- Секція рейтингових товарів -->
             <section class="related-products">
                 <div class="popular-products-section py-4">
                     <!-- Заголовок -->
@@ -800,7 +867,7 @@
                                 {
                                     <div class="col">
                                         <div class="product-item">
-                                            <a href="@Url.Action("Index", "Product", new { id = product.Id })" class="card-text mb-0">
+                                            <a href="@Url.Action("Index", "Product", new { productId = product.Id })" class="card-text mb-0">
                                                 <div class="product-image-container">
                                                     <img src="@product.ImageUrl"
                                                          alt="@product.ProductName"
@@ -811,7 +878,21 @@
                                                 @product.ProductName
                                             </div>
                                             <div class="product-price">
-                                                @product.ProductPrice.ToString("C")
+                                                @if (product.HasPrices)
+                                                {
+                                                    @if (product.MinPrice == product.MaxPrice)
+                                                    {
+                                                        <span>@product.MinPrice.ToString("N0") грн</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>від @product.MinPrice.ToString("N0") до @product.MaxPrice.ToString("N0") грн</span>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Немає в наявності</span>
+                                                }
                                             </div>
                                         </div>
                                     </div>
@@ -829,6 +910,8 @@
                     </div>
                 </div>
             </section>
+
+
 
 
         </div>

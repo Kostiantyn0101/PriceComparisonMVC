@@ -8,6 +8,8 @@ ConfigurationService.ConfigureServices(builder);
 builder.Services.AddHttpClient<IApiService, ApiService>();
 builder.Services.AddSingleton<TokenManager>();
 builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 
 var app = builder.Build();

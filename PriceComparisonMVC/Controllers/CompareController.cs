@@ -29,6 +29,7 @@ namespace PriceComparisonMVC.Controllers
             _comparisonProducts.Clear();
             _comparisonProducts.Add(1);
             _comparisonProducts.Add(2);
+            _comparisonProducts.Add(3);
 
             if (_comparisonProducts.Count == 0)
             {
@@ -42,7 +43,10 @@ namespace PriceComparisonMVC.Controllers
                 try
                 {
                     // Отримуємо основну інформацію про товар
-                    var productResponseModel = await _apiService.GetAsync<ProductResponseModel>($"api/Products/{productId}");
+                    var productResponseModel = await _apiService.GetAsync<ProductNewResponseModel>($"api/Products/{productId}");
+
+                    // Отримуємо інформацію про базовий продукт (бренд і назву)
+                    var baseProductResponseModel = await _apiService.GetAsync<BaseProductResponseModel>($"api/BaseProducts/{productResponseModel.BaseProductId}");
 
                     // Отримуємо характеристики товару
                     var characteristics = await _apiService.GetAsync<List<ProductCharacteristicResponseModel>>($"api/ProductCharacteristics/{productId}");
@@ -51,30 +55,42 @@ namespace PriceComparisonMVC.Controllers
                     var productImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{productId}");
 
                     // Отримуємо дані продавців для визначення цінового діапазону
-                    var sellerProductDetails = await _apiService.GetAsync<List<SellerProductDetailResponseModel>>($"api/SellerProductDetails/{productId}");
+                    List<SellerProductDetailResponseModel> sellerProductDetails = null;
+                    try
+                    {
+                        sellerProductDetails = await _apiService.GetAsync<List<SellerProductDetailResponseModel>>($"api/SellerProductDetails/{productId}");
+                    }
+                    catch (Exception sellerEx)
+                    {
+                        Console.WriteLine($"Помилка при отриманні даних продавців для товару {productId}: {sellerEx.Message}");
+                        sellerProductDetails = new List<SellerProductDetailResponseModel>();
+                    }
 
                     // Визначаємо мінімальну та максимальну ціну, а також кількість пропозицій
                     decimal minPrice = 0;
                     decimal maxPrice = 0;
                     int offerCount = 0;
+                    bool hasOffers = false;
 
                     if (sellerProductDetails != null && sellerProductDetails.Any())
                     {
                         minPrice = sellerProductDetails.Min(s => s.PriceValue);
                         maxPrice = sellerProductDetails.Max(s => s.PriceValue);
                         offerCount = sellerProductDetails.Count;
+                        hasOffers = true;
                     }
 
                     // Формуємо модель представлення для порівняння
                     var comparisonModel = new ProductComparisonViewModel
                     {
                         Id = productId,
-                        Name = productResponseModel?.Title ?? "Невідомий товар",
-                        Brand = productResponseModel?.Brand ?? "Невідомий бренд",
-                        Model = productResponseModel?.Title ?? "",
+                        Name = baseProductResponseModel?.Title ?? "Невідомий товар",
+                        Brand = baseProductResponseModel?.Brand ?? "Невідомий бренд",
+                        Model = productResponseModel?.ModelNumber ?? "",
                         MinPrice = minPrice,
                         MaxPrice = maxPrice,
                         OfferCount = offerCount,
+                        HasOffers = hasOffers,
                         ImageUrl = productImages?.FirstOrDefault()?.ImageUrl ?? "/images/placeholder.jpg",
                         Specifications = ConvertCharacteristicsToSpecifications(characteristics)
                     };
@@ -83,9 +99,7 @@ namespace PriceComparisonMVC.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Рекомендується використовувати механізм логування замість Console.WriteLine
                     Console.WriteLine($"Помилка при отриманні даних для товару {productId}: {ex.Message}");
-                    // Продовжуємо з наступним товаром
                 }
             }
 
@@ -292,6 +306,10 @@ namespace PriceComparisonMVC.Controllers
         }
     }
 
+
+
+
+
     // Модель представлення для товару при порівнянні
     public class ProductComparisonViewModel
     {
@@ -304,6 +322,7 @@ namespace PriceComparisonMVC.Controllers
         public int OfferCount { get; set; }
         public string ImageUrl { get; set; }
         public Dictionary<string, string> Specifications { get; set; }
+        public bool HasOffers { get; set; }
     }
 
     // Модель представлення для розумного порівняння
