@@ -92,7 +92,7 @@
                                                     @*     @product.Title *@
                                                     @* </a> *@
 
-                                                    <a href="@Url.Action("Index", "Product", new { id = product.Id, firstProductId = product.FirstProductId })" class="card-title text-center">
+                                                    <a href="@Url.Action("Index", "Product", new {firstProductId = product.FirstProductId })" class="card-title text-center">
                                                         @product.Title
                                                    </a> 
 

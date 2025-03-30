@@ -148,17 +148,13 @@
                                 </div>
                             </div>
 
-                            @* <div class="card-footer bg-transparent"> *@
-                            @*     <a href="@Url.Action("Index", "Product", new { id = item.Product.Id })" class="btn btn-primary w-100"> *@
-                            @*         Детальніше *@
-                            @*     </a> *@
-                            @* </div> *@
-
                             <div class="card-footer bg-transparent">
-                                <a href="@Url.Action("Index", "Product", new { id = item.Product.Id, firstProductId = item.Product.FirstProductId })" class="btn btn-primary w-100">
+                                <a href="@Url.Action("Index", "Product", new {firstProductId = item.Product.FirstProductId })" class="btn btn-primary w-100">
                                     Детальніше
                                 </a>
                             </div>
+
+                           
 
 
                         </div>

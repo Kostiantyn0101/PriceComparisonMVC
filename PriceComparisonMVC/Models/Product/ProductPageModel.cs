@@ -15,5 +15,7 @@ namespace PriceComparisonMVC.Models.Product
         public List<RelatedProductModel> RelatedProducts { get; set; }
         public List<SellerProductDetailResponseModel> SellerProductDetails { get; set; } 
         public ProductResponseModel ProductResponseModel { get; set; }
+        public List<ProductColorResponseModel> ProductColors { get; set; } = new List<ProductColorResponseModel>();
     }
 }
+
