@@ -21,7 +21,7 @@
                     {
                     new { Title = "Про нас", Links = new[] { "Що таке MarketMap", "Як ми працюємо", "Партнери" } },
                     new { Title = "Корисна інформація", Links = new[] { "Відгуки про товари", "Відгуки про магазин", "Як обрати товар", "Часті запитання" } },
-                    new { Title = "Контакти", Links = new[] { "Зв'язатися з нами", "Карта сайту" } },
+                    new { Title = "Контакти", Links = new[] { "Зв'язатися з нами", "Карта сайту", "Продавцям" } },
                     new { Title = "Правова інформація", Links = new[] { "Політика конфіденційності", "Умови використання" } },
                     new { Title = "Соціальні мережі", Links = new[] { "Instagram", "Facebook", "YouTube", "Telegram" } }
                     })
@@ -31,7 +31,11 @@
                             <div class="d-flex flex-column">
                                 @foreach (var link in category.Links)
                                 {
-                                    <a href="#" class="category-link">@link</a>
+                                    if (link != "Продавцям"){
+                                        <a href="#" class="category-link">@link</a>
+                                    } else{
+                                        <a asp-controller="SellerRequest" asp-action="Index" class="category-link">@link</a>
+                                    }
                                 }
                             </div>
                         </div>
