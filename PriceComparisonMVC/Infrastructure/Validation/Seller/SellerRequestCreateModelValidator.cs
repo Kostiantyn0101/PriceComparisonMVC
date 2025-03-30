@@ -8,7 +8,7 @@ namespace PriceComparisonMVC.Infrastructure.Validation.Seller
         public SellerRequestCreateModelValidator()
         {
             RuleFor(x => x.StoreName)
-               //.NotEmpty().WithMessage("Назва магазину є обов'язковою")
+               .NotEmpty().WithMessage("Назва магазину є обов'язковою")
                .MaximumLength(255).WithMessage("Назва магазину не може містити більше 255 символів");
 
             RuleFor(x => x.WebsiteUrl)
