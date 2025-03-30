@@ -31,8 +31,8 @@ namespace PriceComparisonMVC.Services
             var sellerProductDetails = await GetSellerProductDetailsAsync(baseId);
             var productColors = await GetProductColorsAsync(baseId, productResponseModel?.ProductGroup?.Id ?? 0);
             var relatedProducts = await GetRelatedProductsAsync(productCategoryId, baseId);
-
             var compatibleProductModel = CreateCompatibleProductModel(productResponseModel, baseProductResponseModel, productId);
+            var productVariants = await GetProductsByBaseProductIdAsync(baseId);
 
             return new ProductPageModel
             {
@@ -47,7 +47,8 @@ namespace PriceComparisonMVC.Services
                 ProductResponseModel = compatibleProductModel,
                 CategoryId = productCategoryId,
                 CurrentFeedbackPage = feedbackPage,
-                ProductColors = productColors
+                ProductColors = productColors,
+                ProductVariants = productVariants ?? new List<ProductsByBaseProductResponseModel>()
             };
         }
 
@@ -203,6 +204,23 @@ namespace PriceComparisonMVC.Services
                 TotalItems = 0
             };
         }
+
+        //варіанти по базовому продукту
+        private async Task<List<ProductsByBaseProductResponseModel>?> GetProductsByBaseProductIdAsync(int baseId)
+        {
+            if (baseId <= 0) return null;
+
+            try
+            {
+                return await _apiService.GetAsync<List<ProductsByBaseProductResponseModel>>($"api/Products/bybaseproduct/{baseId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка отримання варіантів продукту: {ex.Message}");
+                return null;
+            }
+        }
+
 
         //отримання продавців по baseId
         private async Task<List<SellerProductDetailResponseModel>?> GetSellerProductDetailsAsync(int baseId)
