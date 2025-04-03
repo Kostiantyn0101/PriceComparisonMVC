@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Розумне порівняння - Завантаження";
+}
+
+@section Scripts {
+    <script src="~/js/smart-comparison-load-page.js"></script>
+}
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        font-size: 16px;
+    }
+
+    h2 {
+        color: #1F4E92;
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .text-primary-custom {
+        color: #1F4E92;
+    }
+
+    .text-success-custom {
+        color: #0B8E00;
+    }
+
+    .loading-container {
+        margin: 40px 0;
+    }
+
+    .loading-tips {
+        background-color: rgba(31, 78, 146, 0.05);
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 30px;
+    }
+
+    .feature-item {
+        font-size: 18px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+    }
+
+    .check-icon {
+        color: #0B8E00;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    .main-description {
+        font-size: 20px;
+        margin-bottom: 30px;
+    }
+
+    video {
+        /* border-radius: 8px; */
+        /* box-shadow: 0 10px 30px rgba(31, 78, 146, 0.2); */
+        max-width: 450px;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h2>Виконується розумне порівняння товарів</h2>
+            <p class="text-muted mb-4 main-description">Наш <span class="text-primary-custom">ШІ</span> аналізує та порівнює характеристики товарів. Це може зайняти до <span class="text-success-custom">20 секунд</span>.</p>
+
+            <div class="loading-container my-5">
+                <video autoplay loop muted playsinline>
+                    <source src="@Url.Content("~/images/MarketMap-animation.mp4")" type="video/mp4">
+                    <!-- Fallback для старих браузерів -->
+                    <img src="@Url.Content("~/images/2GU.gif")" alt="Завантаження" class="img-fluid">
+                </video>
+            </div>
+
+            <div class="loading-tips mt-4">
+                <p class="text-primary-custom mb-4" style="font-size: 22px;">Під час обробки виконується:</p>
+                <div class="list-unstyled text-muted">
+                    <div class="feature-item"><span class="check-icon">✓</span> Аналіз усіх технічних характеристик</div>
+                    <div class="feature-item"><span class="check-icon">✓</span> Виявлення ключових відмінностей</div>
+                    <div class="feature-item"><span class="check-icon">✓</span> Підготовка порівняльної таблиці</div>
+                    <div class="feature-item"><span class="check-icon">✓</span> Формування рекомендацій</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

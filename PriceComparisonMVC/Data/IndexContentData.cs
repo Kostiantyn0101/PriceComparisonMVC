@@ -7,27 +7,34 @@ namespace PriceComparisonMVC.Data
     public static class IndexContentData
     {
 
-        public static IndexContentModel GetIndexContent(List<CategoryResponseModel> apiCategories)
+        // Окремий метод для отримання категорій
+        public static List<CategoryModel> GetCategories()
+        {
+            return new List<CategoryModel>
+            {
+                new CategoryModel { Id = 24, CategoryName = "Аудіо", CategoryIconUrl = "images/category-audio.png" },
+                new CategoryModel { Id = 22, CategoryName = "Гаджети", CategoryIconUrl = "~/images/category-game-controller.png" },
+                new CategoryModel { Id = 23, CategoryName = "Комп'ютери", CategoryIconUrl = "~/images/category-computer.png" },
+                new CategoryModel { Id = 25, CategoryName = "Фото", CategoryIconUrl = "~/images/category-photo.png" },
+                new CategoryModel { Id = 26, CategoryName = "ТV", CategoryIconUrl = "~/images/category-tv.png" },
+                new CategoryModel { Id = 27, CategoryName = "Побутова техніка", CategoryIconUrl = "~/images/category-refrigerator.png" },
+                new CategoryModel { Id = 28, CategoryName = "Клімат", CategoryIconUrl = "~/images/category-climat.png" },
+                new CategoryModel { Id = 29, CategoryName = "Дім", CategoryIconUrl = "~/images/category-home.png" },
+                new CategoryModel { Id = 30, CategoryName = "Дитячі товари", CategoryIconUrl = "~/images/category-home.png" },
+                new CategoryModel { Id = 31, CategoryName = "Авто", CategoryIconUrl = "~/images/category-car.png" },
+                new CategoryModel { Id = 32, CategoryName = "Інструменти", CategoryIconUrl = "~/images/category-wrench.png" },
+                new CategoryModel { Id = 33, CategoryName = "Туризм", CategoryIconUrl = "~/images/category-backpack.png" },
+                new CategoryModel { Id = 34, CategoryName = "Спорт", CategoryIconUrl = "~/images/category-bicycle.png" },
+                new CategoryModel { Id = 35,  CategoryName = "Моба та аксесуари", CategoryIconUrl = "~/images/category-dress.png" }
+            };
+        }
+
+
+        public static IndexContentModel GetIndexContent()
         {
             return new IndexContentModel
             {
-                Categories = new List<CategoryModel>
-                {
-                    new CategoryModel { Id = 24, CategoryName = "Аудіо", CategoryIconUrl = "images/category-audio.png" },
-                    new CategoryModel { Id = 22, CategoryName = "Гаджети", CategoryIconUrl = "~/images/category-game-controller.png" },
-                    new CategoryModel { Id = 23, CategoryName = "Комп'ютери", CategoryIconUrl = "~/images/category-computer.png" },
-                    new CategoryModel { Id = 25, CategoryName = "Фото", CategoryIconUrl = "~/images/category-photo.png" },
-                    new CategoryModel { Id = 26, CategoryName = "ТV", CategoryIconUrl = "~/images/category-tv.png" },
-                    new CategoryModel { Id = 27, CategoryName = "Побутова техніка", CategoryIconUrl = "~/images/category-refrigerator.png" },
-                    new CategoryModel { Id = 28, CategoryName = "Клімат", CategoryIconUrl = "~/images/category-climat.png" },
-                    new CategoryModel { Id = 29, CategoryName = "Дім", CategoryIconUrl = "~/images/category-home.png" },
-                    new CategoryModel { Id = 30, CategoryName = "Дитячі товари", CategoryIconUrl = "~/images/category-home.png" },
-                    new CategoryModel { Id = 31, CategoryName = "Авто", CategoryIconUrl = "~/images/category-car.png" },
-                    new CategoryModel { Id = 32, CategoryName = "Інструменти", CategoryIconUrl = "~/images/category-wrench.png" },
-                    new CategoryModel { Id = 33, CategoryName = "Туризм", CategoryIconUrl = "~/images/category-backpack.png" },
-                    new CategoryModel { Id = 34, CategoryName = "Спорт", CategoryIconUrl = "~/images/category-bicycle.png" },
-                    new CategoryModel { Id = 35,  CategoryName = "Моба та аксесуари", CategoryIconUrl = "~/images/category-dress.png" }
-                },
+                Categories = GetCategories(),
 
                 PopulaCategoriesImages = new List<ItemToViewModel>
                 {
@@ -90,27 +97,32 @@ namespace PriceComparisonMVC.Data
                 {
                     new ItemWhithUrlAndPriceModel
                     {
-                        ProductDescription = "Які зараз кращі пк в Україні? Як обрати якісний та надійний пк?",
-                        ProductPrice = "₴1200",
-                        IconUrl = "https://www.youtube.com/embed/VrjQgXIGX0I"
+                        ProductDescription = "Найкращий смартфон Samsung до 10000 грн.",
+                        ProductPrice = "₴10000",
+                        IconUrl = "https://www.youtube.com/embed/KpDiytA1uNM",
+                        AvatarUrl = "/images/allo_avatar.jpg"
+
                     },
                     new ItemWhithUrlAndPriceModel
                     {
                         ProductDescription = "Як правильно вибрати роутер?",
                         ProductPrice = "₴1200",
-                        IconUrl = "https://www.youtube.com/embed/o_yrBiHwYuY"
+                        IconUrl = "https://www.youtube.com/embed/q4LcGrxuLtM",
+                        AvatarUrl = "/images/allo_avatar.jpg"
                     },
                     new ItemWhithUrlAndPriceModel
                     {
-                        ProductDescription = "Як вибрати холодильник 2024",
-                        ProductPrice = "₴1200",
-                        IconUrl = "https://www.youtube.com/embed/SmNGBOx2688"
+                        ProductDescription = "Як вибрати холодильник e 2025 році",
+                        ProductPrice = "₴9000",
+                        IconUrl = "https://www.youtube.com/embed/SmNGBOx2688",
+                        AvatarUrl = "/images/allo_avatar.jpg"
                     },
                     new ItemWhithUrlAndPriceModel
                     {
-                        ProductDescription = "ЯКИЙ ДРОН КУПИТИ ДЛЯ ДИТИНИ? ВІДПОВІДАЄМО - E99 PRO MAX!",
-                        ProductPrice = "₴1200",
-                        IconUrl = "https://www.youtube.com/embed/M8Dke_dcAyU"
+                        ProductDescription = "Міні-кондиціонер для дому та офісу",
+                        ProductPrice = "₴800",
+                        IconUrl = "https://www.youtube.com/embed/bcPs_lB9uc0",
+                        AvatarUrl = "/images/tovarydladomy_avatar.jpg"
                     }
                 },
 

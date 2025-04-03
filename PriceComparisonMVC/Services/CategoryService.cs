@@ -227,6 +227,19 @@ namespace PriceComparisonMVC.Services
             }
         }
 
+        // Додайте цей метод до класу CategoryService
+        public async Task<CategoryResponseModel> GetCategoryInfoAsync(int categoryId)
+        {
+            try
+            {
+                return await GetCategoryByIdAsync(categoryId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка при отриманні інформації про категорію {categoryId}: {ex.Message}");
+                return null;
+            }
+        }
         #endregion
     }
 }

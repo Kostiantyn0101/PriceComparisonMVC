@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PriceComparisonMVC.Models.Response;
+using PriceComparisonMVC.Models.User;
 using PriceComparisonMVC.Services;
 using PriceComparisonMVC.Models.Request;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace PriceComparisonMVC.Controllers
 {
@@ -9,7 +12,6 @@ namespace PriceComparisonMVC.Controllers
     {
         private readonly IAuthService _authService;
         private readonly TokenManager _tokenManager;
-
 
         public AccountController(IAuthService authService, TokenManager tokenManager)
         {
@@ -28,6 +30,10 @@ namespace PriceComparisonMVC.Controllers
         {
             if (!ModelState.IsValid)
             {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+                }
                 return View(model);
             }
 
@@ -35,12 +41,21 @@ namespace PriceComparisonMVC.Controllers
 
             if (!isSuccess)
             {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = "Невірний логін чи пароль" });
+                }
                 ModelState.AddModelError(string.Empty, "Невірний логін чи пароль");
                 return View(model);
             }
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
+            }
             return RedirectToAction("Index", "Home");
         }
+
 
 
         [HttpPost]
@@ -62,6 +77,15 @@ namespace PriceComparisonMVC.Controllers
         {
             if (!ModelState.IsValid)
             {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+
+                    return Json(new { success = false, message = string.Join(", ", errors) });
+                }
                 return View(model);
             }
 
@@ -69,14 +93,58 @@ namespace PriceComparisonMVC.Controllers
 
             if (!string.IsNullOrEmpty(errorMessage))
             {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = errorMessage });
+                }
                 ModelState.AddModelError(string.Empty, errorMessage);
                 return View(model);
             }
 
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = true, redirectUrl = Url.Action("Login", "Account") });
+            }
             return RedirectToAction("Login", "Account");
         }
 
 
+
+
+
+        [Authorize]
+        public async Task<IActionResult> Profile()
+        {
+            try
+            {
+               
+                string username = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+                string email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+                var userProfile = new UserProfileModel
+                {
+                    Username = username,
+                    Email = email,
+                    AvatarUrl = "/images/empty-avatar.jpeg",
+                    RegistrationDate = DateTime.Now.AddMonths(-6),
+                    ReviewsCount = 12
+                };
+
+                return View(userProfile);
+            }
+            catch (Exception ex)
+            {
+                // Якщо сталася помилка, показуємо базовий профіль з даними з Identity
+                var basicProfile = new UserProfileModel
+                {
+                    Username = User.Identity.Name,
+                    Email = User.Claims.FirstOrDefault(c => c.Type == "email")?.Value ?? "Не вказано",
+                    AvatarUrl = "/images/default-avatar.png"
+                };
+
+                return View(basicProfile);
+            }
+        }
 
     }
 }

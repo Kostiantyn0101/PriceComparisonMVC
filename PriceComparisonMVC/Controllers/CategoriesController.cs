@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PriceComparisonMVC.Data;
 using PriceComparisonMVC.Models;
 using PriceComparisonMVC.Models.Categories;
 using PriceComparisonMVC.Models.Response;
@@ -23,8 +24,14 @@ namespace PriceComparisonMVC.Controllers
                 var categoryListResult = await _categoryService.GetCategoryListAsync(id);
                 ViewBag.CurrentCategory = categoryListResult.CurrentCategory;
 
+                // Отримуємо дані категорій (з того ж джерела, що й для головної сторінки)
+                var categories = Data.IndexContentData.GetCategories();
+
+                // Передаємо через ViewBag
+                ViewBag.Categories = categories;
+
                 return View(categoryListResult.CategoryListModels);
-            }
+             }
             catch (Exception ex)
             {
                 ViewBag.ErrorMessage = "Сталася помилка при отриманні списку категорій: " + ex.Message;
@@ -39,6 +46,13 @@ namespace PriceComparisonMVC.Controllers
                 var result = await _categoryService.GetCategoryProductListAsync(id);
                 ViewBag.CurrentCategory = result.CurrentCategory;
                 ViewBag.ParentCategory = result.ParentCategory;
+
+                // Отримуємо дані категорій (з того ж джерела, що й для головної сторінки)
+                var categories = Data.IndexContentData.GetCategories();
+
+                // Передаємо через ViewBag
+                ViewBag.Categories = categories;
+
 
                 return View(result.ProductsWithCharacteristics);
             }

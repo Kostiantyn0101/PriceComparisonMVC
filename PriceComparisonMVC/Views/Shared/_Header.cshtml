@@ -1,4 +1,4 @@
-﻿<header class="custom-header">
+﻿<nav class="custom-header">
     <div class="container-fluid py-3">
         <div class="row align-items-center">
             <!-- Логотип -->
@@ -7,35 +7,395 @@
                     <img src="@Url.Content("~/images/logo.png")" alt="inMarket Map" class="site-logo">
                 </a>
             </div>
+
             <!-- Поле пошуку -->
-            <div class="col-6">
-                <input type="text" class="form-control custom-search-field" placeholder="Пошук...">
+            <div class="col-5">
+                <form id="search-form" method="get" action="@Url.Action("Results", "Search")">
+                    <input type="text" name="query" class="form-control custom-search-field" placeholder="Пошук..." autocomplete="off">
+                </form>
             </div>
             <!-- Кабінет користувача -->
-            <div class="col-1 d-flex align-items-center justify-content-center text-white">
+            <div class="col-2 d-flex align-items-center justify-content-center text-white">
                 <img src="@Url.Content("~/images/user-icon.png")" alt="Іконка користувача" class="rounded-circle me-2 header-icon">
                 @if (!string.IsNullOrEmpty(ViewBag.Username))
                 {
-                    <span>@ViewBag.Username</span>
+                    <a href="@Url.Action("Profile", "Account")" class="text-white text-decoration-none">@ViewBag.Username</a>
                     <form asp-action="Logout" asp-controller="Account" method="post" class="d-inline">
                         <button type="submit" class="btn btn-link text-white text-decoration-none ms-2 p-0">(Вийти)</button>
                     </form>
                 }
                 else
                 {
-                    <a href="@Url.Action("Login", "Account")" class="text-white text-decoration-none">Кабінет</a>
+                    <a href="#" class="text-white text-decoration-none" data-bs-toggle="modal" data-bs-target="#loginModal">Кабінет</a>
                 }
             </div>
+
             <!-- Порівняння -->
             <div class="col-1 d-flex align-items-center justify-content-center text-white">
                 <img src="@Url.Content("~/images/justice-scale-02.png")" alt="Іконка порівняння" class="rounded-circle me-2 header-icon">
-                <a href="@Url.Action("Comparison", "Compare")" class="text-white text-decoration-none">Порівняння</a>
+                <a href="@Url.Action("Comparison", "Compare")" class="text-white text-decoration-none position-relative">
+                    Порівняння
+                    <span id="comparison-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                        0
+                    </span>
+                </a>
+
             </div>
+
             <!-- Обране -->
             <div class="col-1 d-flex align-items-center justify-content-center text-white">
                 <img src="@Url.Content("~/images/favourite.png")" alt="Іконка обраного" class="rounded-circle me-2 header-icon">
-                <a href="#" class="text-white text-decoration-none">Обране</a>
+                <a href="@Url.Action("Favorites", "Favorites")" class="text-white text-decoration-none position-relative">
+                    Обране
+                    <span id="favorites-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                        0
+                    </span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Модальне вікно для входу -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body p-0">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                    <div class="main-container" style="margin-top: 0; width: 100%; height: auto; box-shadow: none; padding: 30px;">
+                        <div class="text-center mb-4">
+                            <img src="~/images/logo-blue.png" alt="MarketMap Logo" style="width: 350px; height: 100px;" />
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 24px; border-bottom: 1px solid #dee2e6;">
+                            <button class="btn active" id="loginBtn" style="flex: 1; margin: 0 0.5rem; border: none; text-align: center; position: relative; background-color: transparent; color: #2C509A; font-weight: 600; padding-bottom: 10px;">Увійти</button>
+                            <button class="btn" id="registerBtn" style="flex: 1; margin: 0 0.5rem; border: none; text-align: center; position: relative; background-color: transparent; color: black; font-weight: 500; padding-bottom: 10px;">Зареєструватися</button>
+                        </div>
+
+                        <form id="loginForm" asp-action="Login" asp-controller="Account" method="post" style="margin-bottom: 20px;">
+
+                            <!-- Додаємо цей блок для виведення помилок або повідомлень -->
+                            <div id="loginErrorMessage" style="color: #dc3545; margin-bottom: 15px; font-size: 14px; display: none; border-left: 3px solid #dc3545; padding-left: 10px;"></div>
+
+
+                            <div style="margin-bottom: 24px !important;">
+                                <input type="text" class="form-control" id="email" name="Username" placeholder="Ім'я користувача або E-Mail" required
+                                       style="border-radius: 0; height: 51px;">
+                            </div>
+                            <div style="margin-bottom: 24px !important;">
+                                <input type="password" class="form-control" id="password" name="Password" placeholder="Пароль" required
+                                       style="border-radius: 0; height: 51px;">
+                            </div>
+                            <div style="margin-bottom: 24px !important; text-align: center;">
+                                <a href="#" style="text-decoration: none; color: #2C509A !important;">Забули пароль?</a>
+                            </div>
+                            <button type="submit" class="btn btn-primary"
+                                    style="width: 50%; height: 48px; background-color: #2C509A; color: white; font-size: 16px; border: none; border-radius: 0; margin: 0 auto; display: block; transition: background-color 0.3s ease;">
+                                Увійти
+                            </button>
+                            <div style="text-align: center; margin-top: 25px !important;">
+                                <p style="color: #6c757d !important;">Продовжити через</p>
+                                <div style="margin-top: 10px;">
+                                    <a href="#" style="text-decoration: none; color: #6c757d !important; margin-right: 1rem;">Google</a>
+                                    <a href="#" style="text-decoration: none; color: #6c757d !important; margin-right: 1rem;">Apple</a>
+                                    <a href="#" style="text-decoration: none; color: #6c757d !important;">Facebook</a>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Форма реєстрації (початково прихована) -->
+                        <form id="registerForm" asp-action="Register" asp-controller="Account" method="post" style="display: none; margin-bottom: 20px;">
+
+                            <div id="registerErrorMessage" style="color: #dc3545; margin-bottom: 15px; font-size: 14px; display: none; border-left: 3px solid #dc3545; padding-left: 10px;"></div>
+
+                            <div style="margin-bottom: 24px !important;">
+                                <input type="text" class="form-control" id="registerUsername" name="Username" placeholder="Ім'я користувача" required
+                                       style="border-radius: 0; height: 51px;">
+                            </div>
+                            <div style="margin-bottom: 24px !important;">
+                                <input type="email" class="form-control" id="registerEmail" name="Email" placeholder="Email" required
+                                       style="border-radius: 0; height: 51px;">
+                            </div>
+
+                            <div style="margin-bottom: 24px !important;">
+                                <input type="password" class="form-control" id="registerPassword" name="Password" placeholder="Пароль" required
+                                       style="border-radius: 0; height: 51px;">
+                                <small style="color: #6c757d; display: block; margin-top: 5px; font-size: 12px;">
+                                    Мінімум 6 символів, 1 літера, 1 цифра
+                                </small>
+                            </div>
+                            <div style="margin-bottom: 24px !important;">
+                                <input type="password" class="form-control" id="confirmPassword" name="ConfirmPassword" placeholder="Підтвердіть пароль" required
+                                       style="border-radius: 0; height: 51px;">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary"
+                                    style="width: 100%; height: 48px; background-color: #2C509A; color: white; font-size: 16px; border: none; border-radius: 0; margin: 0 auto; display: block; transition: background-color 0.3s ease;">
+                                Зареєструватися
+                            </button>
+
+                            <div style="text-align: center; margin-top: 25px !important;">
+                                <p style="color: #6c757d !important;">Продовжити через</p>
+                                <div style="margin-top: 10px;">
+                                    <a href="#" style="text-decoration: none; color: #6c757d !important; margin-right: 1rem;">Google</a>
+                                    <a href="#" style="text-decoration: none; color: #6c757d !important; margin-right: 1rem;">Apple</a>
+                                    <a href="#" style="text-decoration: none; color: #6c757d !important;">Facebook</a>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</header>
+
+
+
+</nav>
+
+<script src="@Url.Content("~/js/product-compare-cookie-script.js")"></script>
+<script src="@Url.Content("~/js/search.js")"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Отримуємо посилання на елементи
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        // Додаємо обробники подій
+        loginBtn.addEventListener('click', function() {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            loginBtn.classList.add('active');
+            registerBtn.classList.remove('active');
+        });
+
+        registerBtn.addEventListener('click', function() {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            registerBtn.classList.add('active');
+            loginBtn.classList.remove('active');
+        });
+    });
+</script>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Отримуємо форми
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+
+            // Обробник форми входу
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(loginForm);
+
+                    fetch(loginForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            // Відображення помилки
+                            alert(data.message || 'Помилка входу в систему');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Помилка:', error);
+                    });
+                });
+            }
+
+            // Обробник форми реєстрації
+        if (registerForm) {
+            const passwordField = document.getElementById('registerPassword');
+            const confirmPasswordField = document.getElementById('confirmPassword');
+            const errorMessageElement = document.getElementById('registerErrorMessage');
+
+            // Функція перевірки стійкості пароля
+            function validatePassword(password) {
+                // Мінімум 6 символів
+                if (password.length < 6) {
+                    return "Пароль повинен містити мінімум 6 символів";
+                }
+
+                // Мінімум 1 велика літера
+                if (!/[A-Z]/.test(password)) {
+                    return "Пароль повинен містити хоча б одну велику літеру";
+                }
+
+                // Мінімум 1 мала літера
+                if (!/[a-z]/.test(password)) {
+                    return "Пароль повинен містити хоча б одну малу літеру";
+                }
+
+                // Мінімум 1 цифра
+                if (!/[0-9]/.test(password)) {
+                    return "Пароль повинен містити хоча б одну цифру";
+                }
+
+                // Мінімум 1 спецсимвол
+                if (!/[!#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                    return "Пароль повинен містити хоча б один спецсимвол (!#$%^&*()_+ тощо)";
+                }
+
+                return null; // Повертаємо null, якщо пароль відповідає всім вимогам
+            }
+
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Очищаємо повідомлення про помилки
+                errorMessageElement.style.display = 'none';
+                errorMessageElement.textContent = '';
+
+                // Перевірка пароля
+                const password = passwordField.value;
+                const confirmPassword = confirmPasswordField.value;
+
+                // Перевірка на стійкість пароля
+                const passwordError = validatePassword(password);
+                if (passwordError) {
+                    errorMessageElement.textContent = passwordError;
+                    errorMessageElement.style.display = 'block';
+                    errorMessageElement.style.color = '#dc3545';
+                    errorMessageElement.style.borderLeft = '3px solid #dc3545';
+                    return; // Припиняємо відправку форми
+                }
+
+                // Перевірка на співпадіння паролів
+                if (password !== confirmPassword) {
+                    errorMessageElement.textContent = "Паролі не співпадають";
+                    errorMessageElement.style.display = 'block';
+                    errorMessageElement.style.color = '#dc3545';
+                    errorMessageElement.style.borderLeft = '3px solid #dc3545';
+                    return; // Припиняємо відправку форми
+                }
+
+                const formData = new FormData(registerForm);
+                // Видаляємо ConfirmPassword, оскільки він не потрібен на сервері
+                formData.delete('ConfirmPassword');
+
+                // Додаємо індикатор завантаження
+                const submitBtn = registerForm.querySelector('button[type="submit"]');
+                const originalButtonText = submitBtn.textContent;
+                submitBtn.textContent = "Обробка...";
+                submitBtn.disabled = true;
+
+                fetch(registerForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    // Перевіряємо HTTP-статус відповіді
+                    if (!response.ok) {
+                        if (response.status === 400) {
+                            // Помилка валідації
+                            return response.json().then(data => {
+                                throw new Error(data.message || "Помилка валідації форми");
+                            });
+                        } else if (response.status === 500) {
+                            // Серверна помилка
+                            throw new Error("Помилка сервера. Спробуйте пізніше.");
+                        } else {
+                            throw new Error("Помилка при відправці форми. Статус: " + response.status);
+                        }
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Успішна реєстрація - показуємо повідомлення про успіх
+                        errorMessageElement.textContent = "Реєстрація пройшла успішно! Переходимо до форми входу...";
+                        errorMessageElement.style.display = 'block';
+                        errorMessageElement.style.color = '#28a745'; // Зелений колір для успіху
+                        errorMessageElement.style.borderLeft = '3px solid #28a745';
+
+                        // Чекаємо 2 секунди перед перенаправленням
+                        setTimeout(function() {
+                            // Перемикаємося на форму входу в модальному вікні
+                            document.getElementById('loginBtn').click();
+                        }, 2000);
+                    } else {
+                        // Виводимо повідомлення про помилку
+                        errorMessageElement.textContent = data.message || "Помилка при реєстрації";
+                        errorMessageElement.style.display = 'block';
+                        errorMessageElement.style.color = '#dc3545';
+                        errorMessageElement.style.borderLeft = '3px solid #dc3545';
+                    }
+                })
+                .catch(error => {
+                    console.error('Помилка:', error);
+                    // Виводимо повідомлення про помилку
+                    errorMessageElement.textContent = error.message || "Виникла помилка при обробці запиту";
+                    errorMessageElement.style.display = 'block';
+                    errorMessageElement.style.color = '#dc3545';
+                    errorMessageElement.style.borderLeft = '3px solid #dc3545';
+                })
+                .finally(() => {
+                    // Відновлюємо кнопку
+                    submitBtn.textContent = originalButtonText;
+                    submitBtn.disabled = false;
+                });
+            });
+
+            // Додаємо перевірку пароля під час введення для кращого UX
+            passwordField.addEventListener('input', function() {
+                const password = this.value;
+                const error = validatePassword(password);
+
+                if (error) {
+                    this.setCustomValidity(error);
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+
+            // Додаємо перевірку співпадіння паролів під час введення
+            confirmPasswordField.addEventListener('input', function() {
+                if (this.value !== passwordField.value) {
+                    this.setCustomValidity('Паролі не співпадають');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+
+            // Функціонал перемикання між формами
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+
+            if (loginBtn && registerBtn) {
+                loginBtn.addEventListener('click', function() {
+                    loginForm.style.display = 'block';
+                    registerForm.style.display = 'none';
+                    loginBtn.classList.add('active');
+                    registerBtn.classList.remove('active');
+                });
+
+                registerBtn.addEventListener('click', function() {
+                    loginForm.style.display = 'none';
+                    registerForm.style.display = 'block';
+                    registerBtn.classList.add('active');
+                    loginBtn.classList.remove('active');
+                });
+            }
+        });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>

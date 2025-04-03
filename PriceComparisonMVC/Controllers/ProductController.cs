@@ -21,6 +21,11 @@ namespace PriceComparisonMVC.Controllers
             try
             {
                 var productPageModel = await _productService.GetProductPageModelAsync(firstProductId, feedbackPage);
+
+                //відображення блоку категорій
+                var categories = Data.IndexContentData.GetCategories();
+                ViewBag.Categories = categories;
+
                 return View(productPageModel);
             }
             catch (Exception ex)

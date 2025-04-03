@@ -65,7 +65,7 @@ body {
 /* Блок товару */
 .product-container {
     width: 100%;
-    margin-top: 3.875rem;
+    margin-top: 0.875rem;
     padding: 1rem 0;
     box-sizing: border-box;
 }
@@ -275,13 +275,6 @@ body {
 
 
 
-
-
-
-
-
-
-
 /* Секція деталей товару */
 .product-details {
     flex: 1;
@@ -320,6 +313,9 @@ body {
     font-weight: bold;
     color: #000;
 }
+
+
+
 
 /* Блок дій */
 .action-container {
@@ -376,6 +372,9 @@ body {
     .action-button:hover {
         background: #163a6d;
     }
+
+
+
 
 /* Інформаційний блок */
 .info-block {
@@ -535,17 +534,6 @@ body {
     font-size: 1.25rem;
     font-weight: bold;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -985,18 +973,6 @@ body {
     font-weight: bold;
     color: #e76f51;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1523,6 +1499,88 @@ body {
         line-height: 1.6;
         color: #555;
     }
+
+
+
+.colors-container {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 8px 1px;
+    border-radius: 4px;
+}
+
+.spec-title1 {
+    font-weight: bold;
+    margin-right: 10px;
+    white-space: nowrap;
+}
+
+.colors-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.color-square {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #dee2e6;
+    display: inline-block;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin-left: 5px;
+}
+
+    .color-square:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    .color-square.active {
+        border: 2px solid #343a40;
+    }
+
+/* Стилі для сповіщень */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 4px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    z-index: 9999;
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+    .notification.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .notification.success {
+        background-color: #d4edda;
+        border-left: 4px solid #28a745;
+        color: #155724;
+    }
+
+    .notification.info {
+        background-color: #cce5ff;
+        border-left: 4px solid #007bff;
+        color: #004085;
+    }
+
+
+
+
+
+
+
 
 /* Адаптивність */
 @media (max-width: 768px) {

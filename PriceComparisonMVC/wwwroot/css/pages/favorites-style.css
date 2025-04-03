@@ -1,0 +1,112 @@
+﻿/* Стилі для сторінки "Обрані товари" */
+
+.favorite-product-card {
+    position: relative;
+    transition: all 0.3s ease;
+    border: 1px solid #ddd;
+}
+
+    .favorite-product-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+    }
+
+.remove-favorite-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: #f8f9fa;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
+    .remove-favorite-btn:hover {
+        opacity: 1;
+        background-color: #dc3545;
+        color: white;
+    }
+
+.square-img-container {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* Співвідношення сторін 1:1 для квадратних зображень */
+    overflow: hidden;
+}
+
+.product-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 10px;
+}
+
+.card-title {
+    color: #333;
+    font-weight: 500;
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Стилі для навігації по категоріях */
+.list-group-item {
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+    .list-group-item:hover {
+        border-left-color: #007bff;
+        background-color: #f8f9fa;
+    }
+
+/* Стилі для повідомлення про порожній список */
+.alert-info {
+    background-color: #f8f9fa;
+    border-color: #ddd;
+    color: #333;
+}
+
+/* Анімація для додавання/видалення товарів */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+}
+
+    .notification.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .notification.success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+
+    .notification.info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+    }

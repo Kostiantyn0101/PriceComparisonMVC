@@ -1,270 +1,252 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@section Styles {
+    <link rel="stylesheet" href="~/css/pages/home-page.css" />
+    <link rel="stylesheet" href="~/css/pages/header-style.css" />
+    <link rel="stylesheet" href="~/css/pages/footer-style.css" />
+    <link rel="stylesheet" href="~/css/pages/login-style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 }
 
 
-<!DOCTYPE html>
-<html lang="en">
+<partial name="_Header" />
 
-<head>
-    
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>MarketMap - @ViewData["Title"]</title>
-        <!-- CSS стилі -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <link rel="stylesheet" href="@Url.Content("~/css/style.css")" />
-    @* <link rel="stylesheet" href="@Url.Content("~/css/header-style.css")" /> *@
-</head>
-
-<body>
-
-    <partial name="_Header" />
-
-   
-       
-        <!-- Категорії в 2 ряди  -->
-        <div class="section-block py-4">
-            <div class="container-lg custom-inner-container">
-                <!-- Верхній ряд -->
-                <div class="custom-row upper-row">
-                    @for (int i = 0; i < 8 && i < Model.Categories.Count; i++)
-                    {
-                        <div class="custom-box">
-                            <img src="@Url.Content(Model.Categories[i].CategoryIconUrl.StartsWith("~") ? Model.Categories[i].CategoryIconUrl : "~/" + Model.Categories[i].CategoryIconUrl)"
-                                 alt="@Model.Categories[i].CategoryName" class="subcategory-image" />
-                            <a href="@Url.Action("CategoryList", "Categories", new { id = Model.Categories[i].Id })" class="subcategory-link">
-                                @Model.Categories[i].CategoryName
-                            </a>
-                        </div>
-
-                    }
+<!-- Категорії в 2 ряди  -->
+<div class="section-block py-4">
+    <div class="container-lg custom-inner-container">
+        <!-- Верхній ряд -->
+        <div class="custom-row upper-row">
+            @for (int i = 0; i < 8 && i < Model.Categories.Count; i++)
+            {
+                <div class="custom-box">
+                    <img src="@Url.Content(Model.Categories[i].CategoryIconUrl.StartsWith("~") ? Model.Categories[i].CategoryIconUrl : "~/" + Model.Categories[i].CategoryIconUrl)"
+                         alt="@Model.Categories[i].CategoryName" class="subcategory-image" />
+                    <a href="@Url.Action("CategoryList", "Categories", new { id = Model.Categories[i].Id })" class="subcategory-link">
+                        @Model.Categories[i].CategoryName
+                    </a>
                 </div>
-                <!-- Нижній ряд -->
-                <div class="custom-row lower-row">
-                    @for (int i = 8; i < 14 && i < Model.Categories.Count; i++)
-                    {
-                        <div class="custom-box">
-                            <img src="@Url.Content(Model.Categories[i].CategoryIconUrl.StartsWith("~") ? Model.Categories[i].CategoryIconUrl : "~/" + Model.Categories[i].CategoryIconUrl)"
-                                 alt="@Model.Categories[i].CategoryName" class="subcategory-image" />
-                            <a href="@Url.Action("CategoryList", "Categories", new { id = Model.Categories[i].Id })" class="subcategory-link">
-                                @Model.Categories[i].CategoryName
-                            </a>
-                        </div>
-                    }
-                </div>
-            </div>
+
+            }
         </div>
-
-
-        <!-- Контейнер з популярними категоріями -->
-        <div class="advertisement-section py-4">
-            <div class="container">
-                <div class="row g-2">
-                    <!-- Лівий контейнер -->
-                    <div class="col-lg-3 col-md-4 col-12 d-flex flex-column gap-2">
-                        @for (int i = 0; i < 3 && i < Model.PopulaCategoriesImages.Count; i++)
-                        {
-                            <div class="left-block d-flex align-items-center justify-content-center">
-                                <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
-                            </div>
-                        }
-                    </div>
-
-                    <!-- Центральний контейнер -->
-                    <div class="col-lg-6 col-md-8 col-12 d-flex flex-column gap-2">
-                        <div class="center-block large d-flex align-items-center justify-content-center">
-                            <img src="@Url.Content(Model.PopulaCategoriesImages[3].IconUrl)" alt="Популярна категорія">
-                        </div>
-
-                        <div class="center-block d-flex gap-2">
-                            @for (int i = 4; i < 6 && i < Model.PopulaCategoriesImages.Count; i++)
-                            {
-                                <div class="center-subblock flex-fill">
-                                    <div class="subblock-part d-flex align-items-center justify-content-center">
-                                        <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
-                                    </div>
-                                </div>
-                            }
-                        </div>
-
-                        <div class="center-block small d-flex align-items-center justify-content-center">
-                            <img src="@Url.Content(Model.PopulaCategoriesImages[6].IconUrl)" alt="Популярна категорія">
-                        </div>
-                    </div>
-
-                    <!-- Правий контейнер -->
-                    <div class="col-lg-3 col-md-4 col-12 d-flex flex-column gap-2">
-                        @for (int i = 7; i < 10 && i < Model.PopulaCategoriesImages.Count; i++)
-                        {
-                            <div class="right-block d-flex align-items-center justify-content-center">
-                                <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
-                            </div>
-                        }
-                    </div>
+        <!-- Нижній ряд -->
+        <div class="custom-row lower-row">
+            @for (int i = 8; i < 14 && i < Model.Categories.Count; i++)
+            {
+                <div class="custom-box">
+                    <img src="@Url.Content(Model.Categories[i].CategoryIconUrl.StartsWith("~") ? Model.Categories[i].CategoryIconUrl : "~/" + Model.Categories[i].CategoryIconUrl)"
+                         alt="@Model.Categories[i].CategoryName" class="subcategory-image" />
+                    <a href="@Url.Action("CategoryList", "Categories", new { id = Model.Categories[i].Id })" class="subcategory-link">
+                        @Model.Categories[i].CategoryName
+                    </a>
                 </div>
-            </div>
+            }
         </div>
+    </div>
+</div>
 
 
-
-
-        <!-- Popular products section -->
-        <div class="popular-products-section py-4">
-            <!-- Заголовок -->
-            <h2 class="section-title text-center mb-4">Популярні товари для вас</h2>
-
-            <div class="container mb-4">
-                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
-                    @foreach (string category in Model.PopularCategory)
-                    {
-                        <div class="col text-center">
-                            <a href="#" class="category-link1">@category</a>
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <!-- Блоки товарів -->
-            <div class="container">
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
-                    @foreach (var product in Model.PopularProducts)
-                    {
-                        <div class="col">
-                            <div class="product-item">
-                                <div class="product-image-container">
-                                    <img src="@Url.Content($"~/{product.IconUrl}")" alt="@product.ProductDescription" class="product-image">
-                                </div>
-                                <div class="product-description">@product.ProductDescription</div>
-                                <div class="product-price">@product.ProductPrice</div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-
-
-
-        <div class="trending-section py-5">
-            <!-- Заголовок -->
-            <h2 class="section-title text-center mb-4">Актуальне</h2>
-
-            <!-- Блок із посиланнями на категорії -->
-            <div class="container mb-4">
-                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
-                @foreach (string category in Model.ActualCategory)
-                    {
-                        <div class="col text-center">
-                            <a href="#" class="link">@category</a>
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <!-- Блоки субкатегорій -->
-            <div class="container">
-                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
-                    @foreach (var category in Model.ActualCategories)
-                    {
-                        <div class="col">
-                            <div class="subcategory-item">
-                                <img src="@Url.Content($"~/{category.CategoryIconUrl}")" alt="@category.CategoryName" class="subcategory-image">
-                                <a href="@Url.Action("Category", "Home", new { id = category.Id })" class="subcategory-link">
-                                    @category.CategoryName
-                                </a>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <div class="recommended-videos-section py-5 bg-light">
-            <div class="container">
-                <!-- Заголовок -->
-                <h2 class="section-title text-center mb-4">Рекомендовані відео</h2>
-
-                <!-- Рядок із відео -->
-                <div class="row g-4">
-                    @foreach (var video in Model.RecommendedVideos)
-                    {
-                        <div class="col-lg-3 col-md-6">
-                            <div class="video-block h-100 d-flex flex-column">
-                                <!-- Відеоконтент -->
-                                <div class="ratio ratio-16x9 video-container">
-                                    <iframe src="@video.IconUrl" frameborder="0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowfullscreen></iframe>
-                                </div>
-                                <!-- Інформаційний блок -->
-                                <div class="video-info d-flex align-items-start p-3 bg-white">
-                                    <div class="video-rectangle flex-shrink-0 bg-secondary rounded me-3"></div>
-                                    <div class="video-details d-flex flex-column">
-                                        <div class="video-text">
-                                            <a href="@video.IconUrl" target="_blank" class="text-decoration-none text-dark">
-                                                @video.ProductDescription
-                                            </a>
-                                        </div>
-                                        <div class="video-price">@video.ProductPrice</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- СТАТТІ, ОГЛЯДИ  -->
-        <div class="articles-section py-5 bg-light">
-            <div class="container">
-                <!-- Заголовок секції -->
-                <div class="row align-items-center mb-4">
-                    <div class="col-9">
-                        <h2 class="mb-0">Статті, огляди, рекомендації</h2>
-                    </div>
-                    <div class="col-3 text-end">
-                        <a href="#" class="btn btn-link text-decoration-none">
-                            Усі матеріали <span class="arrow">→</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Основний блок із статтями -->
-            <div class="row g-3">
-                @foreach (var review in Model.ReviewModels)
+<!-- Контейнер з популярними категоріями -->
+<div class="advertisement-section py-4">
+    <div class="container">
+        <div class="row g-2">
+            <!-- Лівий контейнер -->
+            <div class="col-lg-3 col-md-4 col-12 d-flex flex-column gap-2">
+                @for (int i = 0; i < 3 && i < Model.PopulaCategoriesImages.Count; i++)
                 {
-                    <div class="col-lg-3 col-md-6">
-                        <div class="article-box">
-                            <!-- Картинка статті -->
-                            <div class="article-image">
-                                <img src="@review.Image" alt="@review.Title" class="img-fluid">
-                            </div>
-                            <!-- Опис статті -->
-                            <div class="article-description">
-                                <div class="article-title">
-                                    <a href="@review.Link" target="_blank">@review.Title</a>
-                                </div>
-                                <div class="article-text">@review.Text</div>
-                            </div>
-                        </div>
+                    <div class="left-block d-flex align-items-center justify-content-center">
+                        <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
                     </div>
                 }
             </div>
+
+            <!-- Центральний контейнер -->
+            <div class="col-lg-6 col-md-8 col-12 d-flex flex-column gap-2">
+                <div class="center-block large d-flex align-items-center justify-content-center">
+                    <img src="@Url.Content(Model.PopulaCategoriesImages[3].IconUrl)" alt="Популярна категорія">
+                </div>
+
+                <div class="center-block d-flex gap-2">
+                    @for (int i = 4; i < 6 && i < Model.PopulaCategoriesImages.Count; i++)
+                    {
+                        <div class="center-subblock flex-fill">
+                            <div class="subblock-part d-flex align-items-center justify-content-center">
+                                <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="center-block small d-flex align-items-center justify-content-center">
+                    <img src="@Url.Content(Model.PopulaCategoriesImages[6].IconUrl)" alt="Популярна категорія">
+                </div>
+            </div>
+
+            <!-- Правий контейнер -->
+            <div class="col-lg-3 col-md-4 col-12 d-flex flex-column gap-2">
+                @for (int i = 7; i < 10 && i < Model.PopulaCategoriesImages.Count; i++)
+                {
+                    <div class="right-block d-flex align-items-center justify-content-center">
+                        <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Popular products section -->
+<div class="popular-products-section py-4">
+    <!-- Заголовок -->
+    <h2 class="section-title text-center mb-4">Популярні товари для вас</h2>
+
+    <div class="container mb-4">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+            @foreach (string category in Model.PopularCategory)
+            {
+                <div class="col text-center">
+                    <a href="#" class="category-link1">@category</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Блоки товарів -->
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+            @foreach (var product in Model.PopularProducts)
+            {
+                <div class="col">
+                    <div class="product-item">
+                        <div class="product-image-container">
+                            <img src="@Url.Content($"~/{product.IconUrl}")" alt="@product.ProductDescription" class="product-image">
+                        </div>
+                        <div class="product-description">@product.ProductDescription</div>
+                        <div class="product-price">@product.ProductPrice</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+<div class="trending-section py-5">
+    <!-- Заголовок -->
+    <h2 class="section-title text-center mb-4">Актуальне</h2>
+
+    <!-- Блок із посиланнями на категорії -->
+    <div class="container mb-4">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+            @foreach (string category in Model.ActualCategory)
+            {
+                <div class="col text-center">
+                    <a href="#" class="link">@category</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Блоки субкатегорій -->
+    <div class="container">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3">
+            @foreach (var category in Model.ActualCategories)
+            {
+                <div class="col">
+                    <div class="subcategory-item">
+                        <img src="@Url.Content($"~/{category.CategoryIconUrl}")" alt="@category.CategoryName" class="subcategory-image">
+                        <a href="@Url.Action("Category", "Home", new { id = category.Id })" class="subcategory-link">
+                            @category.CategoryName
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Оновлена секція з рілсами -->
+<div class="reels-section py-5 bg-light">
+    <div class="container">
+        <!-- Заголовок -->
+        <h2 class="section-title text-center mb-4">Рекомендовані рілси</h2>
+
+        <!-- Рядок із відео -->
+        <div class="row g-4">
+            @foreach (var video in Model.RecommendedVideos)
+            {
+                <div class="col-lg-3 col-md-4 col-6">
+                    <div class="reels-block h-100 d-flex flex-column">
+                        <!-- Відеоконтент (вертикальний формат) -->
+                        <div class="reels-container">
+                            <iframe src="@video.IconUrl" frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen></iframe>
+                        </div>
+                        <!-- Інформаційний блок -->
+                        <div class="reels-info d-flex align-items-start p-3 bg-white">
+                            <div class="avatar-circle flex-shrink-0 me-2">
+                                <img src="@video.AvatarUrl" alt="User Avatar" class="avatar-image">
+                            </div>
+                            <div class="reels-details d-flex flex-column">
+                                <div class="reels-text">
+                                    <a href="@video.IconUrl" target="_blank" class="text-decoration-none text-dark">
+                                        @video.ProductDescription
+                                    </a>
+                                </div>
+                                <div class="reels-price">@video.ProductPrice</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<!-- СТАТТІ, ОГЛЯДИ  -->
+<div class="articles-section py-5 bg-light">
+    <div class="container">
+        <!-- Заголовок секції -->
+        <div class="row align-items-center mb-4">
+            <div class="col-9">
+                <h2 class="mb-0">Статті, огляди, рекомендації</h2>
+            </div>
+            <div class="col-3 text-end">
+                <a href="#" class="btn btn-link text-decoration-none">
+                    Усі матеріали <span class="arrow">→</span>
+                </a>
             </div>
         </div>
 
-    <partial name="_Footer" />
+        <!-- Основний блок із статтями -->
+        <div class="row g-3">
+            @foreach (var review in Model.ReviewModels)
+            {
+                <div class="col-lg-3 col-md-6">
+                    <div class="article-box">
+                        <!-- Картинка статті -->
+                        <div class="article-image">
+                            <img src="@review.Image" alt="@review.Title" class="img-fluid">
+                        </div>
+                        <!-- Опис статті -->
+                        <div class="article-description">
+                            <div class="article-title">
+                                <a href="@review.Link" target="_blank">@review.Title</a>
+                            </div>
+                            <div class="article-text">@review.Text</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
 
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
-
+<partial name="_Footer" />
