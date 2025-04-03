@@ -1,6 +1,11 @@
 ﻿@model PriceComparisonMVC.Models.Product.ProductPageModel
 
 @{
+    ViewData["Title"] = " - " + @Model.ProductResponseModel.Title;
+}
+
+
+@{
     // Отримуємо список характеристик із моделі та сортуємо за DisplayOrder
     // Додаємо перевірку на null для безпечного використання
     var characteristics = (Model.Characteristics ?? Enumerable.Empty<PriceComparisonMVC.Models.Response.ProductCharacteristicResponseModel>())
@@ -14,914 +19,936 @@
     var rightColumn = characteristics.Skip(half);
 }
 
-<!DOCTYPE html>
-<html lang="uk">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/product-style.css" />
+    <link rel="stylesheet" href="~/css/pages/breadcrum.css" />
+    <link rel="stylesheet" href="~/css/pages/header-style.css" />
+    <link rel="stylesheet" href="~/css/pages/footer-style.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/product-style.css" />
-    <link rel="stylesheet" href="~/css/header-style.css" />
-    <link rel="stylesheet" href="~/css/footer-style.css" />
-    <style>
-        .colors-container {
-            margin-top: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            width: 100%;
-            padding: 8px 1px;
-            border-radius: 4px;
-        }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+}
 
-        .spec-title1 {
-            font-weight: bold;
-            margin-right: 10px;
-            white-space: nowrap;
-        }
+@section Scripts {
+    <script src="~/js/product-page-script.js"></script>
+    <script src="~/js/product-page-cookie-script.js"></script>
+}
 
-        .colors-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+<partial name="_Header" />
 
-        .color-square {
-            width: 30px;
-            height: 30px;
-            border: 1px solid #dee2e6;
-            display: inline-block;
-            cursor: pointer;
-            transition: transform 0.2s;
-            margin-left: 5px;
-        }
+<partial name="_CategoriesBlock" model="ViewBag.Categories" />
 
-            .color-square:hover {
-                transform: scale(1.05);
-                box-shadow: 0 0 5px rgba(0,0,0,0.2);
-            }
-
-            .color-square.active {
-                border: 2px solid #343a40;
-            }
-    </style>
-</head>
-
-
-<body>
-
-    <partial name="_Header" />
-
-
-    <section class="category-section">
-        <div class="container text-center">
-            @if (Model.CategoryBreadcrumb != null && Model.CategoryBreadcrumb.Any())
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Головна</a></li>
+        @if (Model.CategoryBreadcrumb != null && Model.CategoryBreadcrumb.Any())
+        {
+            for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++)
             {
-                <!-- Відображення останньої категорії (актуальна категорія товару) -->
-                var lastCategory = Model.CategoryBreadcrumb.Last();
-                <div class="row justify-content-center">
-                    <div class="col-auto custom-box">
-                        @if (!string.IsNullOrEmpty(lastCategory.ImageUrl))
-                        {
-                            <img src="@lastCategory.ImageUrl" alt="Іконка категорії @lastCategory.Title" />
-                        }
-                        <a href="#">@lastCategory.Title</a>
-                    </div>
-                </div>
-
-                <!-- Відображення хлібних крихт -->
-                <div class="row justify-content-center breadcrumb-links">
-                    <div class="col-auto">
-                        Каталог /
-                    </div>
-                    @for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++)
+                <li class="breadcrumb-item">
+                    @if (i == 0)
                     {
-                        <div class="col-auto">
-                            <a href="#">@Model.CategoryBreadcrumb[i].Title</a>
-                            @if (i < Model.CategoryBreadcrumb.Count - 1)
-                            {
-                                @: /
-                            }
-                        </div>
+                        <!-- Для першого (нульового) елемента залишаємо посилання на CategoryList -->
+                        <a href="@Url.Action("CategoryList", "Categories", new { id = Model.CategoryBreadcrumb[i].Id })">
+                            @Model.CategoryBreadcrumb[i].Title
+                        </a>
                     }
-                </div>
+                    else
+                    {
+                        <!-- Для всіх інших елементів (другого і далі) перенаправляємо на CategoryProductList -->
+                        <a href="@Url.Action("CategoryProductList", "Categories", new { id = Model.CategoryBreadcrumb[i].Id })">
+                            @Model.CategoryBreadcrumb[i].Title
+                        </a>
+                    }
+                </li>
             }
+            <li class="breadcrumb-item active" aria-current="page">
+                @Model.ProductResponseModel.Title
+            </li>
+        }
+        else
+        {
+            <li class="breadcrumb-item active" aria-current="page">Всі продукти</li>
+        }
+    </ol>
+</nav>
+
+
+<!-- Основний контент -->
+<main class="product-container">
+    <div class="container-fluid">
+        <!-- Блок товару: заголовок, навігація та фільтри -->
+        <div class="product-header d-flex justify-content-between align-items-center">
+            <!-- Навігація по вкладках -->
+            <nav class="product-navigation d-flex">
+                <a class="nav-item active" href="#" onclick="showTab('description-tab')">Опис</a>
+                <a class="nav-item" href="#" onclick="showTab('stores-tab')">Де купити</a>
+                <a class="nav-item" href="#" onclick="showTab('specs-tab')">Характеристики</a>
+                <a class="nav-item" href="#" onclick="showTab('reviews-tab')">Відгуки</a>
+            </nav>
+
+            <div class="product-filters d-flex align-items-center gap-3">
+                <div class="filter-box">Моделі</div>
+                <div class="filter-box">Підбір за параметрами</div>
+            </div>
         </div>
-    </section>
 
-    <!-- Основний контент -->
-    <main class="product-container">
-        <div class="container-fluid">
-            <!-- Блок товару: заголовок, навігація та фільтри -->
-            <div class="product-header d-flex justify-content-between align-items-center">
-                <!-- Навігація по вкладках -->
-                <nav class="product-navigation d-flex">
-                    <a class="nav-item active" href="#" onclick="showTab('description-tab')">Опис</a>
-                    <a class="nav-item" href="#" onclick="showTab('stores-tab')">Де купити</a>
-                    <a class="nav-item" href="#" onclick="showTab('specs-tab')">Характеристики</a>
-                    <a class="nav-item" href="#" onclick="showTab('reviews-tab')">Відгуки</a>
-                </nav>
+        <div class="main-content d-flex justify-content-between gap-4">
 
-                <div class="product-filters d-flex align-items-center gap-3">
-                    <div class="filter-box">Моделі</div>
-                    <div class="filter-box">Підбір за параметрами</div>
-                </div>
-            </div>
-
-            <div class="main-content d-flex justify-content-between gap-4">
-                <!-- Зображення товару -->
-                <section class="custom-image-section">
-                    <div class="custom-image-block">
-                        @{
-                            // Логіка вибору головного зображення
-                            var primaryImage = Model.ProductImages?.FirstOrDefault(pi => pi.IsPrimary)
-                            ?? Model.ProductImages?.FirstOrDefault();
-                        }
-                        @if (primaryImage != null)
-                        {
-                            <img src="@primaryImage.ImageUrl" alt="Головне зображення товару" />
-                        }
-                        else
-                        {
-                            <img src="~/images/placeholder.jpg" alt="Немає зображення" />
-                        }
-                    </div>
-                    <div class="custom-thumbs-container">
-                        <button class="custom-thumb-prev" aria-label="Попередній">&lt;</button>
-                        <div class="custom-thumbs-wrapper">
-                            <div class="custom-thumbs-track">
-                                @if (Model.ProductImages != null)
-                                {
-                                    foreach (var image in Model.ProductImages)
-                                    {
-                                        <div class="custom-thumb-image-container">
-                                            <img src="@image.ImageUrl" alt="Мініатюра @image.Id" />
-                                        </div>
-                                    }
-                                }
-                            </div>
-                        </div>
-                        <button class="custom-thumb-next" aria-label="Наступний">&gt;</button>
-                    </div>
-                </section>
-
-                <!-- Деталі товару -->
-                <section class="product-details">
+            <!-- Зображення товару -->
+            <section class="custom-image-section">
+                <div class="custom-image-block">
                     @{
-                        decimal minPrice = 0;
-                        decimal maxPrice = 0;
-                        string productTitle = "Товар";
-                        string productDescription = "Опис відсутній";
-
-                        // Перевірка наявності даних про продавців
-                        if (Model.SellerProductDetails != null && Model.SellerProductDetails.Any())
-                        {
-                            minPrice = Model.SellerProductDetails.Min(s => s.PriceValue);
-                            maxPrice = Model.SellerProductDetails.Max(s => s.PriceValue);
-                        }
-
-                        // Перевірка наявності даних про продукт
-                        if (Model.ProductResponseModel != null)
-                        {
-                            productTitle = Model.ProductResponseModel.Title ?? "Товар";
-                            productDescription = Model.ProductResponseModel.Description ?? "Опис відсутній";
-                        }
+                        // Логіка вибору головного зображення
+                        var primaryImage = Model.ProductImages?.FirstOrDefault(pi => pi.IsPrimary)
+                        ?? Model.ProductImages?.FirstOrDefault();
                     }
-                    <h2 class="product-title">@productTitle</h2>
-                    <div class="price-range d-flex justify-content-center align-items-center gap-4">
-                        <div class="price-box min-price">
-                            <span class="price-label">Від</span>
-                            <span class="price-value">@minPrice.ToString("N0")</span>
-                        </div>
-                        <div class="price-box max-price">
-                            <span class="price-label">До</span>
-                            <span class="price-value">@maxPrice.ToString("N0")</span>
-                        </div>
-                    </div>
-
-                    <div class="action-container d-flex justify-content-center gap-5">
-                        <div class="parent-action-container d-flex gap-4">
-                            
-                            
-                            
-                            <!-- Блок для додавання до порівняння -->
-                            <div class="parent-action-container-component">
-                                <div class="action-text text-center">
-                                    @{
-                                        // Отримуємо список продавців
-                                        var sellers = Model.SellerProductDetails;
-                                        int count = sellers?.Count() ?? 0;
-                                        int additional = (count < 5) ? (5 - count) : 0;
-                                    }
-                                    @if (sellers != null)
-                                    {
-                                        @foreach (var offer in sellers)
-                                        {
-                                            <p>@offer.StoreName - @offer.PriceValue.ToString("N0") грн</p>
-                                        }
-                                    }
-                                    @for (int i = 0; i < additional; i++)
-                                    {
-                                        <p>&nbsp;</p>
-                                    }
-                                </div>
-                                <button class="action-button d-flex align-items-center justify-content-center">
-                                    <img src="~/images/justice-scale-02.png" alt="Іконка порівняння" />
-                                    <span>Додати до порівняння</span>
-                                </button>
-                            </div>
-
-                            <!-- Блок для додавання до обраного -->
-                            <div class="parent-action-container-component">
-                                <div class="action-text text-center">
-                                    @if (sellers != null)
-                                    {
-                                        @foreach (var offer in sellers)
-                                        {
-                                            <p>@offer.StoreName - @offer.PriceValue.ToString("N0") грн</p>
-                                        }
-                                    }
-                                    @for (int i = 0; i < additional; i++)
-                                    {
-                                        <p>&nbsp;</p>
-                                    }
-                                </div>
-                                <button class="action-button d-flex align-items-center justify-content-center">
-                                    <img src="~/images/favourite.png" alt="Іконка обраного" />
-                                    <span>Додати до обраного</span>
-                                </button>
-                            </div>
-
-
-                        </div>
-                    </div>
-
-                    <div class="info-block d-flex flex-wrap gap-3 justify-content-start">
-                        <div class="info-item">2023 рік</div>
-                        <div class="info-item">DDR5</div>
-                        <div class="info-item">GAMING (ігрові)</div>
-                        <div class="info-item">Wi-Fi 6E</div>
-                        <div class="info-item">підсвітка</div>
-                        <div class="info-item">ігровий</div>
-                        <div class="info-item">165 Гц</div>
-                        <div class="info-item">матовий</div>
-                        <div class="info-item">SSD M.2</div>
-                        <div class="info-item">дискретна</div>
-                    </div>
-
-
-
-                    <div class="item-specs">
-                        <ul>
-                            @foreach (var group in (Model.ShortCharacteristics ?? Enumerable.Empty<PriceComparisonMVC.Models.Response.ProductCharacteristicGroupResponseModel>()).OrderBy(g => g.GroupDisplayOrder))
+                    @if (primaryImage != null)
+                    {
+                        <img src="@primaryImage.ImageUrl" alt="Головне зображення товару" />
+                    }
+                    else
+                    {
+                        <img src="~/images/placeholder.jpg" alt="Немає зображення" />
+                    }
+                </div>
+                <div class="custom-thumbs-container">
+                    <button class="custom-thumb-prev" aria-label="Попередній">&lt;</button>
+                    <div class="custom-thumbs-wrapper">
+                        <div class="custom-thumbs-track">
+                            @if (Model.ProductImages != null)
                             {
-                                if (group.CharacteristicGroupTitle.Equals("Колір", StringComparison.OrdinalIgnoreCase))
+                                foreach (var image in Model.ProductImages)
                                 {
-                                    <li>
-                                        <strong>@group.CharacteristicGroupTitle:</strong>
-                                        <div class="color-container">
-                                            @foreach (var characteristic in group.ProductCharacteristics)
+                                    <div class="custom-thumb-image-container">
+                                        <img src="@image.ImageUrl" alt="Мініатюра @image.Id" />
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <button class="custom-thumb-next" aria-label="Наступний">&gt;</button>
+                </div>
+            </section>
+
+            <!-- Деталі товару -->
+            <section class="product-details">
+                @{
+                    decimal minPrice = 0;
+                    decimal maxPrice = 0;
+                    string productTitle = "Товар";
+                    string productDescription = "Опис відсутній";
+
+                    // Перевірка наявності даних про продавців
+                    if (Model.SellerProductDetails != null && Model.SellerProductDetails.Any())
+                    {
+                        minPrice = Model.SellerProductDetails.Min(s => s.PriceValue);
+                        maxPrice = Model.SellerProductDetails.Max(s => s.PriceValue);
+                    }
+
+                    // Перевірка наявності даних про продукт
+                    if (Model.ProductResponseModel != null)
+                    {
+                        productTitle = Model.ProductResponseModel.Title ?? "Товар";
+                        productDescription = Model.ProductResponseModel.Description ?? "Опис відсутній";
+                    }
+                }
+                <h2 class="product-title">@productTitle</h2>
+                <div class="price-range d-flex justify-content-center align-items-center gap-4">
+                    <div class="price-box min-price">
+                        <span class="price-label">Від</span>
+                        <span class="price-value">@minPrice.ToString("N0")</span>
+                    </div>
+                    <div class="price-box max-price">
+                        <span class="price-label">До</span>
+                        <span class="price-value">@maxPrice.ToString("N0")</span>
+                    </div>
+                </div>
+
+                <div class="action-container d-flex justify-content-center gap-5">
+                    <div class="parent-action-container d-flex gap-4">
+
+
+
+                        <!-- Блок для додавання до порівняння -->
+                        <div class="parent-action-container-component">
+                            <div class="action-text text-center">
+                                @{
+                                    // Отримуємо список продавців
+                                    var sellers = Model.SellerProductDetails;
+                                    int count = sellers?.Count() ?? 0;
+                                    int additional = (count < 5) ? (5 - count) : 0;
+                                }
+                                @if (sellers != null)
+                                {
+                                    @foreach (var offer in sellers)
+                                    {
+                                        <p>@offer.StoreName - @offer.PriceValue.ToString("N0") грн</p>
+                                    }
+                                }
+                                @for (int i = 0; i < additional; i++)
+                                {
+                                    <p>&nbsp;</p>
+                                }
+                            </div>
+                            @* <button class="action-button d-flex align-items-center justify-content-center" *@
+                            @*         onclick="addToComparison(@Model.ProductResponseModel.Id)"> *@
+                            @*     <img src="~/images/justice-scale-02.png" alt="Іконка порівняння" /> *@
+                            @*     <span>Додати до порівняння</span> *@
+                            @* </button> *@
+                            <button class="action-button d-flex align-items-center justify-content-center"
+                                    onclick="addToComparison(@Model.ProductResponseModel.Id, @(Model.CategoryBreadcrumb != null && Model.CategoryBreadcrumb.Count > 1 ? Model.CategoryBreadcrumb[1].Id : 0))">
+                                <img src="~/images/justice-scale-02.png" alt="Іконка порівняння" />
+                                <span>Додати до порівняння</span>
+                            </button>
+
+                        </div>
+
+                        <!-- Блок для додавання до обраного -->
+                        <div class="parent-action-container-component">
+                            <div class="action-text text-center">
+                                @if (sellers != null)
+                                {
+                                    @foreach (var offer in sellers)
+                                    {
+                                        <p>@offer.StoreName - @offer.PriceValue.ToString("N0") грн</p>
+                                    }
+                                }
+                                @for (int i = 0; i < additional; i++)
+                                {
+                                    <p>&nbsp;</p>
+                                }
+                            </div>
+                            @* <button class="action-button d-flex align-items-center justify-content-center"> *@
+                            @*     <img src="~/images/favourite.png" alt="Іконка обраного" /> *@
+                            @*     <span>Додати до обраного</span> *@
+                            @* </button> *@
+
+                            <button class="action-button d-flex align-items-center justify-content-center"
+                                    @* onclick="addToFavorites(@Model.ProductResponseModel.Id, @(Model.CategoryBreadcrumb != null && Model.CategoryBreadcrumb.Count > 1 ? Model.CategoryBreadcrumb[1].Id : 0))"> *@
+                                onclick="addToFavorites(@Model.ProductResponseModel.Id, @Model.ProductResponseModel.CategoryId)">
+                                <img src="~/images/favourite.png" alt="Іконка обраного" />
+                                <span>Додати до обраного</span>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Блок сірих прямокутників -->
+                <div class="info-block d-flex flex-wrap gap-3 justify-content-start">
+                    @{
+                        var infoItems = new List<string>();
+                        // Перебираємо всі групи характеристик
+                        foreach (var group in (Model.ShortCharacteristics ?? Enumerable.Empty<PriceComparisonMVC.Models.Response.ProductCharacteristicGroupResponseModel>()))
+                        {
+                            foreach (var characteristic in group.ProductCharacteristics)
+                            {
+                                string value = string.Empty;
+                                // Отримуємо значення характеристики з відповідним форматуванням
+                                switch (characteristic.CharacteristicDataType.ToLower())
+                                {
+                                    case "decimal":
+                                        if (characteristic.ValueNumber.HasValue)
+                                        {
+                                            // Пропускаємо значення, якщо воно дорівнює 0
+                                            if (characteristic.ValueNumber.Value == 0)
+                                                continue;
+
+                                            // Перевіряємо, чи є число цілим
+                                            if (Math.Floor(characteristic.ValueNumber.Value) == characteristic.ValueNumber.Value)
                                             {
-                                                <div class="color-box" style="background-color: @characteristic.ValueText;"></div>
+                                                // Якщо число ціле, виводимо без десяткової частини
+                                                value = ((int)characteristic.ValueNumber.Value).ToString();
                                             }
-                                        </div>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li>
-                                        <strong>@group.CharacteristicGroupTitle:</strong>
-                                        @{
-                                            // Формуємо рядок значень характеристик групи
-                                            var values = group.ProductCharacteristics.Select(c =>
+                                            else
                                             {
-                                                string result = string.Empty;
-                                                switch (c.CharacteristicDataType.ToLower())
-                                                {
-                                                    case "decimal":
-                                                        result = c.ValueNumber.HasValue ? c.ValueNumber.Value.ToString() : "";
-                                                        if (!string.IsNullOrEmpty(c.CharacteristicUnit))
-                                                        {
-                                                            result += " " + c.CharacteristicUnit;
-                                                        }
-                                                        break;
-                                                    case "string":
-                                                        result = !string.IsNullOrEmpty(c.ValueText)
-                                                                    ? c.ValueText
-                                                                    .Replace("\\r\\n", "<br/>")
-                                                                    .Replace("\\n", "<br/>")
-                                                                    .Replace("\r\n", "<br/>")
-                                                                    .Replace("\n", "<br/>")
-                                                                    : "";
-                                                        break;
-                                                    case "bool":
-                                                        result = c.ValueBoolean.HasValue ? (c.ValueBoolean.Value ? "Так" : "Ні") : "";
-                                                        break;
-                                                    case "datetime":
-                                                        result = c.ValueDate.HasValue ? c.ValueDate.Value.ToString("yyyy-MM-dd") : "";
-                                                        break;
-                                                    default:
-                                                        break;
-                                                }
-                                                return result;
-                                            }).Where(x => !string.IsNullOrEmpty(x));
+                                                // Якщо число має десяткову частину, виводимо з двома знаками після коми
+                                                value = characteristic.ValueNumber.Value.ToString("F2");
+                                            }
 
-                                            var displayValue = string.Join(", ", values);
+                                            if (!string.IsNullOrEmpty(characteristic.CharacteristicUnit))
+                                            {
+                                                value += " " + characteristic.CharacteristicUnit;
+                                            }
                                         }
-                                        @Html.Raw(displayValue)
-                                    </li>
+                                        break;
+                                    case "string":
+                                        if (!string.IsNullOrEmpty(characteristic.ValueText))
+                                        {
+                                            // Обрізаємо до першого переносу рядка або до 20 символів
+                                            value = characteristic.ValueText
+                                            .Split(new[] { "\r\n", "\n", "\\r\\n", "\\n", "<br/>" }, StringSplitOptions.None)[0];
+                                            if (value.Length > 20)
+                                            {
+                                                value = value.Substring(0, 20);
+                                            }
+                                        }
+                                        break;
+                                    case "bool":
+                                        value = characteristic.ValueBoolean.HasValue && characteristic.ValueBoolean.Value ? "Так" : "Ні";
+                                        break;
+                                    case "datetime":
+                                        value = characteristic.ValueDate.HasValue ? characteristic.ValueDate.Value.Year.ToString() + " рік" : "";
+                                        break;
                                 }
-                            }
-                        </ul>
-                    </div>
-
-                    @if (Model.ProductColors != null && Model.ProductColors.Any())
-                    {
-                        <div class="colors-container">
-                            <span class="spec-title1">Доступні кольори:</span>
-                            <div class="colors-wrapper">
-                                @foreach (var color in Model.ProductColors)
+                                // Додаємо в список, якщо значення не порожнє
+                                if (!string.IsNullOrEmpty(value))
                                 {
-                                    <a href="@Url.Action("Index", "Product", new { firstProductId = color.ProductId })"
-                                       class="color-square @(color.ProductId == Model.ProductResponseModel.Id ? "active" : "")"
-                                       title="@color.Name"
-                                       style="background-color: @color.HexCode;">
-                                    </a>
+                                    infoItems.Add(value);
                                 }
-                            </div>
-                        </div>
-                    }
-
-                </section>
-            </div>
-
-            <!-- Секція порівняння -->
-            <section class="comparison-container">
-                <div class="comparison-inner">
-                    <h2 class="comparison-title">Моделі для порівняння</h2>
-                    <div class="comparison-content d-flex flex-wrap justify-content-start gap-3">
-                        <div class="comparison-item d-flex align-items-center">
-                            <input type="checkbox" class="comparison-checkbox" />
-                            <div class="parameter-box">Модель</div>
-                            <div class="parameter-box">Колір</div>
-                            <div class="parameter-box">Процесор</div>
-                            <div class="parameter-box">ОЗП</div>
-                            <div class="parameter-box">Відеокарта</div>
-                            <div class="parameter-box">Диск</div>
-                            <div class="parameter-box">Дисплей</div>
-                            <div class="price-range-box">40 346 - 75 890 грн.</div>
-                            <div class="compare-box d-flex justify-content-between align-items-center">
-                                <span>Порівняти ціни</span>
-                                <div class="compare-arrow d-flex align-items-center gap-2">
-                                    <span class="compare-price">45</span>
-                                    <span class="compare-arrow-icon">→</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="comparison-item d-flex align-items-center">
-                            <input type="checkbox" class="comparison-checkbox" />
-                            <div class="parameter-box">Модель</div>
-                            <div class="parameter-box">Колір</div>
-                            <div class="parameter-box">Процесор</div>
-                            <div class="parameter-box">ОЗП</div>
-                            <div class="parameter-box">Відеокарта</div>
-                            <div class="parameter-box">Диск</div>
-                            <div class="parameter-box">Дисплей</div>
-                            <div class="price-range-box">40 346 - 75 890 грн.</div>
-                            <div class="compare-box d-flex justify-content-between align-items-center">
-                                <span>Порівняти ціни</span>
-                                <div class="compare-arrow d-flex align-items-center gap-2">
-                                    <span class="compare-price">45</span>
-                                    <span class="compare-arrow-icon">→</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Вкладки контенту - всі вкладки відображаються за замовчуванням -->
-            <!-- Вкладка "Де купити" -->
-            <section id="stores-tab" class="tab-content" style="display:block;">
-                <div class="container-fluid">
-                    <h2 class="store-cards-header text-center">Магазини</h2>
-                    <!-- Кнопки сортування -->
-                    <div class="store-sort-buttons d-flex justify-content-center gap-2">
-                        <button class="btn store-sort-btn">За рейтингом</button>
-                        <button class="btn store-sort-btn">За ціною</button>
-                    </div>
-
-
-
-                    <!-- Контейнер для карток -->
-                    <div class="store-cards-content">
-                        @{
-                            string productImageUrl = primaryImage != null ? primaryImage.ImageUrl : Url.Content("~/images/placeholder.jpg");
-                            string storeProductTitle = Model.ProductResponseModel?.Title ?? "Товар";
-                            string storeProductDescription = Model.ProductResponseModel?.Description ?? "Опис відсутній";
-                        }
-
-                        @if (Model.SellerProductDetails != null && Model.SellerProductDetails.Any())
-                        {
-                            @foreach (var seller in Model.SellerProductDetails)
-                            {
-                                <article class="store-card">
-                                    <!-- Ліва частина -->
-                                    <div class="store-card-left">
-                                        <div class="store-card-left-image" aria-label="Зображення товару">
-                                            <img src="@productImageUrl" class="thumbnail-img" alt="Головне зображення товару" />
-                                        </div>
-                                        <div class="store-card-left-info">
-                                            <div class="store-card-info-box-1">
-                                                <div class="info-icon">
-                                                    <img src="~/images/justice-scale-03.png" alt="Іконка" />
-                                                </div>
-                                                <div class="info-icon">
-                                                    <img src="~/images/favourite-1.png" alt="Іконка обраного" />
-                                                </div>
-                                            </div>
-                                            <div class="store-card-info-box-2">
-                                                @storeProductTitle
-                                            </div>
-                                            <div class="store-card-info-box-3">
-                                                <a href="@seller.ProductStoreUrl" target="_blank">Перейти в магазин</a>
-                                            </div>
-
-                                            <div class="store-card-info-box-4">
-                                                <p class="description-overflow">
-                                                    @storeProductDescription
-                                                    <span class="description-more-btn" onclick="toggleDescription(this)">...</span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Права частина -->
-                                    <div class="store-card-right">
-                                        <div class="store-card-right-text">
-                                            @seller.PriceValue.ToString("N0") грн
-                                        </div>
-                                        <a href="@seller.ProductStoreUrl" class="store-card-right-link" target="_blank">До магазину</a>
-                                        <div class="store-card-right-box">
-                                            <a href="@seller.ProductStoreUrl" target="_blank">
-                                                <img src="@Url.Content($"~/{seller.LogoImageUrl ?? "images/rozetka-logo.png"}")" class="store-logo" alt="Логотип магазину" />
-                                            </a>
-                                        </div>
-                                    </div>
-                                </article>
                             }
                         }
-                        else
-                        {
-                            <div class="alert alert-info">
-                                <p>Інформація про доступні магазини відсутня.</p>
-                            </div>
-                        }
-                    </div>
-                    
+                        // Обмежуємо кількість елементів до 10
+                        var displayItems = infoItems.Take(10);
+                    }
 
-
-
-                </div>
-            </section>
-
-            <!-- Вкладка "Характеристики" -->
-            <section id="specs-tab" class="tab-content full-parameter-section">
-                <!-- Важливо: додаємо контейнер для колонок -->
-                <div style="display:flex; width:100%;">
-                    <div class="specs-columns-container">
-                        <!-- Перша колонка -->
-                        <div class="section-box">
-                            <div class="category-title-box d-flex align-items-center">
-                                <div class="category-type-box">Тип</div>
-                                <div class="category-value-box">Значення</div>
-                            </div>
-                            <div class="category-separator"></div>
-                            <div class="characteristic-box">
-                                <div class="characteristic-title">Характеристики</div>
-                                <table class="characteristic-table">
-                                    @if (leftColumn != null && leftColumn.Any())
-                                    {
-                                        @foreach (var item in leftColumn)
-                                        {
-                                            <tr>
-                                                <td>@item.CharacteristicTitle</td>
-                                                <td>
-                                                    @if (item.CharacteristicDataType == "string")
-                                                    {
-                                                        @* @Html.Raw(item.ValueText.Replace("\\r\\n", "<br/>").Replace("\\n", "<br/>")) *@
-                                                        @Html.Raw((item.ValueText ?? string.Empty)
-                                                                 .Replace("\\r\\n", "<br/>")
-                                                                 .Replace("\\n", "<br/>"))
-
-                                                    }
-                                                    else if (item.CharacteristicDataType == "decimal")
-                                                    {
-                                                        @item.ValueNumber @(string.IsNullOrEmpty(item.CharacteristicUnit) ? "" : item.CharacteristicUnit)
-                                                    }
-                                                    else if (item.CharacteristicDataType == "bool")
-                                                    {
-                                                        @(item.ValueBoolean.HasValue && item.ValueBoolean.Value ? "Так" : "Ні")
-                                                    }
-                                                    else if (item.CharacteristicDataType == "DateTime")
-                                                    {
-                                                        @(item.ValueDate.HasValue ? item.ValueDate.Value.ToString("yyyy-MM-dd") : "")
-                                                    }
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <tr>
-                                            <td colspan="2">Немає характеристик для відображення</td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
-                            <div class="category-separator"></div>
-                        </div>
-
-                        <!-- Друга колонка -->
-                        <div class="section-box">
-                            <div class="category-title-box d-flex align-items-center">
-                                <div class="category-type-box">Тип</div>
-                                <div class="category-value-box">Значення</div>
-                            </div>
-                            <div class="category-separator"></div>
-                            <div class="characteristic-box">
-                                <div class="characteristic-title">Характеристики</div>
-                                <table class="characteristic-table">
-                                    @if (rightColumn != null && rightColumn.Any())
-                                    {
-                                        @foreach (var item in rightColumn)
-                                        {
-                                            <tr>
-                                                <td>@item.CharacteristicTitle</td>
-                                                <td>
-                                                    @if (item.CharacteristicDataType == "string")
-                                                    {
-                                                       @* @Html.Raw(item.ValueText.Replace("\\r\\n", "<br/>").Replace("\\n", "<br/>")) *@
-                                                        @Html.Raw((item.ValueText ?? string.Empty)
-                                                                 .Replace("\\r\\n", "<br/>")
-                                                                 .Replace("\\n", "<br/>"))
-
-                                                    }
-                                                    else if (item.CharacteristicDataType == "decimal")
-                                                    {
-                                                        @item.ValueNumber @(string.IsNullOrEmpty(item.CharacteristicUnit) ? "" : item.CharacteristicUnit)
-                                                    }
-                                                    else if (item.CharacteristicDataType == "bool")
-                                                    {
-                                                        @(item.ValueBoolean.HasValue && item.ValueBoolean.Value ? "Так" : "Ні")
-                                                    }
-                                                    else if (item.CharacteristicDataType == "DateTime")
-                                                    {
-                                                        @(item.ValueDate.HasValue ? item.ValueDate.Value.ToString("yyyy-MM-dd") : "")
-                                                    }
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <tr>
-                                            <td colspan="2">Немає характеристик для відображення</td>
-                                        </tr>
-                                    }
-                                </table>
-                            </div>
-                            <div class="category-separator"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-
-                     
-
-
-
-      
-            <!-- Вкладка "Відгуки" -->
-            <section id="reviews-tab" class="tab-content" style="display:block;">
-                <div class="container-fluid">
-                    <!-- Заголовок "Відгуки" -->
-                    <div class="reviews-header">
-                        Відгуки
-                        @if (Model.FeedbacksPaging.TotalItems > 0)
-                        {
-                            <span>(@Model.FeedbacksPaging.TotalItems)</span>
-                        }
-                    </div>
-
-                    <!-- Повідомлення про успіх або помилку -->
-                    @if (TempData["FeedbackSuccess"] != null)
+                    @foreach (var item in displayItems)
                     {
-                        <div class="alert alert-success">
-                            @TempData["FeedbackSuccess"]
-                        </div>
+                        <div class="info-item" style="background-color: #f0f0f0;">@item</div>
                     }
-                    @if (TempData["FeedbackError"] != null)
-                    {
-                        <div class="alert alert-danger">
-                            @TempData["FeedbackError"]
-                        </div>
-                    }
-
-                    <!-- Кнопка "Додати відгук" -->
-                    <div class="reviews-button-container">
-                        <button class="reviews-add-button" id="show-review-form">Додати відгук</button>
-                    </div>
-
-                    <!-- Контейнер для відгуків -->
-                    <div class="reviews-content">
-                        @if (Model.Feedbacks != null && Model.Feedbacks.Any())
-                        {
-                            foreach (var feedback in Model.Feedbacks)
-                            {
-                                <div class="review-card">
-                                    <div class="review-content">
-                                        <!-- Лівий контейнер -->
-                                        <div class="review-left">
-                                            <!-- Блок з аватаркою користувача -->
-                                            <div class="review-avatar">
-                                                <img src="~/images/empty-avatar.jpeg" class="thumbnail-img" alt="Аватар користувача @feedback.UserName" />
-                                            </div>
-                                            <!-- Блок з текстом відгуку -->
-                                            <div class="review-text">
-                                                <!-- Верхній блок (ім'я користувача + рейтинг + дата) -->
-                                                <div class="review-header">
-                                                    <span class="review-username">@feedback.UserName</span>
-                                                    <div class="review-rating">
-                                                        @for (int i = 0; i < feedback.Rating; i++)
-                                                        {
-                                                            <img src="~/images/star.png" alt="Рейтинг" class="rating-star" />
-                                                        }
-                                                    </div>
-                                                    <span class="review-date">@feedback.CreatedAt.ToString("dd.MM.yyyy")</span>
-                                                </div>
-                                                <!-- Текст відгуку -->
-                                                <p class="review-message">
-                                                    @feedback.FeedbackText
-                                                </p>
-                                    
-                                                <!-- Зображення відгуку (якщо є) -->
-                                                @if (feedback.FeedbackImageUrls != null && feedback.FeedbackImageUrls.Any())
-                                                {
-                                                    <div class="review-images">
-                                                        @foreach (var imageUrl in feedback.FeedbackImageUrls)
-                                                        {
-                                                            <div class="review-image">
-                                                                <img src="@imageUrl" alt="Зображення відгуку" onclick="openImageModal('@imageUrl')" />
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                }
-                                            </div>
-                                        </div>
-                                        <!-- Правий контейнер -->
-                                        <div class="review-right">
-                                            <!-- Стрілка для розгортання/згортання -->
-                                            <div class="review-dropdown">
-                                                <img src="~/images/arrow-up-02.png" alt="Розгорнути" class="dropdown-arrow" />
-                                            </div>
-                                            <!-- Поле для введення коментаря -->
-                                            <p class="review-comment-text">Додати відгук.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-
-                            <!-- Пагінація -->
-                            @if (Model.FeedbacksPaging.TotalItems > Model.FeedbacksPaging.PageSize)
-                            {
-                                <div class="pagination-container">
-                                    <ul class="pagination">
-                                        @if (Model.CurrentFeedbackPage > 1)
-                                        {
-                                            <li>
-                                                <a href="@Url.Action("Index", new { id = Model.ProductResponseModel.Id, feedbackPage = Model.CurrentFeedbackPage - 1 })">
-                                                    <span>&laquo;</span> Попередня
-                                                </a>
-                                            </li>
-                                        }
-
-                                        @{
-                                            var totalPages = (int)Math.Ceiling((double)Model.FeedbacksPaging.TotalItems / Model.FeedbacksPaging.PageSize);
-                                            var startPage = Math.Max(1, Model.CurrentFeedbackPage - 2);
-                                            var endPage = Math.Min(totalPages, startPage + 4);
-                                        }
-
-                                        @for (int i = startPage; i <= endPage; i++)
-                                        {
-                                            <li class="@(i == Model.CurrentFeedbackPage ? "active" : "")">
-                                                <a href="@Url.Action("Index", new { id = Model.ProductResponseModel.Id, feedbackPage = i })">@i</a>
-                                            </li>
-                                        }
-
-                                        @if (Model.CurrentFeedbackPage < totalPages)
-                                        {
-                                            <li>
-                                                <a href="@Url.Action("Index", new { id = Model.ProductResponseModel.Id, feedbackPage = Model.CurrentFeedbackPage + 1 })">
-                                                    Наступна <span>&raquo;</span>
-                                                </a>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <p>Відгуків немає.</p>
-                        }
-                    </div>
-
-                    <!-- Форма додавання відгуку (спочатку схована) -->
-                    <div class="feedback-form-container" id="feedback-form-container" style="display: none;">
-                        <form asp-controller="Product" asp-action="AddFeedback" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="ProductId" value="@Model.ProductResponseModel.Id" />
-                
-                            <div class="form-header">
-                                <h4>Залишити відгук про "@Model.ProductResponseModel.Title"</h4>
-                            </div>
-                
-                            <!-- Блок з рейтингом -->
-                            <div class="rating-block">
-                                <p>Ваша оцінка:</p>
-                                <div class="star-rating">
-                                    @for (int i = 5; i >= 1; i--)
-                                    {
-                                        <input type="radio" id="star@i" name="Rating" value="@i" @(i == 5 ? "checked" : "") />
-                                        <label for="star@i" title="@i зірок">@i</label>
-                                    }
-                                </div>
-                            </div>
-                
-                            <!-- Текст відгуку -->
-                            <div class="form-group">
-                                <label for="FeedbackText">Ваш відгук:</label>
-                                <textarea id="FeedbackText" name="FeedbackText" rows="4" required></textarea>
-                            </div>
-                
-                            <!-- Переваги та недоліки -->
-                            <div class="additional-block">
-                                <!-- Верхній блок (розділений на дві частини) -->
-                                <div class="additional-top">
-                                    <div class="top-left">
-                                        <!-- Верхній внутрішній блок -->
-                                        <div class="top-left-header">
-                                            <div class="top-left-text">Переваги</div>
-                                            <div class="top-left-plus">+</div>
-                                        </div>
-                                        <!-- Нижній внутрішній блок -->
-                                        <div class="top-left-content">
-                                            <div class="advantage-block">
-                                                <span class="advantage-label">Перевага</span>
-                                                <input type="text" name="Advantages[0]" class="advantage-input" placeholder="Введіть текст..." />
-                                            </div>
-                                            <div class="advantage-block">
-                                                <span class="advantage-label">Перевага</span>
-                                                <input type="text" name="Advantages[1]" class="advantage-input" placeholder="Введіть текст..." />
-                                            </div>
-                                            <div class="advantage-block">
-                                                <span class="advantage-label">Перевага</span>
-                                                <input type="text" name="Advantages[2]" class="advantage-input" placeholder="Введіть текст..." />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="top-right">
-                                        <!-- Верхній внутрішній блок -->
-                                        <div class="top-right-header">
-                                            <div class="top-right-text">Недоліки</div>
-                                            <div class="top-right-minus">-</div>
-                                        </div>
-                                        <!-- Нижній внутрішній блок -->
-                                        <div class="top-right-content">
-                                            <div class="advantage-block">
-                                                <span class="advantage-label">Недолік</span>
-                                                <input type="text" name="Disadvantages[0]" class="advantage-input" placeholder="Введіть текст..." />
-                                            </div>
-                                            <div class="advantage-block">
-                                                <span class="advantage-label">Недолік</span>
-                                                <input type="text" name="Disadvantages[1]" class="advantage-input" placeholder="Введіть текст..." />
-                                            </div>
-                                            <div class="advantage-block">
-                                                <span class="advantage-label">Недолік</span>
-                                                <input type="text" name="Disadvantages[2]" class="advantage-input" placeholder="Введіть текст..." />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                    
-                                <!-- Завантаження зображень -->
-                                <div class="form-group">
-                                    <label for="FeedbackImages">Додайте фото (до 5 файлів):</label>
-                                    <input type="file" id="FeedbackImages" name="FeedbackImages" multiple accept="image/*" />
-                                    <div class="image-preview" id="image-preview"></div>
-                                </div>
-                    
-                                <!-- Нижній блок (іконки та кнопка) -->
-                                <div class="additional-bottom">
-                                    <div class="bottom-icons">
-                                        <div class="icon-box"></div>
-                                        <div class="icon-box"></div>
-                                        <div class="icon-box"></div>
-                                        <div class="icon-box"></div>
-                                    </div>
-                                    <button type="submit" class="add-review-button">Додати відгук</button>
-                                    <button type="button" class="cancel-review-button" id="cancel-review">Скасувати</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
                 </div>
-            </section>
-
-            <!-- Модальне вікно для перегляду зображень -->
-            <div id="image-modal" class="modal" style="display: none;">
-                <span class="close-modal">&times;</span>
-                <img class="modal-content" id="modal-image">
-            </div>
 
 
 
-
-
-
-
-
-            <section class="related-products">
-                <div class="popular-products-section py-4">
-                    <!-- Заголовок -->
-                    <h2 class="section-title text-center mb-4">Схожі товари</h2>
-                    <!-- Блоки товарів -->
-                    <div class="container">
-                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
-                            @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
+                <div class="item-specs">
+                    <ul>
+                        @foreach (var group in (Model.ShortCharacteristics ?? Enumerable.Empty<PriceComparisonMVC.Models.Response.ProductCharacteristicGroupResponseModel>()).OrderBy(g => g.GroupDisplayOrder))
+                        {
+                            if (group.CharacteristicGroupTitle.Equals("Колір", StringComparison.OrdinalIgnoreCase))
                             {
-                                @foreach (var product in Model.RelatedProducts)
-                                {
-                                    <div class="col">
-                                        <div class="product-item">
-                                            <a href="@Url.Action("Index", "Product", new { productId = product.Id })" class="card-text mb-0">
-                                                <div class="product-image-container">
-                                                    <img src="@product.ImageUrl"
-                                                         alt="@product.ProductName"
-                                                         class="product-image">
-                                                </div>
-                                            </a>
-                                            <div class="product-description">
-                                                @product.ProductName
-                                            </div>
-                                            <div class="product-price">
-                                                @if (product.HasPrices)
-                                                {
-                                                    @if (product.MinPrice == product.MaxPrice)
-                                                    {
-                                                        <span>@product.MinPrice.ToString("N0") грн</span>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span>від @product.MinPrice.ToString("N0") до @product.MaxPrice.ToString("N0") грн</span>
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">Немає в наявності</span>
-                                                }
-                                            </div>
-                                        </div>
+                                <li>
+                                    <strong>@group.CharacteristicGroupTitle:</strong>
+                                    <div class="color-container">
+                                        @foreach (var characteristic in group.ProductCharacteristics)
+                                        {
+                                            <div class="color-box" style="background-color: @characteristic.ValueText;"></div>
+                                        }
                                     </div>
-                                }
+                                </li>
                             }
                             else
                             {
-                                <div class="col-12">
-                                    <div class="alert alert-info">
-                                        <p>Немає схожих товарів для відображення</p>
-                                    </div>
-                                </div>
+                                <li>
+                                    <strong>@group.CharacteristicGroupTitle:</strong>
+                                    @{
+                                        // Формуємо рядок значень характеристик групи
+                                        var values = group.ProductCharacteristics.Select(c =>
+                                        {
+                                            string result = string.Empty;
+                                            switch (c.CharacteristicDataType.ToLower())
+                                            {
+                                                case "decimal":
+                                                    result = c.ValueNumber.HasValue ? c.ValueNumber.Value.ToString() : "";
+                                                    if (!string.IsNullOrEmpty(c.CharacteristicUnit))
+                                                    {
+                                                        result += " " + c.CharacteristicUnit;
+                                                    }
+                                                    break;
+                                                case "string":
+                                                    result = !string.IsNullOrEmpty(c.ValueText)
+                                                            ? c.ValueText
+                                                            .Replace("\\r\\n", "<br/>")
+                                                            .Replace("\\n", "<br/>")
+                                                            .Replace("\r\n", "<br/>")
+                                                            .Replace("\n", "<br/>")
+                                                            : "";
+                                                    break;
+                                                case "bool":
+                                                    result = c.ValueBoolean.HasValue ? (c.ValueBoolean.Value ? "Так" : "Ні") : "";
+                                                    break;
+                                                case "datetime":
+                                                    result = c.ValueDate.HasValue ? c.ValueDate.Value.ToString("yyyy-MM-dd") : "";
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                            return result;
+                                        }).Where(x => !string.IsNullOrEmpty(x));
+
+                                        var displayValue = string.Join(", ", values);
+                                    }
+                                    @Html.Raw(displayValue)
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+
+                @if (Model.ProductColors != null && Model.ProductColors.Any())
+                {
+                    <div class="colors-container">
+                        <span class="spec-title1">Доступні кольори:</span>
+                        <div class="colors-wrapper">
+                            @foreach (var color in Model.ProductColors)
+                            {
+                                <a href="@Url.Action("Index", "Product", new { firstProductId = color.ProductId })"
+                                   class="color-square @(color.ProductId == Model.ProductResponseModel.Id ? "active" : "")"
+                                   title="@color.Name"
+                                   style="background-color: @color.HexCode;">
+                                </a>
                             }
                         </div>
                     </div>
-                </div>
+                }
             </section>
-
-
-
-
         </div>
-    </main>
 
 
-    <!-- Підключення футера -->
-    <partial name="_Footer" />
+        <section class="comparison-container">
+            <div class="comparison-inner">
+                <h2 class="comparison-title">Моделі для порівняння</h2>
+                <div class="comparison-content d-flex flex-wrap justify-content-start gap-3">
+                    @if (Model.ProductVariants != null && Model.ProductVariants.Any())
+                    {
+                        foreach (var variant in Model.ProductVariants)
+                        {
+                            <div class="comparison-item d-flex align-items-center">
+                                <input type="checkbox" class="comparison-checkbox" />
+                                <div class="parameter-box">@variant.ModelNumber</div>
+                                <div class="parameter-box">@(variant.ProductGroup?.Name ?? "Невідомо")</div>
+                                <div class="price-range-box">Ціна недоступна</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/product-page-script.js"></script>
-</body>
-</html>
+                                <!-- Блок "Порівняти ціни" -->
+                                <div class="compare-box d-flex justify-content-between align-items-center">
+                                    <a href="@Url.Action("Index", "Product", new { firstProductId = variant.Id })" class="text-decoration-none">
+                                        <span>Переглянути товар</span>
+                                        <div class="compare-arrow d-flex align-items-center gap-2">
+                                            <span class="compare-arrow-icon">→</span>
+                                        </div>
+                                    </a>
+                                </div>
+
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-info w-100">
+                            <p>Немає доступних моделей для порівняння</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Вкладки контенту - всі вкладки відображаються за замовчуванням -->
+        <!-- Вкладка "Де купити" -->
+        <section id="stores-tab" class="tab-content" style="display:block;">
+            <div class="container-fluid">
+                <h2 class="store-cards-header text-center">Магазини</h2>
+
+                <!-- Кнопки сортування -->
+                <div class="store-sort-buttons d-flex justify-content-center gap-2">
+                    <button class="btn store-sort-btn">За рейтингом</button>
+                    <button class="btn store-sort-btn">За ціною</button>
+                </div>
+
+                <!-- Контейнер для карток -->
+                <div class="store-cards-content">
+                    @{
+                        string productImageUrl = primaryImage != null ? primaryImage.ImageUrl : Url.Content("~/images/placeholder.jpg");
+                        string storeProductTitle = Model.ProductResponseModel?.Title ?? "Товар";
+                        string storeProductDescription = Model.ProductResponseModel?.Description ?? "Опис відсутній";
+                    }
+
+                    @if (Model.SellerProductDetails != null && Model.SellerProductDetails.Any())
+                    {
+                        @foreach (var seller in Model.SellerProductDetails)
+                        {
+                            <article class="store-card">
+                                <!-- Ліва частина -->
+                                <div class="store-card-left">
+                                    <div class="store-card-left-image" aria-label="Зображення товару">
+                                        <img src="@productImageUrl" class="thumbnail-img" alt="Головне зображення товару" />
+                                    </div>
+                                    <div class="store-card-left-info">
+                                        <div class="store-card-info-box-1">
+                                            <div class="info-icon">
+                                                <img src="~/images/justice-scale-03.png" alt="Іконка" />
+                                            </div>
+                                            <div class="info-icon">
+                                                <img src="~/images/favourite-1.png" alt="Іконка обраного" />
+                                            </div>
+                                        </div>
+                                        <div class="store-card-info-box-2">
+                                            @storeProductTitle
+                                        </div>
+                                        <div class="store-card-info-box-3">
+                                            <a href="@seller.ProductStoreUrl" target="_blank">Перейти в магазин</a>
+                                        </div>
+
+                                        <div class="store-card-info-box-4">
+                                            <p class="description-overflow">
+                                                @storeProductDescription
+                                                <span class="description-more-btn" onclick="toggleDescription(this)">...</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Права частина -->
+                                <div class="store-card-right">
+                                    <div class="store-card-right-text">
+                                        @seller.PriceValue.ToString("N0") грн
+                                    </div>
+                                    <a href="@Url.Action("Track", "ReferenceClick", new {
+                                                   productId = Model.ProductResponseModel.Id,
+                                                   sellerId = seller.SellerId,
+                                                   url = seller.ProductStoreUrl
+                                                })" class="store-card-right-link" target="_blank">
+                                        До магазину
+                                    </a>
+
+                                    <div class="store-card-right-box">
+                                        <img src="@(string.IsNullOrEmpty(seller.LogoImageUrl) ? "/images/logo.png" : seller.LogoImageUrl)"
+                                             class="store-logo"
+                                             alt="Логотип магазину"
+                                             onerror="this.src='/images/logo.png';" />
+                                    </div>
+                                </div>
+                            </article>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <p>Інформація про доступні магазини відсутня.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <!-- Вкладка "Характеристики" -->
+        <section id="specs-tab" class="tab-content full-parameter-section">
+
+            <!-- Важливо: додаємо контейнер для колонок -->
+            <div style="display:flex; width:100%;">
+                <div class="specs-columns-container">
+
+                    <!-- Перша колонка -->
+                    <div class="section-box">
+                        <div class="category-title-box d-flex align-items-center">
+                            <div class="category-type-box">Тип</div>
+                            <div class="category-value-box">Значення</div>
+                        </div>
+                        <div class="category-separator"></div>
+                        <div class="characteristic-box">
+                            <div class="characteristic-title">Характеристики</div>
+                            <table class="characteristic-table">
+                                @if (leftColumn != null && leftColumn.Any())
+                                {
+                                    @foreach (var item in leftColumn)
+                                    {
+                                        <tr>
+                                            <td>@item.CharacteristicTitle</td>
+                                            <td>
+                                                @if (item.CharacteristicDataType == "string")
+                                                {
+                                                    @* @Html.Raw(item.ValueText.Replace("\\r\\n", "<br/>").Replace("\\n", "<br/>")) *@
+                                                    @Html.Raw((item.ValueText ?? string.Empty)
+                                                             .Replace("\\r\\n", "<br/>")
+                                                             .Replace("\\n", "<br/>"))
+
+                                                }
+                                                else if (item.CharacteristicDataType == "decimal")
+                                                {
+                                                    @item.ValueNumber @(string.IsNullOrEmpty(item.CharacteristicUnit) ? "" : item.CharacteristicUnit)
+                                                }
+                                                else if (item.CharacteristicDataType == "bool")
+                                                {
+                                                    @(item.ValueBoolean.HasValue && item.ValueBoolean.Value ? "Так" : "Ні")
+                                                }
+                                                else if (item.CharacteristicDataType == "DateTime")
+                                                {
+                                                    @(item.ValueDate.HasValue ? item.ValueDate.Value.ToString("yyyy-MM-dd") : "")
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2">Немає характеристик для відображення</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                        <div class="category-separator"></div>
+                    </div>
+
+                    <!-- Друга колонка -->
+                    <div class="section-box">
+                        <div class="category-title-box d-flex align-items-center">
+                            <div class="category-type-box">Тип</div>
+                            <div class="category-value-box">Значення</div>
+                        </div>
+                        <div class="category-separator"></div>
+                        <div class="characteristic-box">
+                            <div class="characteristic-title">Характеристики</div>
+                            <table class="characteristic-table">
+                                @if (rightColumn != null && rightColumn.Any())
+                                {
+                                    @foreach (var item in rightColumn)
+                                    {
+                                        <tr>
+                                            <td>@item.CharacteristicTitle</td>
+                                            <td>
+                                                @if (item.CharacteristicDataType == "string")
+                                                {
+                                                    @Html.Raw((item.ValueText ?? string.Empty)
+                                                             .Replace("\\r\\n", "<br/>")
+                                                             .Replace("\\n", "<br/>"))
+                                                }
+                                                else if (item.CharacteristicDataType == "decimal")
+                                                {
+                                                    @item.ValueNumber @(string.IsNullOrEmpty(item.CharacteristicUnit) ? "" : item.CharacteristicUnit)
+                                                }
+                                                else if (item.CharacteristicDataType == "bool")
+                                                {
+                                                    @(item.ValueBoolean.HasValue && item.ValueBoolean.Value ? "Так" : "Ні")
+                                                }
+                                                else if (item.CharacteristicDataType == "DateTime")
+                                                {
+                                                    @(item.ValueDate.HasValue ? item.ValueDate.Value.ToString("yyyy-MM-dd") : "")
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2">Немає характеристик для відображення</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                        <div class="category-separator"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Вкладка "Відгуки" -->
+        <section id="reviews-tab" class="tab-content" style="display:block;">
+            <div class="container-fluid">
+
+                <!-- Заголовок "Відгуки" -->
+                <div class="reviews-header">
+                    Відгуки
+                    @if (Model.FeedbacksPaging.TotalItems > 0)
+                    {
+                        <span>(@Model.FeedbacksPaging.TotalItems)</span>
+                    }
+                </div>
+
+                <!-- Повідомлення про успіх або помилку -->
+                @if (TempData["FeedbackSuccess"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["FeedbackSuccess"]
+                    </div>
+                }
+                @if (TempData["FeedbackError"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["FeedbackError"]
+                    </div>
+                }
+
+                <!-- Кнопка "Додати відгук" -->
+                <div class="reviews-button-container">
+                    <button class="reviews-add-button" id="show-review-form">Додати відгук</button>
+                </div>
+
+                <!-- Контейнер для відгуків -->
+                <div class="reviews-content">
+                    @if (Model.Feedbacks != null && Model.Feedbacks.Any())
+                    {
+                        foreach (var feedback in Model.Feedbacks)
+                        {
+                            <div class="review-card">
+                                <div class="review-content">
+
+                                    <!-- Лівий контейнер -->
+                                    <div class="review-left">
+
+                                        <!-- Блок з аватаркою користувача -->
+                                        <div class="review-avatar">
+                                            <img src="~/images/empty-avatar.jpeg" class="thumbnail-img" alt="Аватар користувача @feedback.UserName" />
+                                        </div>
+
+                                        <!-- Блок з текстом відгуку -->
+                                        <div class="review-text">
+                                            <!-- Верхній блок (ім'я користувача + рейтинг + дата) -->
+                                            <div class="review-header">
+                                                <span class="review-username">@feedback.UserName</span>
+                                                <div class="review-rating">
+                                                    @for (int i = 0; i < feedback.Rating; i++)
+                                                    {
+                                                        <img src="~/images/star.png" alt="Рейтинг" class="rating-star" />
+                                                    }
+                                                </div>
+                                                <span class="review-date">@feedback.CreatedAt.ToString("dd.MM.yyyy")</span>
+                                            </div>
+
+                                            <!-- Текст відгуку -->
+                                            <p class="review-message">
+                                                @feedback.FeedbackText
+                                            </p>
+
+                                            <!-- Зображення відгуку (якщо є) -->
+                                            @if (feedback.FeedbackImageUrls != null && feedback.FeedbackImageUrls.Any())
+                                            {
+                                                <div class="review-images">
+                                                    @foreach (var imageUrl in feedback.FeedbackImageUrls)
+                                                    {
+                                                        <div class="review-image">
+                                                            <img src="@imageUrl" alt="Зображення відгуку" onclick="openImageModal('@imageUrl')" />
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <!-- Правий контейнер -->
+                                    <div class="review-right">
+
+                                        <!-- Стрілка для розгортання/згортання -->
+                                        <div class="review-dropdown">
+                                            <img src="~/images/arrow-up-02.png" alt="Розгорнути" class="dropdown-arrow" />
+                                        </div>
+
+                                        <!-- Поле для введення коментаря -->
+                                        <p class="review-comment-text">Додати відгук.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+
+                        <!-- Пагінація -->
+                        @if (Model.FeedbacksPaging.TotalItems > Model.FeedbacksPaging.PageSize)
+                        {
+                            <div class="pagination-container">
+                                <ul class="pagination">
+                                    @if (Model.CurrentFeedbackPage > 1)
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("Index", new { id = Model.ProductResponseModel.Id, feedbackPage = Model.CurrentFeedbackPage - 1 })">
+                                                <span>&laquo;</span> Попередня
+                                            </a>
+                                        </li>
+                                    }
+
+                                    @{
+                                        var totalPages = (int)Math.Ceiling((double)Model.FeedbacksPaging.TotalItems / Model.FeedbacksPaging.PageSize);
+                                        var startPage = Math.Max(1, Model.CurrentFeedbackPage - 2);
+                                        var endPage = Math.Min(totalPages, startPage + 4);
+                                    }
+
+                                    @for (int i = startPage; i <= endPage; i++)
+                                    {
+                                        <li class="@(i == Model.CurrentFeedbackPage ? "active" : "")">
+                                            <a href="@Url.Action("Index", new { id = Model.ProductResponseModel.Id, feedbackPage = i })">@i</a>
+                                        </li>
+                                    }
+
+                                    @if (Model.CurrentFeedbackPage < totalPages)
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("Index", new { id = Model.ProductResponseModel.Id, feedbackPage = Model.CurrentFeedbackPage + 1 })">
+                                                Наступна <span>&raquo;</span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>Відгуків немає.</p>
+                    }
+                </div>
+
+                <!-- Форма додавання відгуку (спочатку схована) -->
+                <div class="feedback-form-container" id="feedback-form-container" style="display: none;">
+                    <form asp-controller="Product" asp-action="AddFeedback" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="ProductId" value="@Model.ProductResponseModel.Id" />
+
+                        <div class="form-header">
+                            <h4>Залишити відгук про "@Model.ProductResponseModel.Title"</h4>
+                        </div>
+
+                        <!-- Блок з рейтингом -->
+                        <div class="rating-block">
+                            <p>Ваша оцінка:</p>
+                            <div class="star-rating">
+                                @for (int i = 5; i >= 1; i--)
+                                {
+                                    <input type="radio" id="star@i" name="Rating" value="@i" @(i == 5 ? "checked" : "") />
+                                    <label for="star@i" title="@i зірок">@i</label>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Текст відгуку -->
+                        <div class="form-group">
+                            <label for="FeedbackText">Ваш відгук:</label>
+                            <textarea id="FeedbackText" name="FeedbackText" rows="4" required></textarea>
+                        </div>
+
+                        <!-- Переваги та недоліки -->
+                        <div class="additional-block">
+
+                            <!-- Верхній блок (розділений на дві частини) -->
+                            <div class="additional-top">
+                                <div class="top-left">
+
+                                    <!-- Верхній внутрішній блок -->
+                                    <div class="top-left-header">
+                                        <div class="top-left-text">Переваги</div>
+                                        <div class="top-left-plus">+</div>
+                                    </div>
+
+                                    <!-- Нижній внутрішній блок -->
+                                    <div class="top-left-content">
+                                        <div class="advantage-block">
+                                            <span class="advantage-label">Перевага</span>
+                                            <input type="text" name="Advantages[0]" class="advantage-input" placeholder="Введіть текст..." />
+                                        </div>
+                                        <div class="advantage-block">
+                                            <span class="advantage-label">Перевага</span>
+                                            <input type="text" name="Advantages[1]" class="advantage-input" placeholder="Введіть текст..." />
+                                        </div>
+                                        <div class="advantage-block">
+                                            <span class="advantage-label">Перевага</span>
+                                            <input type="text" name="Advantages[2]" class="advantage-input" placeholder="Введіть текст..." />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="top-right">
+
+                                    <!-- Верхній внутрішній блок -->
+                                    <div class="top-right-header">
+                                        <div class="top-right-text">Недоліки</div>
+                                        <div class="top-right-minus">-</div>
+                                    </div>
+
+                                    <!-- Нижній внутрішній блок -->
+                                    <div class="top-right-content">
+                                        <div class="advantage-block">
+                                            <span class="advantage-label">Недолік</span>
+                                            <input type="text" name="Disadvantages[0]" class="advantage-input" placeholder="Введіть текст..." />
+                                        </div>
+                                        <div class="advantage-block">
+                                            <span class="advantage-label">Недолік</span>
+                                            <input type="text" name="Disadvantages[1]" class="advantage-input" placeholder="Введіть текст..." />
+                                        </div>
+                                        <div class="advantage-block">
+                                            <span class="advantage-label">Недолік</span>
+                                            <input type="text" name="Disadvantages[2]" class="advantage-input" placeholder="Введіть текст..." />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Завантаження зображень -->
+                            <div class="form-group">
+                                <label for="FeedbackImages">Додайте фото (до 5 файлів):</label>
+                                <input type="file" id="FeedbackImages" name="FeedbackImages" multiple accept="image/*" />
+                                <div class="image-preview" id="image-preview"></div>
+                            </div>
+
+                            <!-- Нижній блок (іконки та кнопка) -->
+                            <div class="additional-bottom">
+                                <div class="bottom-icons">
+                                    <div class="icon-box"></div>
+                                    <div class="icon-box"></div>
+                                    <div class="icon-box"></div>
+                                    <div class="icon-box"></div>
+                                </div>
+                                <button type="submit" class="add-review-button">Додати відгук</button>
+                                <button type="button" class="cancel-review-button" id="cancel-review">Скасувати</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Модальне вікно для перегляду зображень -->
+        <div id="image-modal" class="modal" style="display: none;">
+            <span class="close-modal">&times;</span>
+            <img class="modal-content" id="modal-image">
+        </div>
+
+
+        <section class="related-products">
+            <div class="popular-products-section py-4">
+                <!-- Заголовок -->
+                <h2 class="section-title text-center mb-4">Схожі товари</h2>
+                <!-- Блоки товарів -->
+                <div class="container">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+                        @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
+                        {
+                            @foreach (var product in Model.RelatedProducts)
+                            {
+                                <div class="col">
+                                    <div class="product-item">
+                                        <a href="@Url.Action("Index", "Product", new { productId = product.Id })" class="card-text mb-0">
+                                            <div class="product-image-container">
+                                                <img src="@product.ImageUrl"
+                                                     alt="@product.ProductName"
+                                                     class="product-image">
+                                            </div>
+                                        </a>
+                                        <div class="product-description">
+                                            @product.ProductName
+                                        </div>
+                                        <div class="product-price">
+                                            @if (product.HasPrices)
+                                            {
+                                                @if (product.MinPrice == product.MaxPrice)
+                                                {
+                                                    <span>@product.MinPrice.ToString("N0") грн</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>від @product.MinPrice.ToString("N0") до @product.MaxPrice.ToString("N0") грн</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Немає в наявності</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <p>Немає схожих товарів для відображення</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<partial name="_Footer" />
+

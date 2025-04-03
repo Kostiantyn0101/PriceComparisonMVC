@@ -1,0 +1,281 @@
+﻿@{
+    ViewData["Title"] = "Контакти MarketMap";
+}
+
+<style>
+    /* Загальні стилі для статичних сторінок */
+
+    /* Заголовки */
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a365d;
+        margin-bottom: 1.5rem;
+    }
+
+
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #1a365d;
+        margin-bottom: 1.2rem;
+    }
+
+
+    .subsection-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #2c5282;
+        margin-bottom: 1rem;
+    }
+
+
+    /* Блоки контенту */
+    .about-content, .info-section, .contact-info, .support-info {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: #333;
+    }
+
+
+    /* Списки з іконками */
+    .features-list, .benefits-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin-bottom: 1.5rem;
+    }
+
+        .features-list li, .benefits-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+    .feature-icon, .benefit-icon {
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+
+    .feature-text, .benefit-text {
+        display: inline;
+    }
+
+    /* Прості списки */
+    .simple-list {
+        list-style-type: none;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .simple-list li {
+            position: relative;
+            margin-bottom: 0.8rem;
+        }
+
+            .simple-list li::before {
+                content: "•";
+                position: absolute;
+                left: -1.5rem;
+                color: #2c5282;
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+
+    /* Нумеровані списки */
+    .numbered-list {
+        counter-reset: item-counter;
+        list-style-type: none;
+        padding-left: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .numbered-list li {
+            position: relative;
+            margin-bottom: 0.8rem;
+            padding-left: 2.5rem;
+        }
+
+            .numbered-list li::before {
+                counter-increment: item-counter;
+                content: counter(item-counter);
+                position: absolute;
+                left: 0;
+                top: 0;
+                font-size: 1rem;
+                font-weight: 700;
+                width: 1.8rem;
+                height: 1.8rem;
+                border-radius: 50%;
+                background-color: #2c5282;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+    /* Підсумок */
+    .conclusion {
+        font-weight: 500;
+        font-style: italic;
+        border-left: 4px solid #2c5282;
+        padding-left: 1.5rem;
+    }
+
+    /* Стилі для сторінки контактів */
+    .site-map-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .site-map-link {
+        display: block;
+        width: 100%;
+        padding: 10px 15px;
+        margin-bottom: 5px;
+        background-color: #1a4d8c;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .site-map-link:hover {
+            background-color: #2c5282;
+            text-decoration: none;
+            color: white;
+        }
+
+    /* Стилі для FAQ */
+    .faq-item {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1rem;
+    }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+    /* Стилі для політики конфіденційності */
+    .terms-section {
+        margin-bottom: 1.5rem;
+    }
+
+        .terms-section ul {
+            margin-top: 0.5rem;
+        }
+</style>
+
+<partial name="_Header" />
+
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h1 class="page-title">Контакти MarketMap</h1>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="intro-text text-center mb-5">
+                <p>
+                    MarketMap – це зручний сервіс для пошуку та порівняння товарів у різних магазинах. Ми завжди відкриті до спілкування
+                    та готові допомогти вам зробити покупки ще комфортнішими!
+                </p>
+            </div>
+
+            <h2 class="section-title text-center mb-4">Як з нами зв'язатися?</h2>
+
+            <div class="row mb-5">
+                <div class="col-md-6">
+                    <div class="contact-info">
+                        <h3 class="subsection-title">Головний офіс:</h3>
+                        <p>Адреса: вул. Центральна, 15, м. Київ, Україна, 01001</p>
+
+                        <h3 class="subsection-title mt-4">Графік роботи:</h3>
+                        <p>Пн-Пт 9:00 – 18:00 (GMT+2)</p>
+
+                        <h3 class="subsection-title mt-4">Телефон:</h3>
+                        <ul class="simple-list">
+                            <li>+380 (44) 123-45-67 (загальні питання)</li>
+                            <li>+380 (44) 987-65-43 (служба підтримки)</li>
+                        </ul>
+
+                        <h3 class="subsection-title mt-4">Email:</h3>
+                        <ul class="simple-list">
+                            <li>Загальні питання: info@marketmap.ua</li>
+                            <li>Питання щодо партнерства: partners@marketmap.ua</li>
+                            <li>Служба підтримки: support@marketmap.ua</li>
+                        </ul>
+
+                        <h3 class="subsection-title mt-4">Офіційний сайт:</h3>
+                        <p>www.marketmap.ua</p>
+
+                        <h3 class="subsection-title mt-4">Соціальні мережі:</h3>
+                        <ul class="simple-list">
+                            <li>Facebook: facebook.com/marketmap</li>
+                            <li>Instagram: instagram.com/marketmap</li>
+                            <li>Telegram-канал: t.me/marketmap</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="support-info">
+                        <h3 class="subsection-title">Служба підтримки</h3>
+                        <p>
+                            Якщо у вас виникли питання або проблеми з використанням MarketMap, наша служба підтримки готова допомогти:
+                        </p>
+
+                        <ul class="simple-list mt-3">
+                            <li>Онлайн-чат на сайті (доступний з 9:00 до 21:00)</li>
+                            <li>Електронна пошта: support@marketmap.ua</li>
+                            <li>Телефон гарячої лінії: +380 (44) 987-65-43</li>
+                        </ul>
+
+                        <p class="mt-3">
+                            Перед тим як звернутися, радимо переглянути розділ Часті запитання (FAQ) – можливо, відповідь уже є!
+                        </p>
+
+                        <p class="mt-3 conclusion">
+                            Ми завжди на зв'язку, щоб зробити ваш досвід покупок максимально приємним!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="site-map mb-5">
+                <h2 class="section-title text-center mb-4">Карта сайту</h2>
+
+                <p class="text-center mb-4">
+                    Щоб вам було простіше орієнтуватися на MarketMap, ми зібрали всі основні розділи сайту в одному місці:
+                </p>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="site-map-links">
+                            <a href="/" class="site-map-link">Головна</a>
+                            <a href="/catalog" class="site-map-link">Каталог товарів</a>
+                            <a href="/product-reviews" class="site-map-link">Відгуки про товари</a>
+                            <a href="/store-reviews" class="site-map-link">Відгуки про магазини</a>
+                            <a href="/how-to-choose-product" class="site-map-link">Як обрати товар</a>
+                            <a href="/useful-info" class="site-map-link">Корисна інформація</a>
+                            <a href="/faq" class="site-map-link">Часті запитання (FAQ)</a>
+                            <a href="/terms-of-use" class="site-map-link">Умови використання</a>
+                            <a href="/privacy-policy" class="site-map-link">Політика конфіденційності</a>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-center mt-4 conclusion">
+                    Завдяки карті сайту ви зможете швидко знайти потрібну інформацію та зробити покупку ще зручнішою!
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_Footer" />

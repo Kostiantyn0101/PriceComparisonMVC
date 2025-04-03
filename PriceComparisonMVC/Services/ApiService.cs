@@ -28,6 +28,33 @@ namespace PriceComparisonMVC.Services
         }
 
 
+        public async Task PostAsync<TRequest>(string endpoint, TRequest requestData)
+        {
+            try
+            {
+                SetAuthorizationHeader();
+                var content = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(endpoint, content);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    var newToken = await _tokenManager.RefreshTokenAsync();
+                    if (!string.IsNullOrEmpty(newToken))
+                    {
+                        SetAuthorizationHeader();
+                        response = await _httpClient.PostAsync(endpoint, content);
+                    }
+                }
+
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error during API request: {ex.Message}");
+            }
+        }
+
+
         private async Task<T> ExecuteRequestAsync<T>(Func<Task<HttpResponseMessage>> requestFunc)
         {
             try

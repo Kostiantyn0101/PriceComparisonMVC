@@ -1,0 +1,221 @@
+﻿@{
+    ViewData["Title"] = "Умови використання";
+}
+
+
+<style>
+    /* Загальні стилі для статичних сторінок */
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a365d;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #1a365d;
+        margin-bottom: 1.2rem;
+    }
+
+    .subsection-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #2c5282;
+        margin-bottom: 1rem;
+    }
+
+    /* Стилі для списків */
+    .features-list, .benefits-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin-bottom: 1.5rem;
+    }
+
+        .features-list li, .benefits-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+    .feature-icon, .benefit-icon {
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+
+    .feature-text, .benefit-text {
+        display: inline-block;
+    }
+
+    /* Прості списки */
+    .simple-list {
+        list-style-type: none;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .simple-list li {
+            position: relative;
+            margin-bottom: 0.8rem;
+        }
+
+            .simple-list li::before {
+                content: "•";
+                position: absolute;
+                left: -1.5rem;
+                color: #2c5282;
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+
+    /* Нумеровані списки */
+    .numbered-list {
+        counter-reset: item-counter;
+        list-style-type: none;
+        padding-left: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .numbered-list li {
+            position: relative;
+            margin-bottom: 0.8rem;
+            padding-left: 2.5rem;
+        }
+
+            .numbered-list li::before {
+                counter-increment: item-counter;
+                content: counter(item-counter);
+                position: absolute;
+                left: 0;
+                top: 0;
+                font-size: 1rem;
+                font-weight: 700;
+                width: 1.8rem;
+                height: 1.8rem;
+                border-radius: 50%;
+                background-color: #2c5282;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+    /* Секції умов */
+    .terms-section {
+        margin-bottom: 2rem;
+    }
+</style>
+
+<partial name="_Header" />
+
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h1 class="page-title">Умови використання</h1>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="terms-intro mb-5">
+                <p>
+                    MarketMap прагне зробити ваш досвід покупок максимально зручним та безпечним. Тут ви знайдете корисні рекомендації,
+                    огляди, поради щодо вибору товарів і взаємодії з продавцями.
+                </p>
+                <p>Ми допоможемо вам:</p>
+                <ul class="features-list">
+                    <li>
+                        <span class="feature-icon">✅</span>
+                        <span class="feature-text">Дізнатися, як обрати найкращий товар для ваших потреб.</span>
+                    </li>
+                    <li>
+                        <span class="feature-icon">✅</span>
+                        <span class="feature-text">Ознайомитися з реальними відгуками про товари та магазини.</span>
+                    </li>
+                    <li>
+                        <span class="feature-icon">✅</span>
+                        <span class="feature-text">Отримати відповіді на найпоширеніші запитання.</span>
+                    </li>
+                </ul>
+                <p class="mt-3">Чим більше ви знаєте, тим впевненіше робите вибір!</p>
+            </div>
+
+            <div class="reviews-section mb-5">
+                <h2 class="section-title text-center mb-4">Відгуки про товари</h2>
+                <p>
+                    Перед покупкою важливо дізнатися думку інших покупців. На MarketMap ви знайдете відгуки про товари, залишені
+                    реальними користувачами.
+                </p>
+
+                <h3 class="subsection-title mt-4">Що містять відгуки?</h3>
+                <ul class="simple-list">
+                    <li>Опис вражень після використання товару.</li>
+                    <li>Переваги та недоліки.</li>
+                    <li>Фото або відео товару у реальному житті.</li>
+                    <li>Рейтинг товару за зручністю, якістю та відповідністю опису.</li>
+                </ul>
+
+                <h3 class="subsection-title mt-4">Як залишити відгук?</h3>
+                <ol class="numbered-list">
+                    <li>Авторизуйтеся на платформі.</li>
+                    <li>Перейдіть на сторінку товару.</li>
+                    <li>Натисніть кнопку «Залишити відгук».</li>
+                    <li>Опишіть свій досвід та додайте фото (за бажанням).</li>
+                </ol>
+                <p class="mt-3">Ваш відгук допоможе іншим зробити правильний вибір!</p>
+            </div>
+
+            <div class="terms-content mt-5">
+                <h2 class="section-title text-center mb-4">Умови використання</h2>
+
+                <div class="terms-section">
+                    <h3 class="subsection-title">1. Загальні положення</h3>
+                    <p>
+                        Ці Умови використання регулюють порядок взаємодії користувачів з платформою MarketMap. Реєструючись або
+                        використовуючи наш сервіс, ви погоджуєтесь з цими правилами.
+                    </p>
+                </div>
+
+                <div class="terms-section mt-4">
+                    <h3 class="subsection-title">2. Реєстрація та обліковий запис</h3>
+                    <ul class="simple-list">
+                        <li>Користувачі повинні надавати достовірну інформацію при реєстрації.</li>
+                        <li>Обліковий запис є особистим, передача третім особам заборонена.</li>
+                        <li>MarketMap залишає за собою право блокувати облікові записи при порушенні правил.</li>
+                    </ul>
+                </div>
+
+                <div class="terms-section mt-4">
+                    <h3 class="subsection-title">3. Відповідальність користувачів</h3>
+                    <ul class="simple-list">
+                        <li>Не розміщувати неправдиву або оманливу інформацію.</li>
+                        <li>Не використовувати платформу для незаконних або шкідливих дій.</li>
+                        <li>Дотримуватись правил етики спілкування.</li>
+                    </ul>
+                </div>
+
+                <div class="terms-section mt-4">
+                    <h3 class="subsection-title">4. Відмова від відповідальності</h3>
+                    <p>
+                        MarketMap не несе відповідальності за зміст оголошень, якість товарів або послуг, а також дії користувачів на платформі.
+                    </p>
+                </div>
+
+                <div class="terms-section mt-4">
+                    <h3 class="subsection-title">5. Припинення доступу</h3>
+                    <p>
+                        MarketMap має право обмежити доступ користувача до сервісу у разі порушення цих Умов.
+                    </p>
+                    <p>
+                        Якщо у вас є питання або зауваження щодо Умов використання, звертайтеся до служби підтримки за [контактною
+                        адресою].
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_Footer" />

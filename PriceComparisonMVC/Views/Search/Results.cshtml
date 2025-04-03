@@ -1,0 +1,97 @@
+﻿@model PriceComparisonMVC.Models.Search.SearchResultsViewModel
+
+@{
+    ViewData["Title"] = $"Результати пошуку: {Model.Query}";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pages/header-style.css" />
+    <link rel="stylesheet" href="~/css/pages/footer-style.css" />
+}
+
+
+<partial name="_Header" />
+
+<partial name="_CategoriesBlock" model="ViewBag.Categories" />
+
+
+<div class="container mt-4">
+    <h2>Результати пошуку: "@Model.Query"</h2>
+
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+    }
+
+    @if (Model.Results.Count == 0)
+    {
+        <div class="alert alert-info">
+            Нічого не знайдено за вашим запитом. Спробуйте змінити пошуковий запит.
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-3 g-4 mt-3">
+            @foreach (var product in Model.Results)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-img-top text-center pt-3">
+                            <img src="@(string.IsNullOrEmpty(product.ImageUrl) ? "/images/placeholder.jpg" : product.ImageUrl)"
+                                 alt="@product.FullName"
+                                 class="img-fluid"
+                                 style="max-height: 150px; object-fit: contain;">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@product.FullName</h5>
+                            @if (product.MinPrice.HasValue)
+                            {
+                                <p class="card-text">
+                                    <strong>Ціна від:</strong> @product.MinPrice.Value.ToString("N0") грн
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="card-text text-muted">Ціна недоступна</p>
+                            }
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between">
+                                <a href="@Url.Action("Index", "Product", new { firstProductId = product.Id })" class="btn btn-primary">Детальніше</a>
+                                @* <button class="btn btn-outline-secondary add-to-comparison" data-product-id="@product.Id"> *@
+                                @*     <i class="bi bi-plus-circle"></i> Порівняти *@
+                                @* </button> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<partial name="_Footer" />
+
+@* <script> *@
+@*     document.addEventListener('DOMContentLoaded', function() { *@
+@*         // Обработчик для кнопок "Порівняти" *@
+@*         const comparisonButtons = document.querySelectorAll('.add-to-comparison'); *@
+@*         comparisonButtons.forEach(button => { *@
+@*             button.addEventListener('click', function() { *@
+@*                 const productId = this.getAttribute('data-product-id'); *@
+@*                 addToComparison(productId); *@
+@*             }); *@
+@*         }); *@
+
+@*         // Функция для добавления товара в сравнение (используем существующий код из product-compare-cookie-script.js) *@
+@*         function addToComparison(productId) { *@
+@*             // Проверяем, существует ли уже функция addToComparisonList *@
+@*             if (typeof addToComparisonList === 'function') { *@
+@*                 addToComparisonList(productId); *@
+@*             } else { *@
+@*                 // Если функция не определена, делаем редирект на страницу сравнения с новым товаром *@
+@*                 window.location.href = '/Compare/Add?id=' + productId; *@
+@*             } *@
+@*         } *@
+@*     }); *@
+@* </script> *@

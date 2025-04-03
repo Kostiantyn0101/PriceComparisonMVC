@@ -1,0 +1,50 @@
+﻿/* Стилі для "хлібних крихт" */
+
+.breadcrumb {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.breadcrumb-item {
+    font-size: 1.25rem;
+    color: #6c757d;
+}
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+        color: #adb5bd;
+    }
+
+    .breadcrumb-item a {
+        color: #1F4E92;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+        .breadcrumb-item a:hover {
+            color: #163a72;
+            text-decoration: underline;
+        }
+
+    .breadcrumb-item.active {
+        color: #495057;
+        font-weight: 500;
+    }
+
+
+/* Адаптивність для мобільних пристроїв */
+/*@media (max-width: 767.98px) {
+    .breadcrumb {
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .breadcrumb-item {
+        font-size: 0.85rem;
+    }
+}*/
+
+

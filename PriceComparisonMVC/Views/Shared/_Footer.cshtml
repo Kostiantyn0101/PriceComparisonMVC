@@ -3,11 +3,6 @@
     <div class="container-fluid">
         <div class="row align-items-start">
             <!-- Логотип -->
-            @* <div class="col-12 col-md-3 col-lg-2 text-center mb-4 mb-md-0"> *@
-            @*     <div class="logo">LOGO</div> *@
-            @* </div> *@
-
-
             <div class="col-12 col-md-3 col-lg-2 text-center mb-4 mb-md-0">
                 <a href="@Url.Action("Index", "Home")" class="footer-logo-container">
                     <img src="@Url.Content("~/images/logo.png")" alt="inMarket Map" class="footer-logo">
@@ -17,29 +12,56 @@
             <!-- Блоки категорій -->
             <div class="col-12 col-md-8 col-lg-9">
                 <div class="row g-4">
-                    @foreach (var category in new[]
-                    {
-                    new { Title = "Про нас", Links = new[] { "Що таке MarketMap", "Як ми працюємо", "Партнери" } },
-                    new { Title = "Корисна інформація", Links = new[] { "Відгуки про товари", "Відгуки про магазин", "Як обрати товар", "Часті запитання" } },
-                    new { Title = "Контакти", Links = new[] { "Зв'язатися з нами", "Карта сайту", "Продавцям" } },
-                    new { Title = "Правова інформація", Links = new[] { "Політика конфіденційності", "Умови використання" } },
-                    new { Title = "Соціальні мережі", Links = new[] { "Instagram", "Facebook", "YouTube", "Telegram" } }
-                    })
-                    {
-                        <div class="col-6 col-lg-2">
-                            <div class="category-title">@category.Title</div>
-                            <div class="d-flex flex-column">
-                                @foreach (var link in category.Links)
-                                {
-                                    if (link != "Продавцям"){
-                                        <a href="#" class="category-link">@link</a>
-                                    } else{
-                                        <a asp-controller="SellerRequest" asp-action="Index" class="category-link">@link</a>
-                                    }
-                                }
-                            </div>
+                    <!-- Про нас -->
+                    <div class="col-6 col-lg-2">
+                        <div class="category-title">Про нас</div>
+                        <div class="d-flex flex-column">
+                            <a asp-controller="StaticPages" asp-action="About" class="category-link">Що таке MarketMap</a>
+                            <a asp-controller="StaticPages" asp-action="About" class="category-link">Як ми працюємо</a>
+                            <a asp-controller="StaticPages" asp-action="About" class="category-link">Партнери</a>
                         </div>
-                    }
+                    </div>
+                    
+                    <!-- Корисна інформація -->
+                    <div class="col-6 col-lg-2">
+                        <div class="category-title">Корисна інформація</div>
+                        <div class="d-flex flex-column">
+                            <a asp-controller="StaticPages" asp-action="UsefulInfo" class="category-link">Відгуки про товари</a>
+                            <a asp-controller="StaticPages" asp-action="UsefulInfo" class="category-link">Відгуки про магазин</a>
+                            <a asp-controller="StaticPages" asp-action="UsefulInfo" class="category-link">Як обрати товар</a>
+                            <a asp-controller="StaticPages" asp-action="UsefulInfo" class="category-link">Часті запитання</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Контакти -->
+                    <div class="col-6 col-lg-2">
+                        <div class="category-title">Контакти</div>
+                        <div class="d-flex flex-column">
+                            <a asp-controller="StaticPages" asp-action="ContactUs" class="category-link">Зв'язатися з нами</a>
+                            <a asp-controller="StaticPages" asp-action="ContactUs" class="category-link">Карта сайту</a>
+                            <a asp-controller="SellerRequest" asp-action="Index" class="category-link">Продавцям</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Правова інформація -->
+                    <div class="col-6 col-lg-2">
+                        <div class="category-title">Правова інформація</div>
+                        <div class="d-flex flex-column">
+                            <a asp-controller="StaticPages" asp-action="TermsOfUse" class="category-link">Політика конфіденційності</a>
+                            <a asp-controller="StaticPages" asp-action="TermsOfUse" class="category-link">Умови використання</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Соціальні мережі -->
+                    <div class="col-6 col-lg-2">
+                        <div class="category-title">Соціальні мережі</div>
+                        <div class="d-flex flex-column">
+                            <a href="#" class="category-link">Instagram</a>
+                            <a href="#" class="category-link">Facebook</a>
+                            <a href="#" class="category-link">YouTube</a>
+                            <a href="#" class="category-link">Telegram</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 

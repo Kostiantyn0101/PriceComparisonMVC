@@ -1,0 +1,127 @@
+﻿.main-container {
+    width: 564px;
+    height: auto; /* Змінено з фіксованої висоти на автоматичну */
+    background-color: #FDFDFD;
+    padding: 40px;
+    margin: auto;
+    margin-top: 50px; /* Центрування по вертикалі */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.logo-img {
+    max-width: 300px;
+    height: auto;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+.button-block {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #dee2e6; /* Додано нижню рамку */
+}
+
+    .button-block .btn {
+        flex: 1;
+        margin: 0 0.5rem;
+        border: none;
+        text-align: center;
+        position: relative;
+        background-color: transparent;
+        color: black;
+        font-weight: 500; /* Додано жирніший шрифт */
+        padding-bottom: 10px; /* Додано відступ знизу */
+    }
+
+        .button-block .btn:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: currentColor;
+        }
+
+        .button-block .btn.active {
+            color: #2C509A; /* Синій колір для активної кнопки */
+            font-weight: 600; /* Жирніший шрифт для активної кнопки */
+        }
+
+            .button-block .btn.active::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background-color: currentColor;
+            }
+
+.btn-primary {
+    width: 100%; /* Змінено з фіксованого розміру на 100% */
+    height: 48px;
+    background-color: #2C509A;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 0;
+    margin: 0 auto;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background-color: #2958bd;
+    }
+
+.form-control {
+    border-radius: 0;
+    height: 51px;
+}
+
+.text-primary {
+    font-size: 40px;
+    line-height: 24px;
+    color: #2C509A !important; /* Додано !important для перевизначення стилів Bootstrap */
+    font-weight: bold; /* Додано жирний шрифт */
+    margin-bottom: 20px; /* Додано відступ знизу */
+}
+
+.mb-3, .mb-4 {
+    margin-bottom: 24px !important;
+}
+
+.modal-dialog {
+    max-width: 564px;
+}
+
+/* Нові стилі для модального вікна */
+.modal-content {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.modal .main-container {
+    border-radius: 0;
+    margin: 0;
+    padding: 30px 40px;
+    box-shadow: none;
+    height: auto;
+}
+
+/* Стилі для посилань на соціальні мережі */
+.social-logins {
+    margin-top: 10px;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Центрування тексту "Продовжити через" */
+.text-center.mt-4 {
+    margin-top: 25px !important;
+}

@@ -1,0 +1,117 @@
+﻿/* Загальні стилі для статичних сторінок */
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a365d;
+    margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #1a365d;
+    margin-bottom: 1.2rem;
+}
+
+.subsection-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #2c5282;
+    margin-bottom: 1rem;
+}
+
+/* Стилі для списків */
+.features-list, .benefits-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 1.5rem;
+}
+
+    .features-list li, .benefits-list li {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: flex-start;
+    }
+
+.feature-icon, .benefit-icon {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+.feature-text, .benefit-text {
+    display: inline-block;
+}
+
+/* Прості списки */
+.simple-list {
+    list-style-type: none;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+    .simple-list li {
+        position: relative;
+        margin-bottom: 0.8rem;
+    }
+
+        .simple-list li::before {
+            content: "•";
+            position: absolute;
+            left: -1.5rem;
+            color: #2c5282;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+/* Нумеровані списки */
+.numbered-list {
+    counter-reset: item-counter;
+    list-style-type: none;
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+    .numbered-list li {
+        position: relative;
+        margin-bottom: 0.8rem;
+        padding-left: 2.5rem;
+    }
+
+        .numbered-list li::before {
+            counter-increment: item-counter;
+            content: counter(item-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 50%;
+            background-color: #2c5282;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+/* Секції умов */
+.terms-section {
+    margin-bottom: 2rem;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .subsection-title {
+        font-size: 1.3rem;
+    }
+}

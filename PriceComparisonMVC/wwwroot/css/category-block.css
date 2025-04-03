@@ -1,0 +1,56 @@
+﻿
+/* Стилі для відображення категорій в одному ряду */
+.custom-row.single-row {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 16px;
+    padding: 10px 0;
+    justify-content: flex-start;
+    scrollbar-width: thin; /* Для Firefox */
+    -ms-overflow-style: none; /* Для IE і Edge */
+}
+
+    /* Стилізація скролбару */
+    .custom-row.single-row::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .custom-row.single-row::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .custom-row.single-row::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+    }
+
+        .custom-row.single-row::-webkit-scrollbar-thumb:hover {
+            background: #a5a5a5;
+        }
+
+    /* Елементи категорій тепер мають фіксовану ширину */
+    .custom-row.single-row .custom-box {
+        flex: 0 0 auto;
+        width: 133px;
+        min-width: 133px;
+        height: 96px;
+    }
+
+        /* Додаємо плавну анімацію при наведенні */
+        .custom-row.single-row .custom-box:hover {
+            transform: translateY(-3px);
+            transition: transform 0.2s ease-in-out;
+        }
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 768px) {
+    .custom-row.single-row {
+        padding: 5px 0;
+    }
+
+        .custom-row.single-row .custom-box {
+            min-width: 110px;
+        }
+}

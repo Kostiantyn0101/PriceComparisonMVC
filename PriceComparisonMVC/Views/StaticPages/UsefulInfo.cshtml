@@ -1,0 +1,343 @@
+﻿@{
+    ViewData["Title"] = "Корисна інформація";
+}
+
+<style>
+    /* Загальні стилі для статичних сторінок */
+
+    /* Заголовки */
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a365d;
+        margin-bottom: 1.5rem;
+    }
+
+    
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #1a365d;
+        margin-bottom: 1.2rem;
+    }
+
+   
+
+    .subsection-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #2c5282;
+        margin-bottom: 1rem;
+    }
+
+   
+
+    /* Блоки контенту */
+    .about-content, .info-section, .contact-info, .support-info {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: #333;
+    }
+
+    
+    /* Списки з іконками */
+    .features-list, .benefits-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin-bottom: 1.5rem;
+    }
+
+        .features-list li, .benefits-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+    .feature-icon, .benefit-icon {
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+
+    .feature-text, .benefit-text {
+        display: inline;
+    }
+
+    /* Прості списки */
+    .simple-list {
+        list-style-type: none;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .simple-list li {
+            position: relative;
+            margin-bottom: 0.8rem;
+        }
+
+            .simple-list li::before {
+                content: "•";
+                position: absolute;
+                left: -1.5rem;
+                color: #2c5282;
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+
+    /* Нумеровані списки */
+    .numbered-list {
+        counter-reset: item-counter;
+        list-style-type: none;
+        padding-left: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+        .numbered-list li {
+            position: relative;
+            margin-bottom: 0.8rem;
+            padding-left: 2.5rem;
+        }
+
+            .numbered-list li::before {
+                counter-increment: item-counter;
+                content: counter(item-counter);
+                position: absolute;
+                left: 0;
+                top: 0;
+                font-size: 1rem;
+                font-weight: 700;
+                width: 1.8rem;
+                height: 1.8rem;
+                border-radius: 50%;
+                background-color: #2c5282;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+    /* Підсумок */
+    .conclusion {
+        font-weight: 500;
+        font-style: italic;
+        border-left: 4px solid #2c5282;
+        padding-left: 1.5rem;
+    }
+
+    /* Стилі для сторінки контактів */
+    .site-map-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .site-map-link {
+        display: block;
+        width: 100%;
+        padding: 10px 15px;
+        margin-bottom: 5px;
+        background-color: #1a4d8c;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .site-map-link:hover {
+            background-color: #2c5282;
+            text-decoration: none;
+            color: white;
+        }
+
+    /* Стилі для FAQ */
+    .faq-item {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1rem;
+    }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+    /* Стилі для політики конфіденційності */
+    .terms-section {
+        margin-bottom: 1.5rem;
+    }
+
+        .terms-section ul {
+            margin-top: 0.5rem;
+        }
+</style>
+
+<partial name="_Header" />
+
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h1 class="page-title">Корисна інформація</h1>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="info-section mb-5">
+                <p>
+                    MarketMap є платформою-каталогом, що надає інформаційні послуги щодо товарів і послуг, доступних на ринку. Всі
+                    компанії, що розміщують свої пропозиції на платформі, несуть повну відповідальність за достовірність поданої інформації.
+                    MarketMap не є продавцем або постачальником товарів чи послуг, представлених на платформі. Всі операції між
+                    користувачами здійснюються безпосередньо, і MarketMap не несе відповідальності за якість товарів, виконання
+                    зобов'язань сторонами та можливі суперечки між користувачами.
+                </p>
+                <p>
+                    Усі матеріали, опубліковані на платформі, є власністю MarketMap або відповідних правовласників. Використання контенту
+                    без дозволу заборонено.
+                </p>
+                <p>
+                    Якщо у вас виникли питання щодо правової інформації, зв'яжіться з нашою юридичною службою через [контактний email/
+                    форму зв'язку].
+                </p>
+            </div>
+
+            <div class="privacy-policy mb-5">
+                <h2 class="section-title text-center mb-4">Політика конфіденційності</h2>
+
+                <div class="terms-section">
+                    <h3 class="subsection-title">1. Загальні положення</h3>
+                    <p>
+                        Ця Політика конфіденційності визначає, які дані ми збираємо, як їх обробляємо та захищаємо. Використовуючи
+                        MarketMap, ви погоджуєтесь із цими умовами.
+                    </p>
+                </div>
+
+                <div class="terms-section mt-4">
+                    <h3 class="subsection-title">2. Які дані ми збираємо?</h3>
+                    <ul class="simple-list">
+                        <li><strong>Персональна інформація:</strong> ім'я, електронна пошта, номер телефону, реквізити компанії (для партнерів).</li>
+                        <li><strong>Технічні дані:</strong> IP-адреса, тип пристрою, браузер, файли cookie.</li>
+                        <li><strong>Інформація про використання:</strong> переглянуті сторінки, запити в пошуку, дії на платформі.</li>
+                    </ul>
+                </div>
+
+                <div class="terms-section mt-4">
+                    <h3 class="subsection-title">3. Як ми використовуємо ваші дані?</h3>
+                    <ul class="simple-list">
+                        <li>Для надання та покращення наших послуг.</li>
+                        <li>Для персоналізації контенту та рекомендацій.</li>
+                        <li>Для зв'язку з вами щодо оновлень, нових можливостей або змін у політиці.</li>
+                        <li>Для захисту та забезпечення безпеки платформи.</li>
+                    </ul>
+                </div>
+
+                <div class="terms-section mt-4">
+                    <h3 class="subsection-title">4. Чи передаємо ми ваші дані третім особам?</h3>
+                    <p>
+                        Ми не продаємо та не передаємо ваші персональні дані без вашого дозволу, за винятком випадків, коли цього вимагає
+                        закон або коли це необхідно для роботи сервісу (наприклад, обробка платежів).
+                    </p>
+                </div>
+
+                <div class="terms-section mt-4">
+                    <h3 class="subsection-title">5. Захист даних</h3>
+                    <p>
+                        Ми застосовуємо сучасні методи захисту інформації, включаючи шифрування та обмежений доступ до персональних
+                        даних.
+                    </p>
+                </div>
+
+                <div class="terms-section mt-4">
+                    <h3 class="subsection-title">6. Ваші права:</h3>
+                    <ul class="simple-list">
+                        <li>Доступ до власних даних.</li>
+                        <li>Виправлення або видалення інформації.</li>
+                        <li>Відмова від обробки персональних даних.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="how-to-choose mb-5">
+                <h2 class="section-title text-center mb-4">Як обрати товар?</h2>
+
+                <p>
+                    Щоб покупка була вдалою, слід врахувати кілька важливих факторів.
+                </p>
+
+                <h3 class="subsection-title mt-4">Кроки для вибору найкращого товару:</h3>
+                <ol class="numbered-list">
+                    <li>
+                        <p>Визначте свої потреби – що саме вам потрібно?</p>
+                    </li>
+                    <li>
+                        <p>Вивчіть характеристики – звертайте увагу на розміри, матеріали, технічні параметри.</p>
+                    </li>
+                    <li>
+                        <p>Перегляньте фото та відео – реальні зображення допоможуть оцінити товар.</p>
+                    </li>
+                    <li>
+                        <p>Читайте відгуки – інші покупці вже протестували цей товар.</p>
+                    </li>
+                    <li>
+                        <p>Перевірте рейтинг магазину – надійні продавці забезпечують якісний сервіс.</p>
+                    </li>
+                    <li>
+                        <p>Порівняйте ціни – іноді можна знайти вигідніші пропозиції.</p>
+                    </li>
+                </ol>
+
+                <p class="conclusion mt-4">
+                    Обираючи розумно, ви отримаєте найкращу якість за свої гроші!
+                </p>
+            </div>
+
+            <div class="faq-section">
+                <h2 class="section-title text-center mb-4">Часті запитання (FAQ)</h2>
+
+                <div class="faq-item">
+                    <h3 class="subsection-title">1. Як зареєструватися на MarketMap?</h3>
+                    <p>
+                        Перейдіть на головну сторінку, натисніть «Реєстрація», заповніть форму та підтвердіть email.
+                    </p>
+                </div>
+
+                <div class="faq-item mt-4">
+                    <h3 class="subsection-title">2. Як зв'язатися з продавцем?</h3>
+                    <p>
+                        На сторінці товару є кнопка «Написати продавцю». Використовуйте її для уточнення деталей.
+                    </p>
+                </div>
+
+                <div class="faq-item mt-4">
+                    <h3 class="subsection-title">3. Як перевірити надійність магазину?</h3>
+                    <p>
+                        Дивіться рейтинг, відгуки покупців.
+                    </p>
+                </div>
+
+                <div class="faq-item mt-4">
+                    <h3 class="subsection-title">4. Чи можна повернути товар?</h3>
+                    <p>
+                        Політика повернення залежить від магазину. Ознайомтесь з умовами перед покупкою.
+                    </p>
+                </div>
+
+                <div class="faq-item mt-4">
+                    <h3 class="subsection-title">5. Чи безпечно купувати на MarketMap?</h3>
+                    <p>
+                        Так, ми перевіряємо продавців і надаємо можливість залишати чесні відгуки.
+                    </p>
+                </div>
+
+                <div class="faq-item mt-4">
+                    <h3 class="subsection-title">6. Як залишити відгук про товар чи магазин?</h3>
+                    <p>
+                        На сторінці товару або магазину натисніть «Залишити відгук» та поділіться своєю думкою.
+                        Якщо у вас залишилися питання, звертайтеся в службу підтримки!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_Footer" />

@@ -9,6 +9,7 @@ namespace PriceComparisonMVC.Services
         Task<CategoryListResult> GetCategoryListAsync(int categoryId);
         Task<CategoryProductListResult> GetCategoryProductListAsync(int categoryId);
         Task<List<ProductToCategoriesListModel>> GetProductsByCategoryAsync(int categoryId, int page = 1, int pageSize = 10);
+        Task<CategoryResponseModel> GetCategoryInfoAsync(int categoryId);
     }
 
     public class CategoryListResult

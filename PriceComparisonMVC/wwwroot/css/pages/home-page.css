@@ -1,0 +1,786 @@
+
+/* Секція з блоками категоріями */
+.section-block {
+    background-color: #f9f9f9; /* Фон секції */
+    padding: 20px 0;
+}
+
+/* Внутрішній контейнер */
+.custom-inner-container {
+    max-width: 1316px; /* Максимальна ширина контейнера */
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+    row-gap: 20px; /* Відстань між рядками */
+    display: flex;
+    flex-direction: column; /* Організує елементи у вертикальну колонку */
+}
+
+/* Рядки категорій */
+.custom-row {
+    display: grid;
+    gap: 16px; /* Відстань між блоками */
+    justify-content: center; /* Центрує елементи всередині контейнера */
+}
+
+.upper-row {
+    grid-template-columns: repeat(8, 133px); /* Верхній ряд: 8 колонок */
+}
+
+.lower-row {
+    grid-template-columns: repeat(6, 133px); /* Нижній ряд: 6 колонок */
+}
+
+/* Блок категорії */
+.custom-box {
+    width: 133px; /* Фіксована ширина */
+    height: 96px; /* Фіксована висота */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden; /* Забороняє вихід вмісту за межі */
+    position: relative; /* Для абсолютного позиціонування субкатегорій */
+}
+
+    .custom-box:hover {
+        overflow: visible;
+    }
+
+
+    /* Іконки в блоках */
+    .custom-box img {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 8px; /* Відступ між іконкою та текстом */
+    }
+
+    /* Посилання */
+    .custom-box a {
+        font-family: 'Roboto', sans-serif;
+        font-size: 14px;
+        color: #333;
+        text-decoration: none;
+        white-space: nowrap; /* Забороняє переноси тексту */
+        overflow: hidden; /* Приховує текст, що виходить за межі */
+        text-overflow: ellipsis; /* Додає три крапки в кінці тексту */
+        text-align: center; /* Вирівнює текст по центру */
+    }
+
+        .custom-box a:hover {
+            text-decoration: underline;
+        }
+
+
+
+
+
+
+/* Секція популярних груп */
+
+/* Advertisement Section */
+.advertisement-section {
+    background-color: #f9f9f9;
+    padding: 20px 0;
+}
+
+/* Гнучке розташування блоків */
+.left-block, .center-block, .right-block {
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .left-block img,
+    .center-block img,
+    .right-block img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+
+    /* Контейнер з трьома блоками ліворуч */
+    .left-block:nth-child(1) {
+        height: 24%;
+    }
+    /* left-up */
+    .left-block:nth-child(2) {
+        height: 55%;
+    }
+    /* left-middle */
+    .left-block:nth-child(3) {
+        height: 20%;
+    }
+    /* left-down */
+
+    /* Головний великий центральний блок */
+    .center-block.large {
+        height: 35vh; /* middle-up */
+    }
+
+    /* Подвійні середні блоки в центрі */
+    .center-block.middle {
+        display: flex;
+        gap: 8px;
+    }
+
+.center-subblock {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.subblock-part {
+    flex: 1;
+    border-radius: 8px;
+}
+
+    .subblock-part img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+/* Підблоки всередині центрального контейнера */
+.center-subblock:nth-child(1) .subblock-part:nth-child(1) {
+    height: 43%;
+}
+/* middle-middle-left */
+.center-subblock:nth-child(1) .subblock-part:nth-child(2) {
+    height: 43%;
+}
+
+.center-subblock:nth-child(2) .subblock-part:nth-child(1) {
+    height: 36%;
+}
+/* middle-middle-right */
+.center-subblock:nth-child(2) .subblock-part:nth-child(2) {
+    height: 36%;
+}
+
+/* Маленький центральний нижній блок */
+.center-block.small {
+    height: 20%;
+}
+
+/* Контейнер з трьома блоками праворуч */
+.right-block:nth-child(1) {
+    height: 24%;
+}
+/* right-up */
+.right-block:nth-child(2) {
+    height: 22%;
+}
+/* right-middle */
+.right-block:nth-child(3) {
+    height: 54%;
+}
+/* right-down */
+
+
+
+
+
+
+
+
+
+
+
+
+/* Секція популярних товарів */
+.popular-products-section {
+    background-color: #f9f9f9; /* Світлий фон */
+    padding: 20px 80px; /* Відступи секції */
+}
+
+/* Заголовок */
+.section-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Посилання */
+.category-link1 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #000; /* встановлено чорний колір */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+    .category-link1:hover {
+        color: #007bff;
+        text-decoration: underline;
+    }
+
+
+
+
+/* Блок товару */
+.product-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    height: 100%; /* Займає всю висоту колонки */
+}
+
+/* Блок для зображення */
+.product-image-container {
+    width: 100%;
+    height: 200px; /* Фіксована висота блоку */
+    background-color: #f9f9f9; /* Фон на випадок менших зображень */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    overflow: hidden; /* Запобігає виходу зображень за межі */
+    margin-bottom: 10px;
+}
+
+/* Зображення */
+.product-image {
+    max-width: 100%; /* Пропорційна ширина */
+    max-height: 100%; /* Пропорційна висота */
+    object-fit: contain; /* Вписує зображення пропорційно */
+    border-radius: 4px;
+}
+
+/* Короткий опис */
+.product-description {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 10px;
+    height: 48px; /* Фіксована висота для вирівнювання */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Ліміт тексту до 2 рядків */
+    -webkit-box-orient: vertical;
+}
+
+/* Ціна товару */
+.product-price {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #e76f51;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Секція актуальних товарів */
+.trending-section {
+    background-color: #f9f9f9;
+    padding: 20px 80px; /* Відступи секції */
+}
+
+/* Заголовок */
+.section-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Субкатегорії */
+.subcategory-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+    transition: box-shadow 0.3s ease; /* Анімація при наведенні */
+}
+
+    .subcategory-item:hover {
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Додаткова тінь при наведенні */
+    }
+
+/* Зображення субкатегорії */
+.subcategory-image {
+    width: 100%;
+    height: 180px; /* Фіксована висота зображення */
+    object-fit: contain; /* Вписати зображення в блок */
+    transition: transform 0.3s ease; /* Анімація при наведенні */
+}
+
+    .subcategory-image:hover {
+        transform: scale(1.05); /* Масштаб при наведенні */
+    }
+
+/* Посилання */
+.subcategory-link {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+    margin-top: 10px;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+    .subcategory-link:hover {
+        color: #007bff; /* Зміна кольору на синій при наведенні */
+    }
+
+
+
+
+
+
+/* СЕКЦІЯ ВІДЕ */
+.recommended-videos-section {
+    background-color: #f9f9f9;
+    padding: 20px 80px; /* Відступи секції */
+}
+
+/* Заголовок */
+.section-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Відеоблок */
+.video-block {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Адаптивне відео */
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* Співвідношення 16:9 */
+    background-color: #000; /* Для кращої видимості перед завантаженням */
+    overflow: hidden;
+}
+
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Вписує відео у контейнер без обрізання */
+    }
+
+/* Інформаційний блок */
+.video-info {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+}
+
+/* Прямокутник поруч із текстом */
+.video-rectangle {
+    width: 68px;
+    height: 72px;
+    background-color: #e76f51;
+    border-radius: 4px;
+}
+
+/* Текст відео */
+.video-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Обрізати текст до 2 рядків */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Додати "..." в кінці */
+    white-space: normal;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+/* Ціна */
+.video-price {
+    color: #e76f51;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Ефекти при наведенні */
+.video-text a:hover {
+    color: #007bff; /* Синій текст при наведенні */
+    text-decoration: underline;
+}
+
+
+
+
+
+
+/* СЕКЦІЯ РІЛСІВ */
+.reels-section {
+    background-color: #f9f9f9;
+    padding: 20px 80px; /* Відступи секції */
+}
+
+/* Заголовок */
+.section-title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Блок рілса */
+.reels-block {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transition: transform 0.3s ease;
+}
+
+    .reels-block:hover {
+        transform: translateY(-5px);
+    }
+
+/* Контейнер для вертикального відео (рілса) */
+.reels-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 177.78%; /* Співвідношення 9:16 для вертикального відео */
+    background-color: #000; /* Для кращої видимості перед завантаженням */
+    overflow: hidden;
+}
+
+    .reels-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Заповнює весь контейнер */
+    }
+
+/* Інформаційний блок */
+.reels-info {
+    padding: 12px;
+    display: flex;
+    align-items: flex-start;
+    background-color: #fff;
+}
+
+/* Аватар користувача замість прямокутника */
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #e0e0e0;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Текст відео */
+.reels-details {
+    flex: 1;
+}
+
+.reels-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Обрізати текст до 2 рядків */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Додати "..." в кінці */
+    white-space: normal;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    line-height: 1.3;
+    margin-bottom: 4px;
+}
+
+/* Ціна */
+.reels-price {
+    color: #e76f51;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Адаптивність для різних екранів */
+@media (max-width: 992px) {
+    .reels-section {
+        padding: 20px 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .reels-section {
+        padding: 20px 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .avatar-circle {
+        width: 32px;
+        height: 32px;
+    }
+
+    .reels-text {
+        font-size: 12px;
+    }
+
+    .reels-price {
+        font-size: 14px;
+    }
+}
+
+
+
+
+
+
+
+
+
+/* Статті, огляди, рекомендації */
+.articles-section {
+    background-color: #f9f9f9;
+}
+
+/* Контейнер статті */
+.article-box {
+    height: 309px;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+    .article-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+/* Картинка статті */
+.article-image {
+    height: 205px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    overflow: hidden;
+}
+
+    .article-image img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+    }
+
+/* Опис статті */
+.article-description {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.article-title a {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+    .article-title a:hover {
+        text-decoration: underline;
+        color: #007bff;
+    }
+
+/* Текст статті */
+.article-text {
+    font-size: 14px;
+    color: #666;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Футер */
+/*.footer {
+    background-color: #1F4E92 !important;
+    color: #fff;
+    padding: 40px 80px;
+    box-sizing: border-box;
+}*/
+
+/* Логотип */
+/*.logo {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+}*/
+
+/* Стилі для логотипу в футері */
+/*.footer-logo-container {
+    display: inline-block;
+}
+
+.footer-logo {
+    width: 200px !important;
+    height: auto !important;
+    max-width: 100%;
+    max-height: 56px;
+    object-fit: contain;
+    filter: brightness(1.2);*/ /* Опціонально: робить логотип трохи яскравішим на темному фоні */
+/*}*/
+
+/* Адаптивність для малих екранів */
+/*@media (max-width: 768px) {
+    .footer-logo {
+        width: 160px !important;
+    }
+}*/
+
+
+/* Заголовки категорій */
+/*.category-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}*/
+
+/* Посилання */
+/*.category-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+    .category-link:hover {
+        color: #FFD700;
+        text-decoration: underline;
+    }*/
+
+/* Додатковий блок */
+/*.additional-box {
+    width: 97px;
+    height: 73px;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #123456;*/ /* Можливий фоновий колір */
+/*}
+
+.arrow-icon {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.additional-link {
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #FFF;
+}
+
+    .additional-link:hover {
+        text-decoration: underline;
+    }*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
