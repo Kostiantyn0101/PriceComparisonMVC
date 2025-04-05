@@ -1,7 +1,5 @@
 ﻿@section Styles {
     <link rel="stylesheet" href="~/css/pages/home-page.css" />
-    <link rel="stylesheet" href="~/css/pages/header-style.css" />
-    <link rel="stylesheet" href="~/css/pages/footer-style.css" />
     <link rel="stylesheet" href="~/css/pages/login-style.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
@@ -53,7 +51,9 @@
                 @for (int i = 0; i < 3 && i < Model.PopulaCategoriesImages.Count; i++)
                 {
                     <div class="left-block d-flex align-items-center justify-content-center">
-                        <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
+                        <a href="@Url.Action("CategoryProductList", "Categories", new { id = Model.PopulaCategoriesImages[i].CategoryId })">
+                            <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
+                        </a>
                     </div>
                 }
             </div>
@@ -61,7 +61,9 @@
             <!-- Центральний контейнер -->
             <div class="col-lg-6 col-md-8 col-12 d-flex flex-column gap-2">
                 <div class="center-block large d-flex align-items-center justify-content-center">
-                    <img src="@Url.Content(Model.PopulaCategoriesImages[3].IconUrl)" alt="Популярна категорія">
+                    <a href="@Url.Action("CategoryProductList", "Categories", new { id = Model.PopulaCategoriesImages[3].CategoryId })">
+                        <img src="@Url.Content(Model.PopulaCategoriesImages[3].IconUrl)" alt="Популярна категорія">
+                    </a>
                 </div>
 
                 <div class="center-block d-flex gap-2">
@@ -69,14 +71,18 @@
                     {
                         <div class="center-subblock flex-fill">
                             <div class="subblock-part d-flex align-items-center justify-content-center">
-                                <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
+                                <a href="@Url.Action("CategoryProductList", "Categories", new { id = Model.PopulaCategoriesImages[i].CategoryId })">
+                                    <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
+                                </a>
                             </div>
                         </div>
                     }
                 </div>
 
                 <div class="center-block small d-flex align-items-center justify-content-center">
-                    <img src="@Url.Content(Model.PopulaCategoriesImages[6].IconUrl)" alt="Популярна категорія">
+                    <a href="@Url.Action("CategoryProductList", "Categories", new { id = Model.PopulaCategoriesImages[6].CategoryId })">
+                        <img src="@Url.Content(Model.PopulaCategoriesImages[6].IconUrl)" alt="Популярна категорія">
+                    </a>
                 </div>
             </div>
 
@@ -85,16 +91,15 @@
                 @for (int i = 7; i < 10 && i < Model.PopulaCategoriesImages.Count; i++)
                 {
                     <div class="right-block d-flex align-items-center justify-content-center">
-                        <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
+                        <a href="@Url.Action("CategoryProductList", "Categories", new { id = Model.PopulaCategoriesImages[i].CategoryId })">
+                            <img src="@Url.Content(Model.PopulaCategoriesImages[i].IconUrl)" alt="Популярна категорія">
+                        </a>
                     </div>
                 }
             </div>
         </div>
     </div>
 </div>
-
-
-
 
 <!-- Popular products section -->
 <div class="popular-products-section py-4">
@@ -103,33 +108,40 @@
 
     <div class="container mb-4">
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
-            @foreach (string category in Model.PopularCategory)
+            @foreach (var category in Model.PopularCategories)
             {
                 <div class="col text-center">
-                    <a href="#" class="category-link1">@category</a>
+                    <a href="javascript:void(0);"
+                       class="category-link1 category-filter @(category.Name == Model.SelectedCategory ? "active" : "")"
+                       data-category="@category.Name">
+                        @category.Name
+                    </a>
                 </div>
             }
         </div>
     </div>
 
-    <!-- Блоки товарів -->
+    <!-- Блоки товарів - буде оновлюватись через AJAX -->
     <div class="container">
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+        <div id="products-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
             @foreach (var product in Model.PopularProducts)
             {
-                <div class="col">
+                <div class="col product-col">
                     <div class="product-item">
-                        <div class="product-image-container">
-                            <img src="@Url.Content($"~/{product.IconUrl}")" alt="@product.ProductDescription" class="product-image">
-                        </div>
-                        <div class="product-description">@product.ProductDescription</div>
-                        <div class="product-price">@product.ProductPrice</div>
+                        <a href="@Url.Action("Index", "Product", new { firstProductId = product.ProductId })">
+                            <div class="product-image-container">
+                                <img src="@Url.Content($"~/{product.IconUrl}")" alt="@product.ProductDescription" class="product-image">
+                            </div>
+                            <div class="product-description">@product.ProductDescription</div>
+                            <div class="product-price">@product.ProductPrice</div>
+                        </a>
                     </div>
                 </div>
             }
         </div>
     </div>
 </div>
+
 
 
 
@@ -250,3 +262,83 @@
 </div>
 
 <partial name="_Footer" />
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Функція для показу індикатора завантаження
+            function showLoading() {
+                var loadingHtml = `
+                    <div class="loading-overlay">
+                        <div class="loading-spinner"></div>
+                    </div>
+                `;
+
+                var productsContainer = $('#products-container');
+                productsContainer.css('position', 'relative');
+                productsContainer.append(loadingHtml);
+            }
+
+            // Функція для приховування індикатора завантаження
+            function hideLoading() {
+                $('.loading-overlay').remove();
+            }
+
+            // Обробник кліку на посилання категорій
+            $('.category-filter').click(function() {
+                var category = $(this).data('category');
+
+                // Видаляємо клас active з усіх посилань та додаємо до поточного
+                $('.category-filter').removeClass('active');
+                $(this).addClass('active');
+
+                // Показуємо індикатор завантаження
+                showLoading();
+
+                // Запит на сервер для отримання товарів
+                $.ajax({
+                    url: '@Url.Action("GetProductsByCategory", "Home")',
+                    type: 'GET',
+                    data: { category: category },
+                    success: function(data) {
+                        setTimeout(function() {
+                            // Очищаємо контейнер
+                            $('#products-container').empty();
+
+                            // Додаємо нові товари з правильним форматом посилань
+                            $.each(data, function(index, product) {
+                                // Правильний формат посилання: /Product?firstProductId=2
+                                var productUrl = '@Url.Action("Index", "Product")?firstProductId=' + product.productId;
+
+                                var productHtml = `
+                                    <div class="col product-col">
+                                        <div class="product-item">
+                                            <a href="${productUrl}">
+                                                <div class="product-image-container">
+                                                    <img src="/${product.iconUrl}" alt="${product.productDescription}" class="product-image">
+                                                </div>
+                                                <div class="product-description">${product.productDescription}</div>
+                                                <div class="product-price">${product.productPrice}</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                `;
+                                $('#products-container').append(productHtml);
+                            });
+
+                            // Приховуємо індикатор завантаження
+                            hideLoading();
+                        }, 300);
+                    },
+                    error: function(error) {
+                        console.log('Помилка при завантаженні товарів:', error);
+                        hideLoading();
+
+                        // Показуємо повідомлення про помилку
+                        $('#products-container').html('<div class="col-12 text-center"><p>Помилка при завантаженні товарів. Спробуйте ще раз.</p></div>');
+                    }
+                });
+            });
+        });
+    </script>
+}
