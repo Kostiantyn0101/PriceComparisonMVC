@@ -27,27 +27,129 @@ namespace PriceComparisonMVC.Controllers
         }
 
         // GET: /Compare/Comparison
+        //public async Task<IActionResult> Comparison()
+        //{
+
+        //    // Отримуємо дані категорій (з того ж джерела, що й для головної сторінки)
+        //    var categories = Data.IndexContentData.GetCategories();
+
+        //    // Передаємо через ViewBag
+        //    ViewBag.Categories = categories;
+
+        //    var productIds = GetComparisonProductsFromCookies();
+
+
+        //    if (productIds.Count == 0)
+        //    {
+        //        return View(new List<ProductComparisonViewModel>());
+        //    }
+
+        //    var comparisonProducts = new List<ProductComparisonViewModel>();
+
+        //    foreach (var productId in productIds)
+        //    {
+        //        try
+        //        {
+        //            // Отримуємо основну інформацію про товар
+        //            var productResponseModel = await _apiService.GetAsync<ProductNewResponseModel>($"api/Products/{productId}");
+
+        //            // Отримуємо інформацію про базовий продукт (бренд і назву)
+        //            var baseProductResponseModel = await _apiService.GetAsync<BaseProductResponseModel>($"api/BaseProducts/{productResponseModel.BaseProductId}");
+
+        //            // Отримуємо характеристики товару
+        //            var characteristics = await _apiService.GetAsync<List<ProductCharacteristicResponseModel>>($"api/ProductCharacteristics/{productId}");
+
+        //            // Отримуємо зображення товару
+        //            var productImages = await _apiService.GetAsync<List<ProductImageModel>>($"api/ProductImage/{productId}");
+
+        //            // Отримуємо дані продавців для визначення цінового діапазону
+        //            List<SellerProductDetailResponseModel> sellerProductDetails = null;
+        //            try
+        //            {
+        //                sellerProductDetails = await _apiService.GetAsync<List<SellerProductDetailResponseModel>>($"api/SellerProductDetails/{productId}");
+        //            }
+        //            catch (Exception sellerEx)
+        //            {
+        //                Console.WriteLine($"Помилка при отриманні даних продавців для товару {productId}: {sellerEx.Message}");
+        //                sellerProductDetails = new List<SellerProductDetailResponseModel>();
+        //            }
+
+        //            // Визначаємо мінімальну та максимальну ціну, а також кількість пропозицій
+        //            decimal minPrice = 0;
+        //            decimal maxPrice = 0;
+        //            int offerCount = 0;
+        //            bool hasOffers = false;
+
+        //            if (sellerProductDetails != null && sellerProductDetails.Any())
+        //            {
+        //                minPrice = sellerProductDetails.Min(s => s.PriceValue);
+        //                maxPrice = sellerProductDetails.Max(s => s.PriceValue);
+        //                offerCount = sellerProductDetails.Count;
+        //                hasOffers = true;
+        //            }
+
+        //            // Формуємо модель представлення для порівняння
+        //            var comparisonModel = new ProductComparisonViewModel
+        //            {
+        //                Id = productId,
+        //                Name = baseProductResponseModel?.Title ?? "Невідомий товар",
+        //                Brand = baseProductResponseModel?.Brand ?? "Невідомий бренд",
+        //                Model = productResponseModel?.ModelNumber ?? "",
+        //                MinPrice = minPrice,
+        //                MaxPrice = maxPrice,
+        //                OfferCount = offerCount,
+        //                HasOffers = hasOffers,
+        //                ImageUrl = productImages?.FirstOrDefault()?.ImageUrl ?? "/images/placeholder.jpg",
+        //                Specifications = ConvertCharacteristicsToSpecifications(characteristics)
+        //            };
+
+        //            comparisonProducts.Add(comparisonModel);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Console.WriteLine($"Помилка при отриманні даних для товару {productId}: {ex.Message}");
+        //        }
+        //    }
+
+        //    // Сортуємо товари за мінімальною ціною
+        //    comparisonProducts = comparisonProducts.OrderBy(p => p.MinPrice).ToList();
+
+        //    return View(comparisonProducts);
+        //}
+
+
+
+
+
+
+
+        // GET: /Compare/CategoryProducts?id={productId}
+
+
+
+        // GET: /Compare/Comparison
         public async Task<IActionResult> Comparison()
         {
-
             // Отримуємо дані категорій (з того ж джерела, що й для головної сторінки)
             var categories = Data.IndexContentData.GetCategories();
 
             // Передаємо через ViewBag
             ViewBag.Categories = categories;
 
-            var productIds = GetComparisonProductsFromCookies();
-            
+            var productItems = GetComparisonProductItemsFromCookies();
 
-            if (productIds.Count == 0)
+            if (productItems.Count == 0)
             {
                 return View(new List<ProductComparisonViewModel>());
             }
 
             var comparisonProducts = new List<ProductComparisonViewModel>();
 
-            foreach (var productId in productIds)
+            foreach (var productItem in productItems)
             {
+                int productId = productItem.productId;
+                int categoryId = productItem.categoryId;
+
                 try
                 {
                     // Отримуємо основну інформацію про товар
@@ -100,7 +202,9 @@ namespace PriceComparisonMVC.Controllers
                         OfferCount = offerCount,
                         HasOffers = hasOffers,
                         ImageUrl = productImages?.FirstOrDefault()?.ImageUrl ?? "/images/placeholder.jpg",
-                        Specifications = ConvertCharacteristicsToSpecifications(characteristics)
+                        Specifications = ConvertCharacteristicsToSpecifications(characteristics),
+                        // Додаємо categoryId з кук до моделі
+                        CategoryId = categoryId
                     };
 
                     comparisonProducts.Add(comparisonModel);
@@ -117,8 +221,6 @@ namespace PriceComparisonMVC.Controllers
             return View(comparisonProducts);
         }
 
-
-        // GET: /Compare/CategoryProducts?id={productId}
         public async Task<IActionResult> CategoryProducts(int id)
         {
 
@@ -177,13 +279,35 @@ namespace PriceComparisonMVC.Controllers
         }
 
         // GET: /Compare/Add
-        public IActionResult Add(int id)
+        public async Task<IActionResult> Add(int id, int categoryId = 0)
         {
-            if (!_comparisonProducts.Contains(id))
+            var products = GetComparisonProductItemsFromCookies();
+
+            // Перевіряємо, чи вже додано цей товар
+            if (!products.Any(p => p.productId == id))
             {
-                if (_comparisonProducts.Count < 5)
+                if (products.Count < 5)
                 {
-                    _comparisonProducts.Add(id);
+                    // Якщо категорію не передано, спробуємо отримати її
+                    if (categoryId == 0)
+                    {
+                        try
+                        {
+                            var categoryDetails = await _apiService.GetAsync<CategoryDetailsResponseModel>($"/api/Categories/getbyproduct/{id}");
+                            if (categoryDetails != null)
+                            {
+                                categoryId = categoryDetails.Id;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Помилка при отриманні категорії для товару {id}: {ex.Message}");
+                        }
+                    }
+
+                    // Додаємо новий товар з категорією
+                    products.Add(new ProductItem { productId = id, categoryId = categoryId });
+                    SaveComparisonProductsToCookies(products);
                     TempData["SuccessMessage"] = "Товар додано до порівняння";
                 }
                 else
@@ -200,8 +324,8 @@ namespace PriceComparisonMVC.Controllers
         }
 
 
-        // Метод для збереження списку товарів в куки
-        private void SaveComparisonProductsToCookies(List<int> products)
+        // Оновлений метод для збереження списку товарів в куки
+        private void SaveComparisonProductsToCookies(List<ProductItem> products)
         {
             var options = new CookieOptions
             {
@@ -214,14 +338,57 @@ namespace PriceComparisonMVC.Controllers
                 options);
         }
 
+
+        // Оновлений метод для отримання продуктів з кук
+        private List<ProductItem> GetComparisonProductItemsFromCookies()
+        {
+            try
+            {
+                // Отримуємо рядок з куків
+                var cookieValue = Request.Cookies["comparison_products"];
+                // Якщо кука існує, парсимо JSON
+                if (!string.IsNullOrEmpty(cookieValue))
+                {
+                    // Спробуємо розпарсити як масив об'єктів
+                    try
+                    {
+                        // Десеріалізуємо як масив об'єктів типу { productId: number, categoryId: number }
+                        var products = System.Text.Json.JsonSerializer.Deserialize<List<ProductItem>>(cookieValue);
+                        if (products != null)
+                        {
+                            return products;
+                        }
+                    }
+                    catch
+                    {
+                        // Якщо не вдалося розпарсити як новий формат, спробуємо старий (просто масив ID)
+                        var productIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(cookieValue);
+                        if (productIds != null)
+                        {
+                            // Конвертуємо старий формат у новий, використовуючи 0 як значення categoryId за замовчуванням
+                            return productIds.Select(id => new ProductItem { productId = id, categoryId = 0 }).ToList();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Помилка при отриманні товарів з куків: {ex.Message}");
+            }
+            return new List<ProductItem>();
+        }
+
+
+
         //Оновлюємо методи для роботи з куками
         public IActionResult RemoveFromComparison(int id)
         {
-            var products = GetComparisonProductsFromCookies();
+            var products = GetComparisonProductItemsFromCookies();
 
-            if (products.Contains(id))
+            var productToRemove = products.FirstOrDefault(p => p.productId == id);
+            if (productToRemove != null)
             {
-                products.Remove(id);
+                products.Remove(productToRemove);
                 SaveComparisonProductsToCookies(products);
                 TempData["InfoMessage"] = "Товар видалено з порівняння";
             }
@@ -238,17 +405,48 @@ namespace PriceComparisonMVC.Controllers
             return RedirectToAction("Comparison");
         }
 
+       
+
 
 
 
         //Сторінка анімації 
         // GET: /Compare/SmartComparison?productIdA=1&productIdB=2
+        //public IActionResult SmartComparison(int productIdA, int productIdB)
+        //{
+        //    // Перенаправляємо на сторінку завантаження
+        //    return View("SmartComparisonLoading");
+        //}
+
+
+        // GET: /Compare/SmartComparison?productIdA=1&productIdB=2
         public IActionResult SmartComparison(int productIdA, int productIdB)
         {
-            // Перенаправляємо на сторінку завантаження
-            return View("SmartComparisonLoading");
+            // Тепер ми повертаємося на сторінку порівняння, де буде показано модальне вікно
+            // Для відображення модального вікна буде використовуватися JavaScript
+            return RedirectToAction("Comparison");
         }
 
+        [HttpPost]
+        public IActionResult CancelComparison()
+        {
+            // Якщо використовується TempData для зберігання ключів кешу або ознак завершення,
+            // очищаємо їх
+            if (TempData.ContainsKey("ComparisonCacheKey"))
+            {
+                TempData.Remove("ComparisonCacheKey");
+            }
+
+            if (TempData.ContainsKey("ComparisonComplete"))
+            {
+                TempData.Remove("ComparisonComplete");
+            }
+
+            // Якщо є інші ресурси або процеси, які потрібно звільнити,
+            // це можна зробити тут
+
+            return Ok(new { success = true, message = "Порівняння скасовано" });
+        }
 
 
         [HttpGet]

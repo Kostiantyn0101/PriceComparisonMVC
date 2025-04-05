@@ -6,7 +6,6 @@ namespace PriceComparisonMVC.Data
 {
     public static class IndexContentData
     {
-
         // Окремий метод для отримання категорій
         public static List<CategoryModel> GetCategories()
         {
@@ -29,7 +28,101 @@ namespace PriceComparisonMVC.Data
             };
         }
 
+        // Методи для отримання товарів за категоріями
+        public static List<ItemWhithUrlAndPriceModel> GetSmartphones()
+        {
+            return new List<ItemWhithUrlAndPriceModel>
+            {
+                new ItemWhithUrlAndPriceModel {
+                    IconUrl = "images/popular-item/16Pro.jpg",
+                    ProductDescription = "Apple iPhone 16 Pro Max ",
+                    ProductPrice = "₴59999",
+                    ProductId = "2",
+                    Category = "Смартфони"
+                },
+                new ItemWhithUrlAndPriceModel {
+                    IconUrl = "images/popular-item/S24.jpg",
+                    ProductDescription = "Samsung Galaxy S24 Ultra 5G 12/512GB Black",
+                    ProductPrice = "₴54999",
+                    ProductId = "1",
+                    Category = "Смартфони"
+                },
+                new ItemWhithUrlAndPriceModel {
+                    IconUrl = "images/popular-item/Redmi13.jpg",
+                    ProductDescription = "Xiaomi Note 13 Pro 5G",
+                    ProductPrice = "₴28999",
+                    ProductId = "4",
+                    Category = "Смартфони"
+                },
+                new ItemWhithUrlAndPriceModel {
+                    IconUrl = "images/popular-item/X6.jpg",
+                    ProductDescription = "Poco X6 Pro",
+                    ProductPrice = "₴19999",
+                    ProductId = "3",
+                    Category = "Смартфони"
+                }
+            };
+        }
 
+        public static List<ItemWhithUrlAndPriceModel> GetLaptops()
+        {
+            return new List<ItemWhithUrlAndPriceModel>
+            {
+                new ItemWhithUrlAndPriceModel {
+                    IconUrl = "images/popular-item/Mac14.jpg",
+                    ProductDescription = "MacBook Pro 14 (Space Black)",
+                    ProductPrice = "₴129999",
+                    ProductId = "38",
+                    Category = "Ноутбуки"
+                },
+                new ItemWhithUrlAndPriceModel {
+                    IconUrl = "images/popular-item/Lenovo.jpg",
+                    ProductDescription = "Lenovo LOQ 15IAX9",
+                    ProductPrice = "₴34999",
+                    ProductId = "12",
+                    Category = "Ноутбуки"
+                },
+                new ItemWhithUrlAndPriceModel {
+                    IconUrl = "images/popular-item/Msi.jpg",
+                    ProductDescription = "MSI Thin 15 B12VE",
+                    ProductPrice = "₴49999",
+                    ProductId = "34",
+                    Category = "Ноутбуки"
+                },
+                new ItemWhithUrlAndPriceModel {
+                    IconUrl = "images/popular-item/Acer.jpg",
+                    ProductDescription = "Acer Nitro V 15 ANV15-41",
+                    ProductPrice = "₴34999",
+                    ProductId = "36",
+                    Category = "Ноутбуки"
+                }
+            };
+        }
+
+        // Метод для отримання популярних категорій
+        public static List<PopularCategoryModel> GetPopularCategories()
+        {
+            return new List<PopularCategoryModel>
+            {
+                new PopularCategoryModel { Name = "Смартфони", CategoryId = "1" },
+                new PopularCategoryModel { Name = "Ноутбуки", CategoryId = "2" },
+                new PopularCategoryModel { Name = "Планшети", CategoryId = "3" },
+                new PopularCategoryModel { Name = "Смарт-Годинники", CategoryId = "4" },
+                new PopularCategoryModel { Name = "Телевізори", CategoryId = "5" }
+            };
+        }
+
+        // Метод для отримання словника продуктів за категоріями
+        public static Dictionary<string, List<ItemWhithUrlAndPriceModel>> GetProductsByCategory()
+        {
+            return new Dictionary<string, List<ItemWhithUrlAndPriceModel>>
+            {
+                { "Смартфони", GetSmartphones() },
+                { "Ноутбуки", GetLaptops() }
+            };
+        }
+
+        // Основний метод для отримання вмісту індексної сторінки
         public static IndexContentModel GetIndexContent()
         {
             return new IndexContentModel
@@ -38,34 +131,29 @@ namespace PriceComparisonMVC.Data
 
                 PopulaCategoriesImages = new List<ItemToViewModel>
                 {
-                    new ItemToViewModel { Name = "left-up", IconUrl = "~/images/reclam-block/left-up.png" },
-                    new ItemToViewModel { Name = "left-middle", IconUrl = "~/images/reclam-block/left-midle.png" },
-                    new ItemToViewModel { Name = "left-down", IconUrl = "~/images/reclam-block/left-down.png" },
-                    new ItemToViewModel { Name = "middle-гu", IconUrl = "~/images/reclam-block/middle-up.png" },
-                    new ItemToViewModel { Name = "middle-middle-left", IconUrl = "~/images/reclam-block/middle-middle-left.png" },
-                    new ItemToViewModel { Name = "middle-middle-right", IconUrl = "~/images/reclam-block/middle-middle-right.png" },
-                    new ItemToViewModel { Name = "middle-down", IconUrl = "~/images/reclam-block/middle-down.png" },
-                    new ItemToViewModel { Name = "right-up", IconUrl = "~/images/reclam-block/right-up.png" },
-                    new ItemToViewModel { Name = "right-middle", IconUrl = "~/images/reclam-block/right-middle.png" },
-                    new ItemToViewModel { Name = "right-down", IconUrl = "~/images/reclam-block/right-down.png" }
+                    new ItemToViewModel { Name = "left-up", IconUrl = "~/images/reclam-block/left-up.png", CategoryId = "29" },
+                    new ItemToViewModel { Name = "left-middle", IconUrl = "~/images/reclam-block/left-midle.png", CategoryId = "82" },
+                    new ItemToViewModel { Name = "left-down", IconUrl = "~/images/reclam-block/left-down.png", CategoryId = "105" },
+                    new ItemToViewModel { Name = "middle-гu", IconUrl = "~/images/reclam-block/middle-up.png", CategoryId = "36" },
+                    new ItemToViewModel { Name = "middle-middle-left", IconUrl = "~/images/reclam-block/middle-middle-left.png", CategoryId = "39" },
+                    new ItemToViewModel { Name = "middle-middle-right", IconUrl = "~/images/reclam-block/middle-middle-right.png", CategoryId = "146" },
+                    new ItemToViewModel { Name = "middle-down", IconUrl = "~/images/reclam-block/middle-down.png", CategoryId = "101" },
+                    new ItemToViewModel { Name = "right-up", IconUrl = "~/images/reclam-block/right-up.png", CategoryId = "38" },
+                    new ItemToViewModel { Name = "right-middle", IconUrl = "~/images/reclam-block/right-middle.png", CategoryId = "159" },
+                    new ItemToViewModel { Name = "right-down", IconUrl = "~/images/reclam-block/right-down.png", CategoryId = "157 " }
                 },
 
-                PopularProducts = new List<ItemWhithUrlAndPriceModel>
-                {
-                    new ItemWhithUrlAndPriceModel { IconUrl = "images/product1.jpg", ProductDescription = "Apple iPhone 16 Pro Max 256GB Desert Titanium (MYWX3SX/A)", ProductPrice = "₴1200" },
-                    new ItemWhithUrlAndPriceModel { IconUrl = "images/product2.jpg", ProductDescription = "Apple iPhone 16 Pro Max 256GB Desert Titanium (MYWX3SX/A)", ProductPrice = "₴1500" },
-                    new ItemWhithUrlAndPriceModel { IconUrl = "images/product3.jpg", ProductDescription = "Короткий опис товару 3", ProductPrice = "₴1700" },
-                    new ItemWhithUrlAndPriceModel { IconUrl = "images/product4.jpg", ProductDescription = "Короткий опис товару 4", ProductPrice = "₴2000" }
-                },
+                // За замовчуванням відображаємо смартфони
+                PopularProducts = GetSmartphones(),
 
-                PopularCategory = new List<string>
-                {
-                   "Smartfon",
-                   "Ноутбуки",
-                   "Планшети",
-                   "Смарт-Годинники",
-                   "Телевізори"
-                },
+                // Додаємо словник для швидкого доступу до товарів за категоріями 
+                ProductsByCategory = GetProductsByCategory(),
+
+                // Використовуємо новий об'єкт для категорій
+                PopularCategories = GetPopularCategories(),
+
+                // За замовчуванням вибрана категорія "Смартфони"
+                SelectedCategory = "Смартфони",
 
                 ActualCategory = new List<string>
                 {
@@ -138,7 +226,7 @@ namespace PriceComparisonMVC.Data
                     new ReviewModel
                     {
                         Image = "https://cdn.pixabay.com/photo/2015/01/21/14/14/apple-606761_1280.jpg",
-                        Title = "Найкращі ігрові комп’ютери",
+                        Title = "Найкращі ігрові комп'ютери",
                         Link = "https://www.pcgamer.com/best-gaming-pcs/",
                         Text = "Список топових ігрових комп'ютерів 2025 року для максимального задоволення від ігор."
                     },

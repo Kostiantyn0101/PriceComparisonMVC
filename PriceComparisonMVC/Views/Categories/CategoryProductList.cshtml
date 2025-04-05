@@ -5,9 +5,7 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/pages/category-product-list-style.css" />
-    <link rel="stylesheet" href="~/css/pages/header-style.css" />
     <link rel="stylesheet" href="~/css/pages/breadcrum.css" />
-    <link rel="stylesheet" href="~/css/pages/footer-style.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 }
@@ -113,27 +111,54 @@
                                                     <ul class="characteristic-list">
                                                         @foreach (var characteristic in group.ProductCharacteristics.OrderBy(pc => pc.DisplayOrder))
                                                         {
-                                                            <li>
-                                                                <span class="characteristic-name">@characteristic.CharacteristicTitle:</span>
-                                                                <span class="characteristic-value">
-                                                                    @if (!string.IsNullOrEmpty(characteristic.ValueText))
+                                                            @* <li> *@
+                                                            @*     <span class="characteristic-name">@characteristic.CharacteristicTitle:</span> *@
+                                                            @*     <span class="characteristic-value"> *@
+                                                            @*         @if (!string.IsNullOrEmpty(characteristic.ValueText)) *@
+                                                            @*         { *@
+                                                            @*             @characteristic.ValueText *@
+                                                            @*         } *@
+                                                            @*         else if (characteristic.ValueNumber.HasValue) *@
+                                                            @*         { *@
+                                                            @*             @characteristic.ValueNumber *@
+                                                            @*         } *@
+                                                            @*         else if (characteristic.ValueBoolean.HasValue) *@
+                                                            @*         { *@
+                                                            @*             @(characteristic.ValueBoolean.Value ? "Так" : "Ні") *@
+                                                            @*         } *@
+                                                            @*         else if (characteristic.ValueDate.HasValue) *@
+                                                            @*         { *@
+                                                            @*             @characteristic.ValueDate.Value.ToShortDateString() *@
+                                                            @*         } *@
+                                                            @*     </span> *@
+                                                            @* </li> *@
+
+                                                        <li>
+                                                            <span class="characteristic-name">@characteristic.CharacteristicTitle:</span>
+                                                            <span class="characteristic-value format-newlines">
+                                                                @if (!string.IsNullOrEmpty(characteristic.ValueText))
+                                                                {
+                                                                    @characteristic.ValueText
+                                                                }
+                                                                else if (characteristic.ValueNumber.HasValue)
+                                                                {
+                                                                    @characteristic.ValueNumber
+                                                                    @if (!string.IsNullOrEmpty(characteristic.CharacteristicUnit))
                                                                     {
-                                                                        @characteristic.ValueText
+                                                                        <span> @characteristic.CharacteristicUnit</span>
                                                                     }
-                                                                    else if (characteristic.ValueNumber.HasValue)
-                                                                    {
-                                                                        @characteristic.ValueNumber
-                                                                    }
-                                                                    else if (characteristic.ValueBoolean.HasValue)
-                                                                    {
-                                                                        @(characteristic.ValueBoolean.Value ? "Так" : "Ні")
-                                                                    }
-                                                                    else if (characteristic.ValueDate.HasValue)
-                                                                    {
-                                                                        @characteristic.ValueDate.Value.ToShortDateString()
-                                                                    }
-                                                                </span>
-                                                            </li>
+                                                                }
+                                                                else if (characteristic.ValueBoolean.HasValue)
+                                                                {
+                                                                    @(characteristic.ValueBoolean.Value ? "Так" : "Ні")
+                                                                }
+                                                                else if (characteristic.ValueDate.HasValue)
+                                                                {
+                                                                    @characteristic.ValueDate.Value.ToShortDateString()
+                                                                }
+                                                            </span>
+                                                        </li>
+
                                                         }
                                                     </ul>
                                                 </div>
@@ -160,3 +185,27 @@
     </main>
 
     <partial name="_Footer" />
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Знаходимо всі елементи для форматування
+        const elements = document.querySelectorAll('.format-newlines');
+
+        elements.forEach(function(element) {
+            // Отримуємо текстовий вміст
+            let text = element.textContent || element.innerText;
+
+            // Перевіряємо, чи містить текст символи переносу рядка
+            if(text.includes('\\r\\n') || text.includes('\\n') || text.includes('\\r')) {
+                // Замінюємо всі можливі варіанти на <br>
+                let formattedText = text
+                    .replace(/\\r\\n/g, '<br>')
+                    .replace(/\\n/g, '<br>')
+                    .replace(/\\r/g, '<br>');
+
+                // Оновлюємо HTML
+                element.innerHTML = formattedText;
+            }
+        });
+    });
+</script>

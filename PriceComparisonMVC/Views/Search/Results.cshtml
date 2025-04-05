@@ -4,16 +4,9 @@
     ViewData["Title"] = $"Результати пошуку: {Model.Query}";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="~/css/pages/header-style.css" />
-    <link rel="stylesheet" href="~/css/pages/footer-style.css" />
-}
-
-
 <partial name="_Header" />
 
 <partial name="_CategoriesBlock" model="ViewBag.Categories" />
-
 
 <div class="container mt-4">
     <h2>Результати пошуку: "@Model.Query"</h2>

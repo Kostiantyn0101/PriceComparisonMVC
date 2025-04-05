@@ -4,6 +4,7 @@ using PriceComparisonMVC.Models;
 using PriceComparisonMVC.Models.Categories;
 using PriceComparisonMVC.Models.Response;
 using PriceComparisonMVC.Services;
+using System.Reflection;
 using System.Text.Json;
 
 namespace PriceComparisonMVC.Controllers
@@ -149,7 +150,8 @@ namespace PriceComparisonMVC.Controllers
                     }
                 }
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Favorites");
+                //return Favorites();
             }
             catch (Exception ex)
             {

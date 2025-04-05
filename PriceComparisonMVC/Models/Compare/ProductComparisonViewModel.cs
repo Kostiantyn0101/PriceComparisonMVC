@@ -13,5 +13,6 @@ namespace PriceComparisonMVC.Models.Compare
         public string ImageUrl { get; set; }
         public Dictionary<string, string> Specifications { get; set; }
         public bool HasOffers { get; set; }
+        public int CategoryId { get; set; }
     }
 }
