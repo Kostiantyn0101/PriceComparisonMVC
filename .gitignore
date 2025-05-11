@@ -398,4 +398,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/PriceComparisonMVC/appsettings.Secrets.json
+
+**/appsettings.Secrets.json
