@@ -103,6 +103,7 @@ dotnet watch run --project PriceComparisonMVC
 
 * **Backend API** – [Kostiantyn0101/PriceComparisonWebAPI](https://github.com/Kostiantyn0101/PriceComparisonWebAPI)
 * **Admin Panel** – [Kostiantyn0101/PriceComparison-UI-MVC-admin](https://github.com/Kostiantyn0101/PriceComparison-UI-MVC-admin)
+* **PriceComparison MVC Front‑end** – [Kostiantyn0101/PriceComparison-UI-MVC](https://github.com/Kostiantyn0101/PriceComparison-UI-MVC)
 
 ## 🤝 Contributing
 
